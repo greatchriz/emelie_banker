@@ -92,7 +92,6 @@
   </li>
   @endif
 
-  @if(Auth::guard('admin')->user()->sectionCheck('Money Transfer'))
   <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#moneytransfer" aria-expanded="true" aria-controls="collapseTable">
       <i class="fas fa-exchange-alt"></i>
@@ -100,12 +99,14 @@
   </a>
     <div id="moneytransfer" class="collapse" aria-labelledby="headingTable" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
+        @if(Auth::guard('admin')->user()->sectionCheck('Money Transfer'))
         <a class="collapse-item" href="{{ route('admin.own.banks.transfer.index') }}">{{ __('Own Bank Transfer') }}</a>
         <a class="collapse-item" href="{{ route('admin.other.banks.transfer.index') }}">{{ __('Other Bank Transfer') }}</a>
+        @endif
+        <a class="collapse-item" href="{{ route('user.transfer.access') }}">{{ __('User Transfer Access') }}</a>
       </div>
     </div>
   </li>
-  @endif
 
   @if(Auth::guard('admin')->user()->sectionCheck('Wire Transfer'))
   <li class="nav-item">
@@ -360,4 +361,16 @@
 
 @endif
 
-
+@if(Auth::guard('admin')->user()->role_id == 0)
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#moneytransfer" aria-expanded="true" aria-controls="collapseTable">
+      <i class="fas fa-exchange-alt"></i>
+    <span>{{ __('Money Transfer') }}</span>
+  </a>
+    <div id="moneytransfer" class="collapse" aria-labelledby="headingTable" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <a class="collapse-item" href="{{ route('user.transfer.access') }}">{{ __('User Transfer Access') }}</a>
+      </div>
+    </div>
+  </li>
+@endif

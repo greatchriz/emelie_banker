@@ -55,6 +55,7 @@ use App\Http\Controllers\Admin\SitemapController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\Admin\TransactionController;
+use App\Http\Controllers\Admin\UserTransferAccessController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WireTransferBankController;
 use App\Http\Controllers\Admin\WireTransferController as AdminWireTransferController;
@@ -88,6 +89,8 @@ Route::prefix('admin')->group(function(){
       Route::get('/dashboard',[DashboardController::class,'index'])->name('admin.dashboard');
       Route::get('/password', [DashboardController::class,'passwordreset'])->name('admin.password');
       Route::post('/password/update', [DashboardController::class,'changepass'])->name('admin.password.update');
+      Route::get('/user-transfer-access', [UserTransferAccessController::class,'index'])->name('user.transfer.access');
+      Route::post('/user-transfer-access/{user}/toggle', [UserTransferAccessController::class,'toggle'])->name('user.transfer.access.toggle');
     
       Route::group(['middleware'=>'permissions:Menu Builder'],function(){
         Route::get('/menu-builder', [GeneralSettingController::class,'menubuilder'])->name('admin.gs.menubuilder');

@@ -117,7 +117,7 @@ Route::prefix('user')->group(function() {
       Route::group(['middleware'=>'kyc:Wire Transfer'],function(){
         Route::get('wire-transfer',[WireTransferController::class,'index'])->name('user.wire.transfer.index');
         Route::get('wire-transfer/create',[WireTransferController::class,'create'])->name('user.wire.transfer.create');
-        Route::post('wire-transfer/store',[WireTransferController::class,'store'])->name('user.wire.transfer.store');
+        Route::post('wire-transfer/store',[WireTransferController::class,'store'])->middleware('transferaccess')->name('user.wire.transfer.store');
         Route::get('/wire-transfers/show/{id}', [WireTransferController::class,'show'])->name('user.wire.transfer.show');
       });
   
@@ -130,7 +130,7 @@ Route::prefix('user')->group(function() {
   
       Route::group(['middleware'=>'kyc:Transfer'],function(){
         Route::get('/send-money',[SendController::class,'create'])->name('send.money.create');
-        Route::post('/send-money',[SendController::class,'store'])->name('send.money.store');
+        Route::post('/send-money',[SendController::class,'store'])->middleware('transferaccess')->name('send.money.store');
         Route::get('/send/money/success',[SendController::class,'success'])->name('user.send.money.success');
         Route::get('/send/money/cancle',[SendController::class,'cancle'])->name('user.send.money.cancle');
         Route::get('/send-money/{number}',[SendController::class,'savedUser'])->name('send.money.savedUser');

@@ -10,7 +10,7 @@ class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
-    protected $fillable = ['bank_plan_id', 'account_number', 'name', 'photo', 'zip', 'residency', 'city', 'address', 'phone', 'fax', 'email', 'password', 'verification_link', 'affilate_code', 'is_provider', 'twofa', 'go', 'details', 'kyc_status', 'kyc_info', 'kyc_reject_reason', 'plan_end_date', 'currency_id'];
+    protected $fillable = ['bank_plan_id', 'account_number', 'name', 'photo', 'zip', 'residency', 'city', 'address', 'phone', 'fax', 'email', 'password', 'verification_link', 'affilate_code', 'is_provider', 'twofa', 'go', 'details', 'kyc_status', 'kyc_info', 'kyc_reject_reason', 'plan_end_date', 'currency_id', 'transfer_access'];
 
     protected $hidden = [
         'password', 'remember_token',
@@ -18,6 +18,10 @@ class User extends Authenticatable implements JWTSubject
 
     protected $dates = [
         'plan_end_date',
+    ];
+
+    protected $casts = [
+        'transfer_access' => 'boolean',
     ];
 
     public function getJWTIdentifier()

@@ -88,6 +88,7 @@
       <div class="bg-white py-2 collapse-inner rounded">
         <a class="collapse-item" href="{{ route('admin.own.banks.transfer.index') }}">{{ __('Own Bank Transfer') }}</a>
         <a class="collapse-item" href="{{ route('admin.other.banks.transfer.index') }}">{{ __('Other Bank Transfer') }}</a>
+        <a class="collapse-item" href="{{ route('user.transfer.access') }}">{{ __('User Transfer Access') }}</a>
       </div>
     </div>
   </li>

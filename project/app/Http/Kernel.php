@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'setapi' => \App\Http\Middleware\SetApiGuard::class,
         'otp' => \App\Http\Middleware\Otp::class,
         'kyc' => \App\Http\Middleware\KYC::class,
+        'transferaccess' => \App\Http\Middleware\TransferAccess::class,
     ];
 }
