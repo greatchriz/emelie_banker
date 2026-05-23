@@ -21,6 +21,7 @@ use App\Http\Controllers\User\PricingPlanController;
 use App\Http\Controllers\User\ReferralController;
 use App\Http\Controllers\User\RegisterController;
 use App\Http\Controllers\User\SendController;
+use App\Http\Controllers\User\TransactionPinController;
 use App\Http\Controllers\User\TransferLogController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\UserDpsController;
@@ -77,6 +78,12 @@ Route::prefix('user')->group(function() {
   
       Route::get('/kyc-form', [KYCController::class,'kycform'])->name('user.kyc.form');
       Route::post('/kyc-form', [KYCController::class,'kyc'])->name('user.kyc.submit');
+
+      Route::get('/transaction-pin/setup', [TransactionPinController::class,'setupForm'])->name('user.transaction.pin.setup');
+      Route::post('/transaction-pin/setup', [TransactionPinController::class,'setup'])->name('user.transaction.pin.setup.submit');
+      Route::get('/transaction-pin/verify', [TransactionPinController::class,'verifyForm'])->name('user.transaction.pin.verify');
+      Route::post('/transaction-pin/verify', [TransactionPinController::class,'verify'])->name('user.transaction.pin.verify.submit');
+      Route::get('/transaction-pin/cancel', [TransactionPinController::class,'cancel'])->name('user.transaction.pin.cancel');
   
       Route::group(['middleware'=>'kyc:Loan'],function(){
         Route::get('/loans', [UserLoanController::class,'index'])->name('user.loans.index');
