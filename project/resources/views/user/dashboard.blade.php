@@ -1,7 +1,7 @@
 @extends('layouts.user')
 
 @section('contents')
-  <div class="mb-6 flex flex-wrap items-center justify-between gap-4 lg:mb-8">
+  <div class="user-dashboard mb-6 flex flex-wrap items-center justify-between gap-4 lg:mb-8">
     <div>
       <h3>{{ __('Dashboard') }}</h3>
       <p class="mt-1 text-sm text-n100">{{ __('Welcome back') }}, {{ $user->name }}</p>
@@ -13,10 +13,10 @@
   </div>
 
   @if (auth()->user()->kyc_status != 1)
-    <div class="box mb-4 border border-[#FFC861]/40 bg-[#FFC861]/10">
+    <div class="kyc-alert box mb-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-          <span class="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#FFC861]/20 text-[#B87900]">
+          <span class="alert-icon flex size-11 shrink-0 items-center justify-center rounded-full">
             <i class="las la-user-check text-2xl"></i>
           </span>
           <div>
@@ -24,7 +24,7 @@
             <p class="text-sm text-n700">{{ __('You have a information to submit for kyc verification.') }}</p>
           </div>
         </div>
-        <a href="{{ route('user.kyc.form') }}" class="btn-primary bg-[#B87900]">{{ __('Submit') }}</a>
+        <a href="{{ route('user.kyc.form') }}" class="btn-primary kyc-submit">{{ __('Submit') }}</a>
       </div>
     </div>
   @endif
@@ -290,11 +290,11 @@
                   </td>
                   <td class="px-6 py-3">
                     @if ($data->status == 1)
-                      <span class="rounded-full bg-[#20B757]/10 px-3 py-1 text-xs font-semibold text-[#20B757]">@lang('Completed')</span>
+                      <span class="status-pill status-success">@lang('Completed')</span>
                     @elseif($data->status == 2)
-                      <span class="rounded-full bg-[#EF4444]/10 px-3 py-1 text-xs font-semibold text-[#EF4444]">@lang('Rejected')</span>
+                      <span class="status-pill status-danger">@lang('Rejected')</span>
                     @else
-                      <span class="rounded-full bg-[#FFC861]/10 px-3 py-1 text-xs font-semibold text-[#B87900]">@lang('Pending')</span>
+                      <span class="status-pill status-warning">@lang('Pending')</span>
                     @endif
                   </td>
                   <td class="px-6 py-3">

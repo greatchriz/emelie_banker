@@ -33,7 +33,7 @@
       </form>
     </div>
 
-    <div class="flex items-center gap-3 md:gap-4">
+    <div class="topbar-actions flex items-center gap-3 md:gap-4">
       <div class="relative lg:hidden">
         <button id="mobile-search-btn" class="flex h-10 w-10 cursor-pointer select-none items-center justify-center gap-2 rounded-full border border-n30 bg-primary/5 md:h-12 md:w-12" type="button">
           <i class="las la-search"></i>
@@ -48,7 +48,7 @@
         </div>
       </div>
 
-      <button id="darkModeToggle" aria-label="dark mode switch" class="h-10 w-10 shrink-0 rounded-full border border-n30 bg-primary/5 md:h-12 md:w-12" type="button">
+      <button id="darkModeToggle" aria-label="dark mode switch" class="topbar-btn" type="button">
         <i class="las la-sun text-2xl dark:hidden!"></i>
         <i class="las la-moon text-2xl dark:block! hidden!"></i>
       </button>

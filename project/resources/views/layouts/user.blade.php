@@ -13,10 +13,25 @@
     <link rel="stylesheet" href="{{ asset('assets/user/css/tabler.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/user/css/custom.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/user/bankhub/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/user/bankhub/css/user-overrides.css') }}">
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.colorScheme = 'dark';
+          } else {
+            document.documentElement.style.colorScheme = 'light';
+          }
+        } catch (error) {
+          document.documentElement.style.colorScheme = 'light';
+        }
+      })();
+    </script>
     @stack('css')
   </head>
 
-  <body class="vertical hidden bg-secondary/5">
+  <body class="user-shell vertical hidden bg-secondary/5">
     <div class="loader min-w-screen fixed inset-0 z-50! flex min-h-screen items-center justify-center bg-n0">
       <svg viewBox="25 25 50 50">
         <circle r="20" cy="50" cx="50"></circle>
