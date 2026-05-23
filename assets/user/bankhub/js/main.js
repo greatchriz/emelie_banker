@@ -1,19 +1,18 @@
 // set theme config
 const themeConfig = {
-  layout: '', // vertical, two-column, hovered, detached, horizontal
+  layout: 'vertical',
   direction: '', // rtl, ltr
   theme: '', // light, dark
   customizer: false, // true, false
 };
 
-let currentlayout = themeConfig.layout || 'vertical';
+let currentlayout = 'vertical';
 
 // theme customizer
 if (themeConfig.customizer) {
   const customizerContainer = document.createElement('div');
   customizerContainer.id = 'customizer-container';
   customizerContainer.classList.add('z-[60]', 'w-full');
-  const layouts = ['vertical', 'two-column', 'hovered', 'detached', 'horizontal'];
   const customizerComponent = `<button
     id="customizer-btn"
     class="fixed ltr:right-4 rtl:left-4 z-50 top-1/2 bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center">
@@ -66,10 +65,6 @@ if (themeConfig.customizer) {
             <span>RTL</span>
           </button>
         </div>
-        <h6 class="h6 mb-3">Sidebar</h6>
-        <div class="flex gap-4 flex-wrap" id="layout-container">
-          ${layouts.map((layout) => `<button class="border border-n30  capitalize rounded-lg px-4 py-2 layout-btn ${currentlayout === layout ? 'active' : ''}">${layout}</button>`).join('')}
-        </div>
       </div>
     </aside>
   </div>`;
@@ -78,20 +73,12 @@ if (themeConfig.customizer) {
   document.body.appendChild(customizerContainer);
 }
 
-// Attach event listeners for notification and language dropdowns
+// Attach event listeners for topbar dropdowns
 const darkModeToggle = document.getElementById('darkModeToggle');
 const lightBtn = document.getElementById('light-btn');
 const darkBtn = document.getElementById('dark-btn');
-const notificationBtn = document.getElementById('notification-btn');
 const languageBtn = document.getElementById('language-btn');
 const profileBtn = document.getElementById('profile-btn');
-const layoutBtn = document.getElementById('layout-btn');
-const layout = document.getElementById('layout');
-let layoutList;
-if (layout) {
-  layoutList = layout.querySelectorAll('li');
-}
-const selectedLayout = document.getElementById('selected-layout');
 const language = document.getElementById('language');
 let languageList;
 if (language) {
@@ -174,37 +161,8 @@ if (menuLinks) {
 }
 // change layout
 function changeLayout(layout = 'vertical') {
-  // remove previous class
   document.body.classList.remove('vertical', 'two-column', 'hovered', 'horizontal', 'detached');
-  if (layout) {
-    document.body.classList.add(layout);
-    if (selectedLayout) {
-      selectedLayout.textContent = layout;
-    }
-  } else {
-    document.body.classList.add('vertical');
-    selectedLayout.textContent = 'vertical';
-  }
-  if (layoutList) {
-    layoutList.forEach((otherItem) => {
-      otherItem.classList.remove('active');
-    });
-  }
-
-  const layoutBtns = document.querySelectorAll('.layout-btn');
-  layoutBtns.forEach((btn) => btn.classList.remove('active'));
-  layoutBtns.forEach((btn) => {
-    if (currentlayout == btn.textContent.trim().toLocaleLowerCase()) {
-      btn.classList.add('active');
-    }
-  });
-  if (layoutList) {
-    layoutList.forEach((item) => {
-      if (item.textContent.trim().toLowerCase() === currentlayout) {
-        item.classList.add('active');
-      }
-    });
-  }
+  document.body.classList.add(layout || 'vertical');
   setActiveMenu();
 }
 
@@ -226,15 +184,12 @@ const handleFocus = (e) => {
 document.addEventListener('DOMContentLoaded', () => {
   // Check the user's preference from local storage
   const dir = themeConfig.direction || localStorage.getItem('dir');
-  const savedLayout = themeConfig.layout || localStorage.getItem('layout');
   if (dir) {
     document.documentElement.dir = dir;
   }
-  if (savedLayout) {
-    currentlayout = savedLayout;
-  }
+  currentlayout = 'vertical';
+  localStorage.removeItem('layout');
   changeLayout(currentlayout);
-  // set layout based on localstorage
 
   // Set the initial theme based on the user's preference
   if (isDarkMode) {
@@ -415,43 +370,11 @@ function toggleDropdown(btnId, dropdownId) {
   }
 }
 
-notificationBtn && notificationBtn.addEventListener('click', () => toggleDropdown('notification-btn', 'notification'));
 profileBtn && profileBtn.addEventListener('click', () => toggleDropdown('profile-btn', 'profile'));
 profileBtn &&
   mobileSearchBtn.addEventListener('click', () => {
     toggleDropdown('mobile-search-btn', 'mobile-search');
   });
-// Layout swithcer
-
-layoutBtn &&
-  layoutBtn.addEventListener('click', () => {
-    toggleDropdown('layout-btn', 'layout');
-  });
-
-if (layoutList) {
-  layoutList.forEach((item) => {
-    item.addEventListener('click', (event) => {
-      // Update the selected layout text
-      selectedLayout.textContent = item.textContent;
-      // document.body.classList.add = item.innerText;
-      currentlayout = item.dataset.layout;
-      document.body.classList.add(item.dataset.layout);
-      localStorage.setItem('layout', item.dataset.layout);
-
-      changeLayout(currentlayout);
-      item.classList.add('active');
-      // Close the dropdown
-      toggleDropdown('layout-btn', 'layout');
-      if (layout.classList.contains('show')) {
-        document.getElementById('drop-arrow').classList.add('rotate-180');
-      } else {
-        document.getElementById('drop-arrow').classList.remove('rotate-180');
-      }
-      // Prevent the click event from propagating to the document
-      event.stopPropagation();
-    });
-  });
-}
 
 // Language switcher
 
@@ -549,23 +472,6 @@ customizerBtn &&
       }
     }
   });
-
-const layoutBtns = document.querySelectorAll('.layout-btn');
-if (layoutBtns) {
-  layoutBtns.forEach((button) => {
-    button.addEventListener('click', () => {
-      layoutBtns.forEach((btn) => {
-        btn.classList.remove('active');
-      });
-      button.classList.add('active');
-      currentlayout = button.textContent.trim().toLowerCase();
-      selectedLayout.textContent = currentlayout;
-      localStorage.setItem('layout', currentlayout);
-      document.body.classList.add(currentlayout);
-      changeLayout(currentlayout);
-    });
-  });
-}
 
 // open account modal
 function setupModal(modalBtnSelector, modalOverlaySelector, modalCloseBtnSelector) {

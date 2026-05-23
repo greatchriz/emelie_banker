@@ -36,8 +36,11 @@
           <span class="text-sm text-n100">{{ __('Available Balance') }}</span>
           <h2 class="mt-2 text-3xl font-semibold">{{ showprice($user->balance,$currency) }}</h2>
         </div>
-        <span class="flex rounded-xl bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-          {{ __('Account') }}: {{ $user->account_number }}
+        <span class="account-number-copy flex items-center gap-2 rounded-xl bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+          <span>{{ __('Account') }}: <span id="accountNumberText">{{ $user->account_number }}</span></span>
+          <button class="account-copy-btn" type="button" onclick="copyAccountNumber()" aria-label="{{ __('Copy account number') }}">
+            <i class="las la-copy"></i>
+          </button>
         </span>
       </div>
       <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -327,6 +330,27 @@
 
       if (typeof toastr !== 'undefined') {
         toastr.success("{{ __('Copied') }}");
+      } else {
+        alert('copied');
+      }
+    }
+
+    function copyAccountNumber() {
+      var accountNumber = document.getElementById('accountNumberText').textContent.trim();
+
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(accountNumber);
+      } else {
+        var tempInput = document.createElement('input');
+        tempInput.value = accountNumber;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+      }
+
+      if (typeof toastr !== 'undefined') {
+        toastr.success("{{ __('Account number copied') }}");
       } else {
         alert('copied');
       }

@@ -1,29 +1,12 @@
 <nav class="navbar-top topbarfull z-20 gap-3 border-b border-n0 bg-n0 py-3 shadow-sm duration-300" id="topbar">
   <div class="topbar-inner flex items-center justify-between">
-    <div class="flex grow items-center gap-4 xxl:gap-6">
+    <div class="topbar-left flex grow items-center gap-4 xxl:gap-6">
       <a href="{{ route('user.dashboard') }}" class="topbar-logo hidden shrink-0">
         <img width="174" height="38" src="{{ asset('assets/images/'.$gs->logo) }}" alt="{{ $gs->title }}" class="logo-full2 hidden lg:block" />
       </a>
       <button aria-label="sidebar-toggle-btn" class="flex items-center rounded-s-2xl bg-primary px-0.5 py-3 text-xl text-white" id="sidebar-toggle-btn">
         <i class="las la-angle-left text-lg"></i>
       </button>
-
-      <div class="topnav-layout">
-        <div id="layout-btn" class="flex w-full cursor-pointer items-center justify-between gap-2 rounded-[30px] border border-n30 bg-primary/5 px-4 py-1 lg:py-1.5 xxl:px-6 xxl:py-2">
-          <span class="flex select-none items-center gap-2">
-            <i class="las la-border-all text-3xl text-primary"></i>
-            <span id="selected-layout" class="capitalize">Vertical</span>
-          </span>
-          <i id="drop-arrow" class="las la-angle-down shrink-0 text-lg duration-300"></i>
-        </div>
-        <ul id="layout" class="hide absolute left-0 top-full z-20 w-full origin-top rounded-lg bg-n0 p-2 shadow-[0px_6px_30px_0px_rgba(0,0,0,0.08)] duration-300">
-          <li data-layout="vertical" class="active">Vertical</li>
-          <li data-layout="two-column">Two-Column</li>
-          <li data-layout="hovered">Hovered</li>
-          <li data-layout="horizontal">Horizontal</li>
-          <li data-layout="detached">Detached</li>
-        </ul>
-      </div>
 
       <form class="topnav-search">
         <input type="text" placeholder="{{ __('Search') }}" class="w-full border-none bg-transparent py-2 focus:border-none focus:shadow-none focus:outline-none md:py-2.5 xxl:py-3 ltr:pl-4 rtl:pr-4" />
@@ -52,35 +35,6 @@
         <i class="las la-sun text-2xl dark:hidden!"></i>
         <i class="las la-moon text-2xl dark:block! hidden!"></i>
       </button>
-
-      <div class="relative">
-        <button id="notification-btn" class="topbar-btn" type="button">
-          <i class="las la-bell text-2xl"></i>
-          <span class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-white">2</span>
-        </button>
-        <div id="notification" class="hide absolute top-full z-20 origin-[60%_0] rounded-md bg-n0 shadow-[0px_6px_30px_0px_rgba(0,0,0,0.08)] duration-300 ltr:-right-27.5 sm:ltr:right-0 sm:ltr:origin-top-right rtl:-left-30 sm:rtl:left-0 sm:rtl:origin-top-left">
-          <div class="flex items-center justify-between border-b border-n30 p-3 lg:px-4">
-            <h5 class="h5">{{ __('Notifications') }}</h5>
-            <a href="{{ route('user.message.index') }}" class="text-sm text-primary">{{ __('View All') }}</a>
-          </div>
-          <ul class="flex w-75 flex-col p-4">
-            <li class="flex cursor-pointer gap-2 rounded-md px-2 py-1.5 duration-300 hover:bg-primary/10">
-              <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"><i class="las la-envelope text-xl"></i></span>
-              <span class="text-sm">
-                <span class="block font-medium">{{ __('Support Center') }}</span>
-                <span class="text-xs text-n100">{{ __('Check your latest messages') }}</span>
-              </span>
-            </li>
-            <li class="flex cursor-pointer gap-2 rounded-md px-2 py-1.5 duration-300 hover:bg-primary/10">
-              <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"><i class="las la-shield-alt text-xl"></i></span>
-              <span class="text-sm">
-                <span class="block font-medium">{{ __('Account Security') }}</span>
-                <span class="text-xs text-n100">{{ __('Keep your profile up to date') }}</span>
-              </span>
-            </li>
-          </ul>
-        </div>
-      </div>
 
       <a href="{{ route('user.message.index') }}" class="topbar-btn max-[620px]:hidden">
         <i class="lab la-facebook-messenger"></i>
