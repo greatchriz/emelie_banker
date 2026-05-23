@@ -1,0 +1,1849 @@
+<!doctype html>
+<html dir="ltr" lang="en">
+  
+<!-- Mirrored from softivuspro.com/bankhub-html/components.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 23 May 2026 00:03:52 GMT -->
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="assets/images/favicon.ico" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com/" />
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" />
+    <link rel="stylesheet" href="assets/css/line-awesome/css/line-awesome.min.css" />
+    <link rel="stylesheet" href="../../cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css" />
+    <link rel="stylesheet" href="../../cdn.jsdelivr.net/npm/notyf%403/notyf.min.css" />
+    <link rel="stylesheet" href="assets/css/hint.min.html" />
+    <meta name="description" content="Bankhub - Html Tailwindcss Banking and Fintech Dashboard Template" />
+    <title>Bankhub - HTML Tailwindcss Fintech and Banking Dashboard</title>
+  <script defer src="assets/js/app.js"></script><link href="assets/css/style.css" rel="stylesheet"></head>
+
+  <body class="vertical hidden bg-secondary/5">
+    <!-- Loader -->
+    <div class="loader min-w-screen fixed inset-0 z-50! flex min-h-screen items-center justify-center bg-n0">
+      <svg viewBox="25 25 50 50">
+        <circle r="20" cy="50" cx="50"></circle>
+      </svg>
+    </div>
+    <!-- Navigation -->
+    <section class="topbar-container z-30">
+  <nav class="navbar-top topbarfull z-20 gap-3 border-b bg-n0 border-n0 py-3 shadow-sm duration-300" id="topbar">
+    <div class="topbar-inner flex items-center justify-between">
+      <div class="flex grow items-center gap-4 xxl:gap-6">
+        <a href="index.html" class="topbar-logo hidden shrink-0">
+          <img width="174" height="38" src="assets/images/logo-with-text.png" alt="logo" class="logo-full2 hidden lg:block" />
+        </a>
+        <button aria-label="sidebar-toggle-btn" class="flex items-center rounded-s-2xl bg-primary px-0.5 py-3 text-xl text-white" id="sidebar-toggle-btn">
+          <i class="las la-angle-left text-lg"></i>
+        </button>
+        <!-- Select layout -->
+        <div class="topnav-layout">
+          <div id="layout-btn" class="flex w-full cursor-pointer items-center justify-between gap-2 rounded-[30px] border border-n30 bg-primary/5 px-4 py-1 lg:py-1.5 xxl:px-6 xxl:py-2">
+            <span class="flex select-none items-center gap-2">
+              <i class="las la-border-all text-3xl text-primary"></i>
+              <span id="selected-layout" class="capitalize">Vertical</span>
+            </span>
+            <i id="drop-arrow" class="las la-angle-down shrink-0 text-lg duration-300"></i>
+          </div>
+          <ul id="layout" class="hide absolute left-0 top-full z-20 w-full origin-top rounded-lg bg-n0 p-2 shadow-[0px_6px_30px_0px_rgba(0,0,0,0.08)] duration-300">
+            <li data-layout="vertical" class="active">Vertical</li>
+            <li data-layout="two-column">Two-Column</li>
+            <li data-layout="hovered">Hovered</li>
+            <li data-layout="horizontal">Horizontal</li>
+            <li data-layout="detached">Detached</li>
+          </ul>
+        </div>
+
+        <!-- Search bar -->
+        <form class="topnav-search">
+          <input type="text" placeholder="Search" class="w-full border-none bg-transparent py-2 focus:border-none focus:shadow-none focus:outline-none md:py-2.5 xxl:py-3 ltr:pl-4 rtl:pr-4" />
+          <button aria-label="search btn" class="flex h-8 w-9 items-center justify-center rounded-full bg-primary text-white">
+            <i class="las la-search text-lg"></i>
+          </button>
+        </form>
+      </div>
+      <div class="flex items-center gap-3 md:gap-4">
+        <!-- mobile Search  -->
+        <div class="relative lg:hidden">
+          <button id="mobile-search-btn" class="flex h-10 w-10 cursor-pointer select-none items-center justify-center gap-2 rounded-full border border-n30 bg-primary/5 md:h-12 md:w-12">
+            <i class="las la-search"></i>
+          </button>
+          <div id="mobile-search" class="hide invisible absolute -left-8 top-full z-20 flex min-w-max max-w-62.5 origin-[20%_20%] gap-3 overflow-y-auto rounded-md bg-n0 p-3 opacity-0 shadow-[0px_6px_30px_0px_rgba(0,0,0,0.08)] duration-300">
+            <form class="flex w-full items-center justify-between gap-3 rounded-[30px] border border-n30 bg-secondary/5 p-1 focus-within:border-primary xxl:p-2">
+              <input type="text" placeholder="Search" class="w-full bg-transparent py-1 ltr:pl-4 rtl:pr-4" />
+              <button class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-white lg:h-8 lg:w-8">
+                <i class="las la-search text-lg"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+        <!-- dark mode toggle -->
+        <button id="darkModeToggle" aria-label="dark mode switch" class="h-10 w-10 shrink-0 rounded-full border border-n30 bg-primary/5 md:h-12 md:w-12">
+          <i class="las la-sun text-2xl dark:hidden!"></i>
+          <i class="las la-moon text-2xl dark:block! hidden!"></i>
+        </button>
+        <!-- Notification -->
+        <div class="relative">
+          <button id="notification-btn" class="topbar-btn">
+            <i class="las la-bell text-2xl"></i>
+            <span class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-white"> 2 </span>
+          </button>
+          <div id="notification" class="hide absolute top-full z-20 origin-[60%_0] rounded-md bg-n0 shadow-[0px_6px_30px_0px_rgba(0,0,0,0.08)] duration-300 ltr:-right-27.5 sm:ltr:right-0 sm:ltr:origin-top-right rtl:-left-30 sm:rtl:left-0 sm:rtl:origin-top-left">
+            <div class="flex items-center justify-between border-b border-n30 p-3 lg:px-4">
+              <h5 class="h5">Notifications</h5>
+              <a href="#" class="text-sm text-primary"> View All </a>
+            </div>
+            <ul class="flex w-75 flex-col p-4">
+              <div class="flex cursor-pointer gap-2 rounded-md px-2 py-1.5 duration-300 hover:bg-primary/10">
+                <img src="assets/images/user-3.png" width="44" height="40" class="shrink-0 rounded-full" alt="img" />
+                <div class="text-sm">
+                  <div class="flex gap-1">
+                    <span class="font-medium">Benjamin</span>
+                    <span>Sent a message</span>
+                  </div>
+                  <span class="text-xs text-n100">1 hour ago</span>
+                </div>
+              </div>
+              <div class="flex cursor-pointer gap-2 rounded-md px-2 py-1.5 duration-300 hover:bg-primary/10">
+                <img src="assets/images/user-4.png" width="44" height="40" class="shrink-0 rounded-full" alt="img" />
+                <div class="text-sm">
+                  <div class="flex gap-1">
+                    <span class="font-medium">Benjamin</span>
+                    <span>Left a Comment</span>
+                  </div>
+                  <span class="text-xs text-n100">1 hour ago</span>
+                </div>
+              </div>
+              <div class="flex cursor-pointer gap-2 rounded-md px-2 py-1.5 duration-300 hover:bg-primary/10">
+                <img src="assets/images/user-5.png" width="44" height="40" class="shrink-0 rounded-full" alt="img" />
+                <div class="text-sm">
+                  <div class="flex gap-1">
+                    <span class="font-medium">Benjamin</span>
+                    <span>Sent a message</span>
+                  </div>
+                  <span class="text-xs text-n100">2 hour ago</span>
+                </div>
+              </div>
+              <div class="flex cursor-pointer gap-2 rounded-md px-2 py-1.5 duration-300 hover:bg-primary/10">
+                <img src="assets/images/user-7.png" width="44" height="40" class="shrink-0 rounded-full" alt="img" />
+                <div class="text-sm">
+                  <div class="flex gap-1">
+                    <span class="font-medium">Samuel</span>
+                    <span>Uploaded a file</span>
+                  </div>
+                  <span class="text-xs text-n100">Yesterday</span>
+                </div>
+              </div>
+              <div class="flex cursor-pointer gap-2 rounded-md px-2 py-1.5 duration-300 hover:bg-primary/10">
+                <img src="assets/images/user-7.png" width="44" height="40" class="shrink-0 rounded-full" alt="img" />
+                <div class="text-sm">
+                  <div class="flex gap-1">
+                    <span class="font-medium">David</span>
+                    <span>Left a Comment</span>
+                  </div>
+                  <span class="text-xs text-n100">Yesterday</span>
+                </div>
+              </div>
+            </ul>
+          </div>
+        </div>
+        <!-- Chat Link -->
+        <a href="chat.html" class="topbar-btn max-[620px]:hidden">
+          <i class="lab la-facebook-messenger"></i>
+          <span class="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-white"> 3 </span>
+        </a>
+        <!-- language dropdown -->
+        <div class="relative">
+          <button id="language-btn" class="topbar-btn">
+            <i class="las la-language"></i>
+          </button>
+          <div id="language" class="hide absolute top-full z-20 rounded-md bg-n0 shadow-[0px_6px_30px_0px_rgba(0,0,0,0.08)] duration-300 ltr:right-0 ltr:origin-top-right rtl:left-0 rtl:origin-top-left">
+            <ul class="flex w-32 flex-col rounded-md bg-n0 p-1">
+              <li class="active language-btn">English</li>
+              <li class="language-btn">Arabic</li>
+              <li class="language-btn">Hindi</li>
+              <li class="language-btn">Spanish</li>
+            </ul>
+          </div>
+        </div>
+        <!-- Profile dropdown -->
+        <div class="relative shrink-0">
+          <div id="profile-btn" class="size-10 cursor-pointer md:size-12">
+            <img src="assets/images/user-big-4.png" class="rounded-full" width="48" height="48" alt="profile img" />
+          </div>
+          <div id="profile" class="hide absolute top-full z-20 rounded-md bg-n0 shadow-[0px_6px_30px_0px_rgba(0,0,0,0.08)] duration-300 ltr:right-0 ltr:origin-top-right rtl:left-0 rtl:origin-top-left">
+            <div class="flex flex-col items-center border-b border-n40 p-3 text-center lg:p-4">
+              <img src="assets/images/user-big-4.png" width="60" height="60" class="rounded-full" alt="profile img" />
+              <h6 class="h6 mt-2">William James</h6>
+              <span class="text-sm">james@mail.com</span>
+            </div>
+            <ul class="flex w-62.5 flex-col p-4">
+              <li>
+                <a href="profile.html" class="flex items-center gap-2 rounded-md px-2 py-1.5 duration-300 hover:bg-primary hover:text-n0">
+                  <span class="flex items-center">
+                    <i class="las la-user text-xl"></i>
+                  </span>
+                  Profile
+                </a>
+              </li>
+              <li>
+                <a href="chat.html" class="flex items-center gap-2 rounded-md px-2 py-1.5 duration-300 hover:bg-primary hover:text-n0">
+                  <span class="flex items-center">
+                    <i class="las la-envelope mt-1 text-xl"></i>
+                  </span>
+                  Messages
+                </a>
+              </li>
+              <li>
+                <a href="help-center.html" class="flex items-center gap-2 rounded-md px-2 py-1.5 duration-300 hover:bg-primary hover:text-n0">
+                  <span class="flex items-center">
+                    <i class="las la-life-ring mt-1 text-xl"></i>
+                  </span>
+                  Help
+                </a>
+              </li>
+              <li>
+                <a href="security.html" class="flex items-center gap-2 rounded-md px-2 py-1.5 duration-300 hover:bg-primary hover:text-n0">
+                  <span class="flex items-center">
+                    <i class="las la-cog mt-1 text-xl"></i>
+                  </span>
+                  Settings
+                </a>
+              </li>
+              <li>
+                <a href="sign-in.html" class="flex items-center gap-2 rounded-md px-2 py-1.5 duration-300 hover:bg-primary hover:text-n0">
+                  <span class="flex items-center">
+                    <i class="las la-sign-out-alt mt-1 text-xl"></i>
+                  </span>
+                  Logout
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner relative">
+      <div class="logo-column">
+        <div class="logo-container">
+          <div class="logo-inner">
+            <a href="index.html" class="logo-wrapper">
+              <img src="assets/images/logo-with-text.png" width="174" height="38" class="logo-full" alt="logo" />
+              <img src="assets/images/logo.png" width="37" height="36" class="logo-icon hidden" alt="logo" />
+            </a>
+            <img width="141" height="38" class="logo-text hidden" src="assets/images/logo-text.png" alt="logo text" />
+            <button class="sidebar-close-btn xl:hidden" id="sidebar-close-btn">
+              <i class="las la-times"></i>
+            </button>
+          </div>
+        </div>
+        <div class="menu-container pb-28">
+          <div class="menu-wrapper">
+            <p class="menu-heading">Navigation</p>
+            <ul class="menu-ul">
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-home"></i>
+                    </span>
+                    <span class="menu-title font-medium">Dashboard</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="index.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 01</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="dashboard-02.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 02</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="dashboard-03.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 03</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="dashboard-04.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 04</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="dashboard-05.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 05</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-piggy-bank"></i>
+                    </span>
+                    <span class="menu-title font-medium">Accounts</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="bank-account.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Bank Account</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="account-overview.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Account Overview</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="account-details.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Account Details</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="deposit-details.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Deposit Details</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-credit-card"></i>
+                    </span>
+                    <span class="menu-title font-medium">Cards</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="card-overview.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Card Overview</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="card-details.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Card Details</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-exchange-alt"></i>
+                    </span>
+                    <span class="menu-title font-medium">Transaction</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="transaction-01.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 01</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="transaction-02.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 02</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="transaction-03.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 03</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-wallet"></i>
+                    </span>
+                    <span class="menu-title font-medium">Payment</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="payment-overview.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Payment Overview</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="providers.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Payment Providers</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="exchange.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Exchange</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="make-payment.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Make a Payment</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-coins"></i>
+                    </span>
+                    <span class="menu-title font-medium">Private Transfers</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="add-contact.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Add Contact</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="transfer-overview.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Transfer Overview</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="make-transfer.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Make Transfer</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="chat.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Chat</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-file-invoice"></i>
+                    </span>
+                    <span class="menu-title font-medium">Invoicing</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="add-new.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Add New Invoice</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="invoice-01.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 01</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="invoice-02.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 02</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-chart-bar"></i>
+                    </span>
+                    <span class="menu-title font-medium">Trading</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="trading-01.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 01</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="trading-02.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 02</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="trading-03.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 03</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-chart-pie"></i>
+                    </span>
+                    <span class="menu-title font-medium">Reports</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="reports-01.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 01</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="reports-02.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Style 02</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-cog"></i>
+                    </span>
+                    <span class="menu-title font-medium">Settings</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="profile.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Profile</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="security.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Security</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="social-network.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Social Network</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="notification.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Notification</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="payment-limits.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Payment Limits</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-user-circle"></i>
+                    </span>
+                    <span class="menu-title font-medium">Authentication</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="sign-up.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Sign Up</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="sign-in.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Sign In</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="signin-qrcode.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Sign In QR Code</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="404.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Error Page</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-handshake"></i>
+                    </span>
+                    <span class="menu-title font-medium">Support</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="help-center.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Help Center</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="privacy-policy.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Privacy Policy</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="contact-us.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Contact Us</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <a href="loans.html" class="menu-link">
+                  <i class="las la-hand-holding-usd"></i>
+                  <span>Loans</span>
+                </a>
+              </li>
+              <li class="menu-li">
+                <a href="budgets.html" class="menu-link">
+                  <i class="las la-calculator"></i>
+                  <span>Budgets</span>
+                </a>
+              </li>
+              <li class="menu-li">
+                <a href="investments.html" class="menu-link">
+                  <i class="las la-chart-line"></i>
+                  <span>Investments</span>
+                </a>
+              </li>
+              <li class="menu-li">
+                <a href="crypto-wallet.html" class="menu-link">
+                  <i class="lab la-bitcoin"></i>
+                  <span>Crypto Wallet</span>
+                </a>
+              </li>
+              <li class="menu-li">
+                <a href="savings-goals.html" class="menu-link">
+                  <i class="las la-piggy-bank"></i>
+                  <span>Savings Goals</span>
+                </a>
+              </li>
+              <li class="menu-li">
+                <a href="components.html" class="menu-link">
+                  <i class="las la-puzzle-piece"></i>
+                  <span>Components</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="menu-wrapper docs">
+            <p class="menu-heading">Documentation</p>
+            <ul class="menu-ul">
+              <li class="menu-li">
+                <a href="getting-started.html" class="menu-link">
+                  <i class="las la-book-open"></i>
+                  <span>Getting Started</span>
+                </a>
+              </li>
+              <li class="menu-li">
+                <button class="menu-btn group">
+                  <span class="flex items-center justify-center gap-2">
+                    <span class="menu-icon">
+                      <i class="las la-cog"></i>
+                    </span>
+                    <span class="menu-title font-medium">Customization</span>
+                  </span>
+                  <span class="plus-minus">
+                    <i class="las la-plus text-xl"></i>
+                    <i class="las la-minus text-xl"></i>
+                  </span>
+                  <span class="chevron-down hidden">
+                    <i class="las la-angle-down text-base"></i>
+                  </span>
+                </button>
+                <ul class="submenu-hide submenu">
+                  <li>
+                    <a href="configuration.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Configuration</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="dark-mode.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Dark Mode</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="color.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Color</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="styling.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Styling</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="plugins.html" class="submenu-link">
+                      <i class="las la-minus text-xl"></i>
+                      <span>Plugins</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li class="menu-li">
+                <a href="layout.html" class="menu-link">
+                  <i class="las la-caret-square-left"></i>
+                  <span>Layout</span>
+                </a>
+              </li>
+              <li class="menu-li">
+                <a href="webpack.html" class="menu-link">
+                  <i class="las la-tools"></i>
+                  <span>Webpack</span>
+                </a>
+              </li>
+              <li class="menu-li">
+                <a href="changelog.html" class="menu-link">
+                  <i class="las la-code-branch"></i>
+                  <span>Changelog</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="px-4 xxl:px-6 3xl:px-8">
+            <div class="balance-part">
+              <p class="border-t-2 border-dashed border-primary/20 py-4 text-xs font-semibold lg:py-6">Balance</p>
+              <ul>
+                <li>
+                  <button class="group flex w-full items-center justify-between rounded-xl px-4 py-2.5 lg:py-3 3xl:px-6">
+                    <span class="flex items-center gap-2">
+                      <span class="-mb-1 self-center text-primary">
+                        <i class="las la-dollar-sign"></i>
+                      </span>
+                      <span class="font-medium">33,215.00 USD</span>
+                    </span>
+                  </button>
+                  <button class="group flex w-full items-center justify-between rounded-xl px-4 py-2.5 lg:py-3 3xl:px-6">
+                    <span class="flex items-center gap-2">
+                      <span class="-mb-1 self-center text-primary">
+                        <i class="las la-euro-sign"></i>
+                      </span>
+                      <span class="font-medium">15,254.32 EUR</span>
+                    </span>
+                  </button>
+                  <button class="group flex w-full items-center justify-between rounded-xl px-4 py-2.5 lg:py-3 3xl:px-6">
+                    <span class="flex items-center gap-2">
+                      <span class="-mb-1 self-center text-primary">
+                        <i class="las la-pound-sign"></i>
+                      </span>
+                      <span class="font-medium">7,029.14 GBP</span>
+                    </span>
+                  </button>
+                  <button class="group flex w-full items-center justify-between rounded-xl px-4 py-2.5 lg:py-3 3xl:px-6">
+                    <span class="flex items-center gap-2">
+                      <span class="-mb-1 self-center text-primary">
+                        <i class="las la-plus-circle"></i>
+                      </span>
+                      <span class="font-medium">Add More Balance</span>
+                    </span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div class="upgrade-part">
+              <img src="assets/images/upgrade.png" width="272" height="173" alt="upgrade" />
+              <p class="mb-8 mt-6 text-sm">
+                Upgrade your account to
+                <span class="font-semibold text-primary">PRO</span> for even more examples.
+              </p>
+              <a href="#" class="btn-primary flex w-full justify-center"> Upgrade Now </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</section>
+
+    <!-- Main Content -->
+    <main class="main-content has-sidebar">
+      <div class="main-inner">
+        <h2 class="mb-6 xl:mb-8">Components</h2>
+        <div class="space-y-4 xl:space-y-6">
+          <!-- Accordion -->
+          <div class="white-box">
+            <h4 class="mb-4">Accordion</h4>
+            <div class="tabs">
+              <ul class="tab-navigation" role="tablist">
+                <li class="mr-1">
+                  <a href="#" class="tab-link active">Preview</a>
+                </li>
+                <li class="mr-1">
+                  <a href="#" class="tab-link">Code</a>
+                </li>
+              </ul>
+              <div class="tab-content mt-4">
+                <div class="tab-panel active">
+                  <div class="accordion w-full max-w-3xl space-y-3">
+                    <div class="accordion-item bg-primary/5 border border-n30 rounded-lg overflow-hidden">
+                      <div class="accordion-header cursor-pointer bg-primary/5 px-4 py-3 flex justify-between items-center">
+                        <h2 class="text-lg font-semibold">Section 1</h2>
+                        <svg class="accordion-arrow w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                      <div class="accordion-content transition-all bg-n0 duration-300 ease-in-out">
+                        <div class="px-3 py-2">
+                          <p>Content for section 1 goes here. You can add any HTML content inside this div. You can add any HTML content inside this div. This is the third section. You can add any HTML content inside this div.</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="accordion-item bg-primary/5 border border-n30 rounded-lg overflow-hidden">
+                      <div class="accordion-header cursor-pointer bg-primary/5 px-4 py-3 flex justify-between items-center">
+                        <h2 class="text-lg font-semibold">Section 2</h2>
+                        <svg class="accordion-arrow w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                      <div class="accordion-content transition-all bg-n0 duration-300 ease-in-out">
+                        <div class="px-3 py-2">
+                          <p>Content for section 2 goes here. You can add any HTML content inside this div. You can add any HTML content inside this div. This is the third section. You can add any HTML content inside this div.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item bg-primary/5 border border-n30 rounded-lg overflow-hidden">
+                      <div class="accordion-header cursor-pointer bg-primary/5 px-4 py-3 flex justify-between items-center">
+                        <h2 class="text-lg font-semibold">Section 3</h2>
+                        <svg class="accordion-arrow w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                      <div class="accordion-content transition-all bg-n0 duration-300 ease-in-out">
+                        <div class="px-3 py-2">
+                          <p>Content for section 3 goes here. You can add any HTML content inside this div. This is the third section. You can add any HTML content inside this div.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item bg-primary/5 border border-n30 rounded-lg overflow-hidden">
+                      <div class="accordion-header cursor-pointer bg-primary/5 px-4 py-3 flex justify-between items-center">
+                        <h2 class="text-lg font-semibold">Section 4</h2>
+                        <svg class="accordion-arrow w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </div>
+                      <div class="accordion-content transition-all bg-n0 duration-300 ease-in-out">
+                        <div class="px-3 py-2">
+                          <p>Content for section 4 goes here. You can add any HTML content inside this div. this is the content for section 4 goes here. You can add any HTML content inside this div.</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Add more accordion items as needed -->
+                  </div>
+                </div>
+                <div class="tab-panel hidden">
+                  <div class="code relative">
+                    <button class="copy-code px-2 py-1 f-center gap-2 border text-sm rounded-lg border-primary absolute top-9 z-2 text-primary right-3"><i class="las la-copy"></i><span class="btn-text">Copy</span></button>
+                    <pre>
+  <code class="rounded-lg">&#x3C;div class=&#x22;accordion w-full max-w-3xl space-y-3&#x22;&#x3E;
+  &#x3C;div class=&#x22;accordion-item bg-primary/5 border border-n30   rounded-lg overflow-hidden&#x22;&#x3E;
+    &#x3C;div class=&#x22;accordion-header cursor-pointer bg-primary/5 px-4 py-3 flex justify-between items-center&#x22;&#x3E;
+      &#x3C;h2 class=&#x22;text-lg font-semibold&#x22;&#x3E;Section 1&#x3C;/h2&#x3E;
+      &#x3C;svg class=&#x22;accordion-arrow w-6 h-6 transition-transform duration-300&#x22; fill=&#x22;none&#x22; stroke=&#x22;currentColor&#x22; viewBox=&#x22;0 0 24 24&#x22; xmlns=&#x22;http://www.w3.org/2000/svg&#x22;&#x3E;
+        &#x3C;path stroke-linecap=&#x22;round&#x22; stroke-linejoin=&#x22;round&#x22; stroke-width=&#x22;2&#x22; d=&#x22;M19 9l-7 7-7-7&#x22;&#x3E;&#x3C;/path&#x3E;
+      &#x3C;/svg&#x3E;
+    &#x3C;/div&#x3E;
+    &#x3C;div class=&#x22;accordion-content transition-all bg-n0  duration-300 ease-in-out&#x22;&#x3E;
+      &#x3C;div class=&#x22;px-3 py-2&#x22;&#x3E;
+        &#x3C;p&#x3E;Content for section 1 goes here. You can add any HTML content inside this div. You can add any HTML content inside this div. This is the third section. You can add any HTML content inside this div.&#x3C;/p&#x3E;
+      &#x3C;/div&#x3E;
+    &#x3C;/div&#x3E;
+  &#x3C;/div&#x3E;
+
+  &#x3C;div class=&#x22;accordion-item bg-primary/5 border border-n30   rounded-lg overflow-hidden&#x22;&#x3E;
+    &#x3C;div class=&#x22;accordion-header cursor-pointer bg-primary/5 px-4 py-3 flex justify-between items-center&#x22;&#x3E;
+      &#x3C;h2 class=&#x22;text-lg font-semibold&#x22;&#x3E;Section 2&#x3C;/h2&#x3E;
+      &#x3C;svg class=&#x22;accordion-arrow w-6 h-6 transition-transform duration-300&#x22; fill=&#x22;none&#x22; stroke=&#x22;currentColor&#x22; viewBox=&#x22;0 0 24 24&#x22; xmlns=&#x22;http://www.w3.org/2000/svg&#x22;&#x3E;
+        &#x3C;path stroke-linecap=&#x22;round&#x22; stroke-linejoin=&#x22;round&#x22; stroke-width=&#x22;2&#x22; d=&#x22;M19 9l-7 7-7-7&#x22;&#x3E;&#x3C;/path&#x3E;
+      &#x3C;/svg&#x3E;
+    &#x3C;/div&#x3E;
+    &#x3C;div class=&#x22;accordion-content transition-all bg-n0  duration-300 ease-in-out&#x22;&#x3E;
+      &#x3C;div class=&#x22;px-3 py-2&#x22;&#x3E;
+        &#x3C;p&#x3E;Content for section 2 goes here. You can add any HTML content inside this div. You can add any HTML content inside this div. This is the third section. You can add any HTML content inside this div.&#x3C;/p&#x3E;
+      &#x3C;/div&#x3E;
+    &#x3C;/div&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;accordion-item bg-primary/5 border border-n30   rounded-lg overflow-hidden&#x22;&#x3E;
+    &#x3C;div class=&#x22;accordion-header cursor-pointer bg-primary/5 px-4 py-3 flex justify-between items-center&#x22;&#x3E;
+      &#x3C;h2 class=&#x22;text-lg font-semibold&#x22;&#x3E;Section 3&#x3C;/h2&#x3E;
+      &#x3C;svg class=&#x22;accordion-arrow w-6 h-6 transition-transform duration-300&#x22; fill=&#x22;none&#x22; stroke=&#x22;currentColor&#x22; viewBox=&#x22;0 0 24 24&#x22; xmlns=&#x22;http://www.w3.org/2000/svg&#x22;&#x3E;
+        &#x3C;path stroke-linecap=&#x22;round&#x22; stroke-linejoin=&#x22;round&#x22; stroke-width=&#x22;2&#x22; d=&#x22;M19 9l-7 7-7-7&#x22;&#x3E;&#x3C;/path&#x3E;
+      &#x3C;/svg&#x3E;
+    &#x3C;/div&#x3E;
+    &#x3C;div class=&#x22;accordion-content transition-all bg-n0  duration-300 ease-in-out&#x22;&#x3E;
+      &#x3C;div class=&#x22;px-3 py-2&#x22;&#x3E;
+        &#x3C;p&#x3E;Content for section 3 goes here. You can add any HTML content inside this div. This is the third section. You can add any HTML content inside this div.&#x3C;/p&#x3E;
+      &#x3C;/div&#x3E;
+    &#x3C;/div&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;accordion-item bg-primary/5 border border-n30   rounded-lg overflow-hidden&#x22;&#x3E;
+    &#x3C;div class=&#x22;accordion-header cursor-pointer bg-primary/5 px-4 py-3 flex justify-between items-center&#x22;&#x3E;
+      &#x3C;h2 class=&#x22;text-lg font-semibold&#x22;&#x3E;Section 4&#x3C;/h2&#x3E;
+      &#x3C;svg class=&#x22;accordion-arrow w-6 h-6 transition-transform duration-300&#x22; fill=&#x22;none&#x22; stroke=&#x22;currentColor&#x22; viewBox=&#x22;0 0 24 24&#x22; xmlns=&#x22;http://www.w3.org/2000/svg&#x22;&#x3E;
+        &#x3C;path stroke-linecap=&#x22;round&#x22; stroke-linejoin=&#x22;round&#x22; stroke-width=&#x22;2&#x22; d=&#x22;M19 9l-7 7-7-7&#x22;&#x3E;&#x3C;/path&#x3E;
+      &#x3C;/svg&#x3E;
+    &#x3C;/div&#x3E;
+    &#x3C;div class=&#x22;accordion-content transition-all bg-n0  duration-300 ease-in-out&#x22;&#x3E;
+      &#x3C;div class=&#x22;px-3 py-2&#x22;&#x3E;
+        &#x3C;p&#x3E;Content for section 4 goes here. You can add any HTML content inside this div. this is the content for section 4 goes here. You can add any HTML content inside this div. &#x3C;/p&#x3E;
+      &#x3C;/div&#x3E;
+    &#x3C;/div&#x3E;
+  &#x3C;/div&#x3E;
+
+  &#x3C;!-- Add more accordion items as needed --&#x3E;
+&#x3C;/div&#x3E;
+  </code>
+                      </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerts -->
+          <div class="white-box">
+            <h4 class="mb-4">Alert</h4>
+
+            <div class="tabs">
+              <ul class="tab-navigation" role="tablist">
+                <li class="mr-1">
+                  <a href="#" class="tab-link active">Preview</a>
+                </li>
+                <li class="mr-1">
+                  <a href="#" class="tab-link">Code</a>
+                </li>
+              </ul>
+              <div class="tab-content mt-4">
+                <div class="tab-panel active">
+                  <div class="flex flex-col gap-4 lg:gap-6 pt-5">
+                    <div class="py-3 px-4 md:px-6 lg:px-8 rounded-xl bg-primary/20 flex justify-between items-center">
+                      <div class="flex gap-5 items-center">
+                        <i class="las la-info-circle text-3xl text-primary"></i>
+                        <span class="l-text font-medium text-primary">This is an primary alert — check it out!</span>
+                      </div>
+                      <span class="cursor-pointer size-9 rounded-full hover:bg-primary/30 duration-300 f-center">
+                        <i class="las la-times text-2xl text-primary"></i>
+                      </span>
+                    </div>
+                    <div class="py-3 px-4 md:px-6 lg:px-8 rounded-xl bg-secondary/20 flex justify-between items-center">
+                      <div class="flex gap-5 items-center">
+                        <i class="las la-check-circle text-3xl text-secondary"></i>
+                        <span class="l-text font-medium text-secondary">This is an Secondary alert — check it out!</span>
+                      </div>
+                      <span class="cursor-pointer size-9 rounded-full hover:bg-secondary/30 duration-300 f-center">
+                        <i class="las la-times text-2xl text-secondary"></i>
+                      </span>
+                    </div>
+                    <div class="py-3 px-4 md:px-6 lg:px-8 rounded-xl bg-error/20 flex justify-between items-center">
+                      <div class="flex gap-5 items-center">
+                        <i class="las la-exclamation-triangle text-3xl text-error"></i>
+                        <span class="l-text font-medium text-error">This is an error alert — check it out!</span>
+                      </div>
+                      <span class="cursor-pointer size-9 rounded-full hover:bg-error/30 duration-300 f-center">
+                        <i class="las la-times text-2xl text-error"></i>
+                      </span>
+                    </div>
+                    <div class="py-3 px-4 md:px-6 lg:px-8 rounded-xl bg-warning/20 flex justify-between items-center">
+                      <div class="flex gap-5 items-center">
+                        <i class="las la-times-circle text-3xl text-warning"></i>
+                        <span class="l-text font-medium text-warning">This is an warning alert — check it out!</span>
+                      </div>
+                      <span class="cursor-pointer size-9 rounded-full hover:bg-warning/30 duration-300 f-center">
+                        <i class="las la-times text-2xl text-warning"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-panel hidden">
+                  <div class="code relative">
+                    <button class="copy-code px-2 py-1 f-center gap-2 border text-sm rounded-lg border-primary absolute top-4 z-2 text-primary right-3"><i class="las la-copy"></i><span class="btn-text">Copy</span></button>
+                    <pre>
+<code class="rounded-lg">&#x3C;div class=&#x22;flex flex-col gap-4 lg:gap-6 pt-5&#x22;&#x3E;
+  &#x3C;div class=&#x22;py-3 px-4 md:px-6 lg:px-8 rounded-xl bg-primary/20 flex justify-between items-center&#x22;&#x3E;
+    &#x3C;div class=&#x22;flex gap-5 items-center&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-info-circle text-3xl text-primary&#x22;&#x3E;&#x3C;/i&#x3E;
+      &#x3C;span class=&#x22;l-text font-medium text-primary&#x22;&#x3E;This is an primary alert &#x2014; check it out!&#x3C;/span&#x3E;
+    &#x3C;/div&#x3E;
+    &#x3C;span class=&#x22;cursor-pointer size-9 rounded-full hover:bg-primary/30 duration-300 f-center&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-times text-2xl text-primary&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/span&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;py-3 px-4 md:px-6 lg:px-8 rounded-xl bg-secondary/20 flex justify-between items-center&#x22;&#x3E;
+    &#x3C;div class=&#x22;flex gap-5 items-center&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-check-circle text-3xl text-secondary&#x22;&#x3E;&#x3C;/i&#x3E;
+      &#x3C;span class=&#x22;l-text font-medium text-secondary&#x22;&#x3E;This is an Secondary alert &#x2014; check it out!&#x3C;/span&#x3E;
+    &#x3C;/div&#x3E;
+    &#x3C;span class=&#x22;cursor-pointer size-9 rounded-full hover:bg-secondary/30 duration-300 f-center&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-times text-2xl text-secondary&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/span&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;py-3 px-4 md:px-6 lg:px-8 rounded-xl bg-error/20 flex justify-between items-center&#x22;&#x3E;
+    &#x3C;div class=&#x22;flex gap-5 items-center&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-exclamation-triangle text-3xl text-error&#x22;&#x3E;&#x3C;/i&#x3E;
+      &#x3C;span class=&#x22;l-text font-medium text-error&#x22;&#x3E;This is an error alert &#x2014; check it out!&#x3C;/span&#x3E;
+    &#x3C;/div&#x3E;
+    &#x3C;span class=&#x22;cursor-pointer size-9 rounded-full hover:bg-error/30 duration-300 f-center&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-times text-2xl text-error&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/span&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;py-3 px-4 md:px-6 lg:px-8 rounded-xl bg-warning/20 flex justify-between items-center&#x22;&#x3E;
+    &#x3C;div class=&#x22;flex gap-5 items-center&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-times-circle text-3xl text-warning&#x22;&#x3E;&#x3C;/i&#x3E;
+      &#x3C;span class=&#x22;l-text font-medium text-warning&#x22;&#x3E;This is an warning alert &#x2014; check it out!&#x3C;/span&#x3E;
+    &#x3C;/div&#x3E;
+    &#x3C;span class=&#x22;cursor-pointer size-9 rounded-full hover:bg-warning/30 duration-300 f-center&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-times text-2xl text-warning&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/span&#x3E;
+  &#x3C;/div&#x3E;
+&#x3C;/div&#x3E;   </code>
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Avatar -->
+          <div class="white-box">
+            <h4 class="mb-4">Avatar</h4>
+
+            <div class="tabs">
+              <ul class="tab-navigation" role="tablist">
+                <li class="mr-1">
+                  <a href="#" class="tab-link active">Preview</a>
+                </li>
+                <li class="mr-1">
+                  <a href="#" class="tab-link">Code</a>
+                </li>
+              </ul>
+              <div class="tab-content mt-4">
+                <div class="tab-panel active">
+                  <div class="flex gap-4">
+                    <img class="size-10 rounded-full" src="assets/images/avatar-1.html" alt="" />
+                    <img class="size-10 rounded-full" src="assets/images/avatar-2.html" alt="" />
+                    <img class="size-10 rounded-full" src="assets/images/avatar-3.html" alt="" />
+                    <div class="size-8 lg:size-10 rounded-full f-center text-neutral-0 bg-primary">
+                      <i class="las la-user-circle text-2xl text-n0"></i>
+                    </div>
+                    <div class="size-8 lg:size-10 rounded-full f-center text-neutral-0 bg-secondary">
+                      <i class="las la-user-circle text-2xl text-n0"></i>
+                    </div>
+                    <div class="size-8 lg:size-10 rounded-full f-center text-neutral-0 bg-warning">
+                      <i class="las la-user-circle text-2xl text-n0"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-panel hidden">
+                  <div class="code relative">
+                    <button class="copy-code px-2 py-1 f-center gap-2 border text-sm rounded-lg border-primary absolute top-4 z-2 text-primary right-3"><i class="las la-copy"></i><span class="btn-text">Copy</span></button>
+                    <pre>
+<code class="rounded-lg">&#x3C;div class=&#x22;flex gap-4&#x22;&#x3E;
+  &#x3C;img class=&#x22;size-10 rounded-full&#x22; src=&#x22;./assets/images/avatar-1.png&#x22; alt=&#x22;&#x22; /&#x3E;
+  &#x3C;img class=&#x22;size-10 rounded-full&#x22; src=&#x22;./assets/images/avatar-2.png&#x22; alt=&#x22;&#x22; /&#x3E;
+  &#x3C;img class=&#x22;size-10 rounded-full&#x22; src=&#x22;./assets/images/avatar-3.png&#x22; alt=&#x22;&#x22; /&#x3E;
+  &#x3C;div class=&#x22;size-8 lg:size-10 rounded-full f-center text-neutral-0 bg-primary&#x22;&#x3E;
+    &#x3C;i class=&#x22;las la-user-circle text-2xl text-n0&#x22;&#x3E;&#x3C;/i&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;size-8 lg:size-10 rounded-full f-center text-neutral-0 bg-secondary&#x22;&#x3E;
+    &#x3C;i class=&#x22;las la-user-circle text-2xl text-n0&#x22;&#x3E;&#x3C;/i&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;size-8 lg:size-10 rounded-full f-center text-neutral-0 bg-warning&#x22;&#x3E;
+    &#x3C;i class=&#x22;las la-user-circle text-2xl text-n0&#x22;&#x3E;&#x3C;/i&#x3E;
+  &#x3C;/div&#x3E;
+&#x3C;/div&#x3E;  </code>
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Badges -->
+          <div class="white-box">
+            <h4 class="mb-4">Badges</h4>
+            <div class="tabs">
+              <ul class="tab-navigation" role="tablist">
+                <li class="mr-1">
+                  <a href="#" class="tab-link active">Preview</a>
+                </li>
+                <li class="mr-1">
+                  <a href="#" class="tab-link">Code</a>
+                </li>
+              </ul>
+              <div class="tab-content mt-4">
+                <div class="tab-panel active">
+                  <div class="flex gap-4 lg:gap-6 flex-wrap">
+                    <div class="relative">
+                      <span class="absolute -top-0.5 -right-1.5 text-[10px] rounded-full size-4 bg-primary text-white f-center font-bold">5</span>
+                      <i class="las la-bell text-4xl"></i>
+                    </div>
+                    <div class="relative">
+                      <span class="absolute -top-0.5 -right-1.5 text-[10px] rounded-full size-4 bg-secondary text-n0 f-center font-bold">5</span>
+                      <i class="las la-bell text-4xl"></i>
+                    </div>
+                    <div class="relative size-10 rounded-full bg-n50">
+                      <span class="absolute bottom-0 f-center size-4 right-0 text-n0 bg-secondary rounded-full border border-n0">
+                        <i class="las la-clock text-xs"></i>
+                      </span>
+                    </div>
+                    <div class="relative size-10 rounded-full bg-n50">
+                      <span class="absolute bottom-0 f-center size-4 right-0 text-n0 bg-primary rounded-full border-[0.5px] border-n0"> </span>
+                    </div>
+                    <div class="relative">
+                      <span class="absolute -top-1 -right-2 text-xs rounded-full h-5 min-w-max px-1.5 bg-error text-n0 f-center font-bold">99</span>
+                      <i class="las la-bell text-4xl"></i>
+                    </div>
+                    <div class="relative">
+                      <span class="absolute -top-1 -right-3 text-xs rounded-full h-5 min-w-max px-1.5 bg-error text-n0 f-center font-bold">999</span>
+                      <i class="las la-bell text-4xl"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-panel hidden">
+                  <div class="code relative">
+                    <button class="copy-code px-2 py-1 f-center gap-2 border text-sm rounded-lg border-primary absolute top-4 z-2 text-primary right-3"><i class="las la-copy"></i><span class="btn-text">Copy</span></button>
+                    <pre>
+<code class="rounded-lg"> &#x3C;div class=&#x22;flex gap-4 lg:gap-6 flex-wrap&#x22;&#x3E;
+  &#x3C;div class=&#x22;relative&#x22;&#x3E;
+    &#x3C;span class=&#x22;absolute -top-0.5 -right-1.5 text-[10px] rounded-full size-4 bg-primary text-white f-center font-bold&#x22;&#x3E;5&#x3C;/span&#x3E;
+    &#x3C;i class=&#x22;las la-bell text-4xl&#x22;&#x3E;&#x3C;/i&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;relative&#x22;&#x3E;
+    &#x3C;span class=&#x22;absolute -top-0.5 -right-1.5 text-[10px] rounded-full size-4 bg-secondary text-n0 f-center font-bold&#x22;&#x3E;5&#x3C;/span&#x3E;
+    &#x3C;i class=&#x22;las la-bell text-4xl&#x22;&#x3E;&#x3C;/i&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;relative size-10 rounded-full bg-n50 &#x22;&#x3E;
+    &#x3C;span class=&#x22;absolute bottom-0 f-center size-4 right-0 text-n0 bg-secondary rounded-full border border-n0 &#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-clock text-xs&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/span&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;relative size-10 rounded-full bg-n50 &#x22;&#x3E;
+    &#x3C;span class=&#x22;absolute bottom-0 f-center size-4 right-0 text-n0 bg-primary rounded-full border-[0.5px] border-n0 &#x22;&#x3E; &#x3C;/span&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;relative&#x22;&#x3E;
+    &#x3C;span class=&#x22;absolute -top-1 -right-2 text-xs rounded-full h-5 min-w-max px-1.5 bg-error text-n0 f-center font-bold&#x22;&#x3E;99&#x3C;/span&#x3E;
+    &#x3C;i class=&#x22;las la-bell text-4xl&#x22;&#x3E;&#x3C;/i&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;relative&#x22;&#x3E;
+    &#x3C;span class=&#x22;absolute -top-1 -right-3 text-xs rounded-full h-5 min-w-max px-1.5 bg-error text-n0 f-center font-bold&#x22;&#x3E;999&#x3C;/span&#x3E;
+    &#x3C;i class=&#x22;las la-bell text-4xl&#x22;&#x3E;&#x3C;/i&#x3E;
+  &#x3C;/div&#x3E;
+&#x3C;/div&#x3E; </code>
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Breadcrumb -->
+          <div class="white-box">
+            <h4 class="mb-4">Breadcrumb</h4>
+            <div class="tabs">
+              <ul class="tab-navigation" role="tablist">
+                <li class="mr-1">
+                  <a href="#" class="tab-link active">Preview</a>
+                </li>
+                <li class="mr-1">
+                  <a href="#" class="tab-link">Code</a>
+                </li>
+              </ul>
+              <div class="tab-content mt-4">
+                <div class="tab-panel active">
+                  <div class="space-y-4 xl:space-y-6">
+                    <ul class="flex gap-1 items-center">
+                      <li><a href="index.html">Home </a></li>
+                      <li>/</li>
+                      <li><a href="#">Components </a></li>
+                      <li>/</li>
+                      <li><span class="text-primary-300 font-medium"> Breadcrumbs </span></li>
+                    </ul>
+                    <ul class="flex flex-wrap gap-1 items-center">
+                      <li>
+                        <a class="flex items-center gap-2" href="index.html"> <i class="las la-home text-xl shrink-0"></i> <span>Home</span></a>
+                      </li>
+                      <li>/</li>
+                      <li>
+                        <a class="flex items-center gap-2" href="#"> <i class="las la-layer-group text-xl shrink-0"></i> <span>Components</span></a>
+                      </li>
+                      <li>/</li>
+                      <li>
+                        <span class="text-primary-300 flex items-center gap-2 font-medium"> <i class="las la-bell text-xl shrink-0"></i> <span>Breadcrumbs</span></span>
+                      </li>
+                    </ul>
+
+                    <ul class="flex flex-wrap gap-2 items-center">
+                      <li>
+                        <a class="flex items-center gap-2" href="index.html"> <i class="las text-lg xl:text-xl xxl:text-2xl la-home shrink-0"></i> <span>Home</span></a>
+                      </li>
+                      <li class="text-sm text-n700">•</li>
+                      <li>
+                        <a class="flex items-center gap-2" href="#"> <i class="las text-lg xl:text-xl xxl:text-2xl la-layer-group shrink-0"></i> <span>Link 1</span></a>
+                      </li>
+                      <li class="text-sm text-n700">•</li>
+                      <li>
+                        <a class="flex items-center gap-2" href="#"> <i class="las text-lg xl:text-xl xxl:text-2xl la-layer-group shrink-0"></i> <span>Link 2</span></a>
+                      </li>
+                      <li class="text-sm text-n700">•</li>
+                      <li>
+                        <a class="flex items-center gap-2" href="#"> <i class="las text-lg xl:text-xl xxl:text-2xl la-layer-group shrink-0"></i> <span>Link 3</span></a>
+                      </li>
+                      <li class="text-sm text-n700">•</li>
+                      <li>
+                        <span class="flex items-center gap-2 text-primary-300 font-medium"> <i class="las text-lg xl:text-xl xxl:text-2xl la-layer-group shrink-0"></i> <span>Link 4</span></span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="tab-panel hidden">
+                  <div class="code relative">
+                    <button class="copy-code px-2 py-1 f-center gap-2 border text-sm rounded-lg border-primary absolute top-4 z-2 text-primary right-3"><i class="las la-copy"></i><span class="btn-text">Copy</span></button>
+                    <pre>
+<code class="rounded-lg"> &#x3C;div class=&#x22;space-y-4 xl:space-y-6&#x22;&#x3E;
+  &#x3C;ul class=&#x22;flex gap-1 items-center&#x22;&#x3E;
+    &#x3C;li&#x3E;&#x3C;a href=&#x22;index.html&#x22;&#x3E;Home &#x3C;/a&#x3E;&#x3C;/li&#x3E;
+    &#x3C;li&#x3E;/&#x3C;/li&#x3E;
+    &#x3C;li&#x3E;&#x3C;a href=&#x22;#&#x22;&#x3E;Components &#x3C;/a&#x3E;&#x3C;/li&#x3E;
+    &#x3C;li&#x3E;/&#x3C;/li&#x3E;
+    &#x3C;li&#x3E;&#x3C;span class=&#x22;text-primary-300 font-medium&#x22;&#x3E; Breadcrumbs &#x3C;/span&#x3E;&#x3C;/li&#x3E;
+  &#x3C;/ul&#x3E;
+  &#x3C;ul class=&#x22;flex flex-wrap gap-1 items-center&#x22;&#x3E;
+    &#x3C;li&#x3E;
+      &#x3C;a class=&#x22;flex items-center gap-2&#x22; href=&#x22;index.html&#x22;&#x3E; &#x3C;i class=&#x22;las la-home text-xl shrink-0&#x22;&#x3E;&#x3C;/i&#x3E; &#x3C;span&#x3E;Home&#x3C;/span&#x3E;&#x3C;/a&#x3E;
+    &#x3C;/li&#x3E;
+    &#x3C;li&#x3E;/&#x3C;/li&#x3E;
+    &#x3C;li&#x3E;
+      &#x3C;a class=&#x22;flex items-center gap-2&#x22; href=&#x22;#&#x22;&#x3E; &#x3C;i class=&#x22;las la-layer-group text-xl shrink-0&#x22;&#x3E;&#x3C;/i&#x3E; &#x3C;span&#x3E;Components&#x3C;/span&#x3E;&#x3C;/a&#x3E;
+    &#x3C;/li&#x3E;
+    &#x3C;li&#x3E;/&#x3C;/li&#x3E;
+    &#x3C;li&#x3E;
+      &#x3C;span class=&#x22;text-primary-300 flex items-center gap-2 font-medium&#x22;&#x3E; &#x3C;i class=&#x22;las la-bell text-xl shrink-0&#x22;&#x3E;&#x3C;/i&#x3E; &#x3C;span&#x3E;Breadcrumbs&#x3C;/span&#x3E;&#x3C;/span&#x3E;
+    &#x3C;/li&#x3E;
+  &#x3C;/ul&#x3E;
+
+  &#x3C;ul class=&#x22;flex flex-wrap gap-2 items-center&#x22;&#x3E;
+    &#x3C;li&#x3E;
+      &#x3C;a class=&#x22;flex items-center gap-2&#x22; href=&#x22;index.html&#x22;&#x3E; &#x3C;i class=&#x22;las text-lg xl:text-xl xxl:text-2xl la-home shrink-0&#x22;&#x3E;&#x3C;/i&#x3E; &#x3C;span&#x3E;Home&#x3C;/span&#x3E;&#x3C;/a&#x3E;
+    &#x3C;/li&#x3E;
+    &#x3C;li class=&#x22;text-sm text-n700 &#x22;&#x3E;&#x2022;&#x3C;/li&#x3E;
+    &#x3C;li&#x3E;
+      &#x3C;a class=&#x22;flex items-center gap-2&#x22; href=&#x22;#&#x22;&#x3E; &#x3C;i class=&#x22;las text-lg xl:text-xl xxl:text-2xl la-layer-group shrink-0&#x22;&#x3E;&#x3C;/i&#x3E; &#x3C;span&#x3E;Link 1&#x3C;/span&#x3E;&#x3C;/a&#x3E;
+    &#x3C;/li&#x3E;
+    &#x3C;li class=&#x22;text-sm text-n700 &#x22;&#x3E;&#x2022;&#x3C;/li&#x3E;
+    &#x3C;li&#x3E;
+      &#x3C;a class=&#x22;flex items-center gap-2&#x22; href=&#x22;#&#x22;&#x3E; &#x3C;i class=&#x22;las text-lg xl:text-xl xxl:text-2xl la-layer-group shrink-0&#x22;&#x3E;&#x3C;/i&#x3E; &#x3C;span&#x3E;Link 2&#x3C;/span&#x3E;&#x3C;/a&#x3E;
+    &#x3C;/li&#x3E;
+    &#x3C;li class=&#x22;text-sm text-n700 &#x22;&#x3E;&#x2022;&#x3C;/li&#x3E;
+    &#x3C;li&#x3E;
+      &#x3C;a class=&#x22;flex items-center gap-2&#x22; href=&#x22;#&#x22;&#x3E; &#x3C;i class=&#x22;las text-lg xl:text-xl xxl:text-2xl la-layer-group shrink-0&#x22;&#x3E;&#x3C;/i&#x3E; &#x3C;span&#x3E;Link 3&#x3C;/span&#x3E;&#x3C;/a&#x3E;
+    &#x3C;/li&#x3E;
+    &#x3C;li class=&#x22;text-sm text-n700 &#x22;&#x3E;&#x2022;&#x3C;/li&#x3E;
+    &#x3C;li&#x3E;
+      &#x3C;span class=&#x22;flex items-center gap-2 text-primary-300 font-medium&#x22;&#x3E; &#x3C;i class=&#x22;las text-lg xl:text-xl xxl:text-2xl la-layer-group shrink-0&#x22;&#x3E;&#x3C;/i&#x3E; &#x3C;span&#x3E;Link 4&#x3C;/span&#x3E;&#x3C;/span&#x3E;
+    &#x3C;/li&#x3E;
+  &#x3C;/ul&#x3E;
+&#x3C;/div&#x3E; </code>
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="white-box">
+            <h4 class="mb-4">Buttons</h4>
+            <div class="tabs">
+              <ul class="tab-navigation" role="tablist">
+                <li class="mr-1">
+                  <a href="#" class="tab-link active">Preview</a>
+                </li>
+                <li class="mr-1">
+                  <a href="#" class="tab-link">Code</a>
+                </li>
+              </ul>
+              <div class="tab-content mt-4">
+                <div class="tab-panel active">
+                  <div class="flex gap-4 flex-wrap">
+                    <button class="btn-primary">Primary</button>
+                    <button class="btn-secondary">Secondary</button>
+                    <button class="btn-warning rounded-md">Rounded lg</button>
+                    <button class="btn-error rounded-md">Rounded lg</button>
+                    <button class="btn-outline rounded-md hover:text-n0">Primary</button>
+                    <button class="btn-outline text-secondary border-secondary rounded-md hover:bg-secondary">Secondary</button>
+                  </div>
+                </div>
+                <div class="tab-panel hidden">
+                  <div class="code relative">
+                    <button class="copy-code px-2 py-1 f-center gap-2 border text-sm rounded-lg border-primary absolute top-4 z-2 text-primary right-3"><i class="las la-copy"></i><span class="btn-text">Copy</span></button>
+                    <pre>
+<code class="rounded-lg"> &#x3C;div class=&#x22;flex gap-4 flex-wrap&#x22;&#x3E;
+  &#x3C;button class=&#x22;btn-primary&#x22;&#x3E;Primary&#x3C;/button&#x3E;
+  &#x3C;button class=&#x22;btn-secondary&#x22;&#x3E;Secondary&#x3C;/button&#x3E;
+  &#x3C;button class=&#x22;btn-warning rounded-md&#x22;&#x3E;Rounded lg&#x3C;/button&#x3E;
+  &#x3C;button class=&#x22;btn-error rounded-md&#x22;&#x3E;Rounded lg&#x3C;/button&#x3E;
+  &#x3C;button class=&#x22;btn-outline rounded-md hover:text-n0&#x22;&#x3E;Primary&#x3C;/button&#x3E;
+  &#x3C;button class=&#x22;btn-outline text-secondary border-secondary rounded-md hover:bg-secondary&#x22;&#x3E;Secondary&#x3C;/button&#x3E;
+&#x3C;/div&#x3E;  </code>
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chips -->
+          <div class="white-box">
+            <h4 class="mb-4">Chips</h4>
+            <div class="tabs">
+              <ul class="tab-navigation" role="tablist">
+                <li class="mr-1">
+                  <a href="#" class="tab-link active">Preview</a>
+                </li>
+                <li class="mr-1">
+                  <a href="#" class="tab-link">Code</a>
+                </li>
+              </ul>
+              <div class="tab-content mt-4">
+                <div class="tab-panel active">
+                  <div class="flex flex-wrap gap-4">
+                    <div class="chip primary">
+                      <span class="icon">
+                        <i class="las la-layer-group"></i>
+                      </span>
+                      <span>Primary Deletable</span>
+                      <span class="icon cursor-pointer">
+                        <i class="las la-times"></i>
+                      </span>
+                    </div>
+                    <div class="chip primary">
+                      <span class="icon">
+                        <i class="las la-layer-group"></i>
+                      </span>
+                      <span>Primary Clickable</span>
+                    </div>
+                    <!-- secondary chip -->
+                    <div class="chip secondary">
+                      <span class="icon">
+                        <i class="las la-layer-group"></i>
+                      </span>
+                      <span>Secondary Deletable</span>
+                      <span class="icon cursor-pointer">
+                        <i class="las la-times"></i>
+                      </span>
+                    </div>
+                    <div class="chip secondary">
+                      <span class="icon">
+                        <i class="las la-layer-group"></i>
+                      </span>
+                      <span>Secondary Clickable</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-panel hidden">
+                  <div class="code relative">
+                    <button class="copy-code px-2 py-1 f-center gap-2 border text-sm rounded-lg border-primary absolute top-4 z-2 text-primary right-3"><i class="las la-copy"></i><span class="btn-text">Copy</span></button>
+                    <pre>
+<code class="rounded-lg">  &#x3C;div class=&#x22;flex flex-wrap gap-4&#x22;&#x3E;
+  &#x3C;div class=&#x22;chip primary&#x22;&#x3E;
+    &#x3C;span class=&#x22;icon&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-layer-group&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/span&#x3E;
+    &#x3C;span&#x3E;Primary Deletable&#x3C;/span&#x3E;
+    &#x3C;span class=&#x22;icon cursor-pointer&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-times&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/span&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;chip primary&#x22;&#x3E;
+    &#x3C;span class=&#x22;icon&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-layer-group&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/span&#x3E;
+    &#x3C;span&#x3E;Primary Clickable&#x3C;/span&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;!-- secondary chip --&#x3E;
+  &#x3C;div class=&#x22;chip secondary&#x22;&#x3E;
+    &#x3C;span class=&#x22;icon&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-layer-group&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/span&#x3E;
+    &#x3C;span&#x3E;Secondary Deletable&#x3C;/span&#x3E;
+    &#x3C;span class=&#x22;icon cursor-pointer&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-times&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/span&#x3E;
+  &#x3C;/div&#x3E;
+  &#x3C;div class=&#x22;chip secondary&#x22;&#x3E;
+    &#x3C;span class=&#x22;icon&#x22;&#x3E;
+      &#x3C;i class=&#x22;las la-layer-group&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/span&#x3E;
+    &#x3C;span&#x3E;Secondary Clickable&#x3C;/span&#x3E;
+  &#x3C;/div&#x3E;
+&#x3C;/div&#x3E;  </code>
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dropdown -->
+          <div class="white-box">
+            <h4 class="mb-4">Dropdown</h4>
+
+            <div class="tabs">
+              <ul class="tab-navigation" role="tablist">
+                <li class="mr-1">
+                  <a href="#" class="tab-link active">Preview</a>
+                </li>
+                <li class="mr-1">
+                  <a href="#" class="tab-link">Code</a>
+                </li>
+              </ul>
+              <div class="tab-content mt-4">
+                <div class="tab-panel active">
+                  <div class="flex gap-4">
+                    <div class="dropdown relative max-w-max">
+                      <button class="dropdown-toggle bg-primary text-white font-bold py-2 px-4 rounded inline-flex items-center gap-2">
+                        <span class="mr-1">Dropdown</span>
+                        <i class="las la-angle-down text-base"></i>
+                      </button>
+                      <ul class="dropdown-menu absolute hidden text-n700 pt-1 bg-n0 w-full shadow-xl">
+                        <li><span class="dropdown-item cursor-pointer rounded-t py-2 px-4 block whitespace-no-wrap">Option 1</span></li>
+                        <li><span class="dropdown-item cursor-pointer py-2 px-4 block whitespace-no-wrap">Option 2</span></li>
+                        <li><span class="dropdown-item cursor-pointer rounded-b py-2 px-4 block whitespace-no-wrap">Option 3</span></li>
+                      </ul>
+                    </div>
+
+                    <div class="dropdown relative max-w-max">
+                      <button class="dropdown-toggle bg-secondary text-n0 font-bold py-2 px-4 rounded inline-flex items-center gap-2">
+                        <span class="mr-1">Dropdown</span>
+                        <i class="las la-angle-down text-base"></i>
+                      </button>
+                      <ul class="dropdown-menu absolute hidden text-n700 pt-1 bg-n0 w-full shadow-xl">
+                        <li><span class="cursor-pointer dropdown-item rounded-t py-2 px-4 block whitespace-no-wrap">Option 1</span></li>
+                        <li><span class="cursor-pointer dropdown-item py-2 px-4 block whitespace-no-wrap">Option 2</span></li>
+                        <li><span class="cursor-pointer dropdown-item rounded-b py-2 px-4 block whitespace-no-wrap">Option 3</span></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-panel hidden">
+                  <div class="code relative">
+                    <button class="copy-code px-2 py-1 f-center gap-2 border text-sm rounded-lg border-primary absolute top-9 z-2 text-primary right-3"><i class="las la-copy"></i><span class="btn-text">Copy</span></button>
+                    <pre>
+  <code class="rounded-lg"> 
+  &#x3C;div class=&#x22;flex gap-4&#x22;&#x3E;
+  &#x3C;div class=&#x22;dropdown relative max-w-max&#x22;&#x3E;
+    &#x3C;button class=&#x22;dropdown-toggle bg-primary text-white font-bold py-2 px-4 rounded inline-flex items-center gap-2&#x22;&#x3E;
+      &#x3C;span class=&#x22;mr-1&#x22;&#x3E;Dropdown&#x3C;/span&#x3E;
+      &#x3C;i class=&#x22;las la-angle-down text-base&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/button&#x3E;
+    &#x3C;ul class=&#x22;dropdown-menu absolute hidden text-n700 pt-1 bg-n0 w-full shadow-xl&#x22;&#x3E;
+      &#x3C;li&#x3E;&#x3C;span class=&#x22;dropdown-item cursor-pointer rounded-t py-2 px-4 block whitespace-no-wrap&#x22;&#x3E;Option 1&#x3C;/span&#x3E;&#x3C;/li&#x3E;
+      &#x3C;li&#x3E;&#x3C;span class=&#x22;dropdown-item cursor-pointer py-2 px-4 block whitespace-no-wrap&#x22;&#x3E;Option 2&#x3C;/span&#x3E;&#x3C;/li&#x3E;
+      &#x3C;li&#x3E;&#x3C;span class=&#x22;dropdown-item cursor-pointer rounded-b py-2 px-4 block whitespace-no-wrap&#x22;&#x3E;Option 3&#x3C;/span&#x3E;&#x3C;/li&#x3E;
+    &#x3C;/ul&#x3E;
+  &#x3C;/div&#x3E;
+
+  &#x3C;div class=&#x22;dropdown relative max-w-max&#x22;&#x3E;
+    &#x3C;button class=&#x22;dropdown-toggle bg-secondary text-n0 font-bold py-2 px-4 rounded inline-flex items-center gap-2&#x22;&#x3E;
+      &#x3C;span class=&#x22;mr-1&#x22;&#x3E;Dropdown&#x3C;/span&#x3E;
+      &#x3C;i class=&#x22;las la-angle-down text-base&#x22;&#x3E;&#x3C;/i&#x3E;
+    &#x3C;/button&#x3E;
+    &#x3C;ul class=&#x22;dropdown-menu absolute hidden text-n700 pt-1 bg-n0 w-full shadow-xl&#x22;&#x3E;
+      &#x3C;li&#x3E;&#x3C;span class=&#x22;cursor-pointer dropdown-item rounded-t py-2 px-4 block whitespace-no-wrap&#x22;&#x3E;Option 1&#x3C;/span&#x3E;&#x3C;/li&#x3E;
+      &#x3C;li&#x3E;&#x3C;span class=&#x22;cursor-pointer dropdown-item py-2 px-4 block whitespace-no-wrap&#x22;&#x3E;Option 2&#x3C;/span&#x3E;&#x3C;/li&#x3E;
+      &#x3C;li&#x3E;&#x3C;span class=&#x22;cursor-pointer dropdown-item rounded-b py-2 px-4 block whitespace-no-wrap&#x22;&#x3E;Option 3&#x3C;/span&#x3E;&#x3C;/li&#x3E;
+    &#x3C;/ul&#x3E;
+  &#x3C;/div&#x3E;
+&#x3C;/div&#x3E;
+  </code>
+                      </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal -->
+          <div class="white-box">
+            <h4 class="mb-4">Modal</h4>
+
+            <div class="tabs">
+              <ul class="tab-navigation" role="tablist">
+                <li class="mr-1">
+                  <a href="#" class="tab-link active">Preview</a>
+                </li>
+                <li class="mr-1">
+                  <a href="#" class="tab-link">Code</a>
+                </li>
+              </ul>
+              <div class="tab-content mt-4">
+                <div class="tab-panel active">
+                  <!-- Modal open btn -->
+                  <button data-modal-target="modal1" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Open Modal</button>
+                  <!-- Modal element -->
+                  <div id="modal1" class="fixed inset-0 items-center justify-center z-99 hidden">
+                    <div class="f-center h-screen w-screen">
+                      <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-xl w-full">
+                        <h2 class="text-2xl font-bold mb-4">Modal Title</h2>
+                        <p class="mb-4">This is the content of the modal. You can put any HTML here.</p>
+                        <div class="flex justify-end">
+                          <button data-modal-close="modal1" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-panel hidden">
+                  <div class="code relative">
+                    <button class="copy-code px-2 py-1 f-center gap-2 border text-sm rounded-lg border-primary absolute top-9 z-2 text-primary right-3"><i class="las la-copy"></i><span class="btn-text">Copy</span></button>
+                    <pre>
+          <code class="rounded-lg"> 
+&#x3C;!-- Modal open btn --&#x3E;
+&#x3C;button data-modal-target=&#x22;modal1&#x22; class=&#x22;bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ml-4&#x22;&#x3E;Open Modal&#x3C;/button&#x3E;
+&#x3C;!-- Modal element --&#x3E;
+&#x3C;div id=&#x22;modal1&#x22; class=&#x22;fixed inset-0 items-center justify-center z-99 hidden&#x22;&#x3E;
+  &#x3C;div class=&#x22;f-center h-screen w-screen&#x22;&#x3E;
+    &#x3C;div class=&#x22;bg-white rounded-lg shadow-xl p-6 m-4 max-w-xl w-full&#x22;&#x3E;
+      &#x3C;h2 class=&#x22;text-2xl font-bold mb-4&#x22;&#x3E;Modal Title&#x3C;/h2&#x3E;
+      &#x3C;p class=&#x22;mb-4&#x22;&#x3E;This is the content of the modal. You can put any HTML here.&#x3C;/p&#x3E;
+      &#x3C;div class=&#x22;flex justify-end&#x22;&#x3E;
+        &#x3C;button data-modal-close=&#x22;modal1&#x22; class=&#x22;bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded&#x22;&#x3E;Close&#x3C;/button&#x3E;
+      &#x3C;/div&#x3E;
+    &#x3C;/div&#x3E;
+  &#x3C;/div&#x3E;
+&#x3C;/div&#x3E;
+          </code>
+                              </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Offcanvas -->
+          <div class="white-box">
+            <h4 class="mb-4">Offcanvas</h4>
+
+            <div class="tabs">
+              <ul class="tab-navigation" role="tablist">
+                <li class="mr-1">
+                  <a href="#" class="tab-link active">Preview</a>
+                </li>
+                <li class="mr-1">
+                  <a href="#" class="tab-link">Code</a>
+                </li>
+              </ul>
+              <div class="tab-content mt-4">
+                <div class="tab-panel active">
+                  <button data-offcanvas-target="offcanvas1" class="bg-primary text-white font-bold py-2 px-4 rounded">Open Off-Canvas</button>
+
+                  <!-- Off-canvas element -->
+                  <div id="offcanvas1" class="fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out z-50">
+                    <div class="p-4">
+                      <h2 class="text-lg font-semibold mb-4">Off-Canvas Content</h2>
+                      <p>This is the content for the off-canvas.</p>
+                      <button data-offcanvas-close="offcanvas1" class="mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Close</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-panel hidden">
+                  <div class="code relative">
+                    <button class="copy-code px-2 py-1 f-center gap-2 border text-sm rounded-lg border-primary absolute top-9 z-2 text-primary right-3"><i class="las la-copy"></i><span class="btn-text">Copy</span></button>
+                    <pre>
+  <code class="rounded-lg"> 
+&#x3C;button data-offcanvas-target=&#x22;offcanvas1&#x22; class=&#x22;bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded&#x22;&#x3E;Open Off-Canvas&#x3C;/button&#x3E;             
+        
+&#x3C;!-- Off-canvas element --&#x3E;
+&#x3C;div id=&#x22;offcanvas1&#x22; class=&#x22;fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out z-50&#x22;&#x3E;
+  &#x3C;div class=&#x22;p-4&#x22;&#x3E;
+    &#x3C;h2 class=&#x22;text-lg font-semibold mb-4&#x22;&#x3E;Off-Canvas Content&#x3C;/h2&#x3E;
+    &#x3C;p&#x3E;This is the content for the off-canvas.&#x3C;/p&#x3E;
+    &#x3C;button data-offcanvas-close=&#x22;offcanvas1&#x22; class=&#x22;mt-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded&#x22;&#x3E;Close&#x3C;/button&#x3E;
+  &#x3C;/div&#x3E;
+&#x3C;/div&#x3E;
+  </code>
+                      </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Toast Notification -->
+          <div class="white-box">
+            <h4 class="mb-4">Toast</h4>
+
+            <div class="tabs">
+              <ul class="tab-navigation" role="tablist">
+                <li class="mr-1">
+                  <a href="#" class="tab-link active">Preview</a>
+                </li>
+                <li class="mr-1">
+                  <a href="#" class="tab-link">Code</a>
+                </li>
+              </ul>
+              <div class="tab-content mt-4">
+                <div class="tab-panel active">
+                  <div class="flex items-center gap-4 flex-wrap">
+                    <button class="bg-primary text-white font-medium rounded-md py-2 px-4" data-toast="success" data-message="This is success Toast">Success Toast</button>
+                    <button class="bg-error text-n0 font-medium rounded-md py-2 px-4" data-toast="error" data-message="This is error Toast">Error Taost</button>
+                  </div>
+                </div>
+                <div class="tab-panel hidden">
+                  <div class="code relative">
+                    <button class="copy-code px-2 py-1 f-center gap-2 border text-sm rounded-lg border-primary absolute top-9 z-2 text-primary right-3"><i class="las la-copy"></i><span class="btn-text">Copy</span></button>
+                    <pre>
+  <code class="rounded-lg"> 
+  &#x3C;div class=&#x22;flex items-center gap-4 flex-wrap&#x22;&#x3E;
+  &#x3C;button class=&#x22;bg-primary text-white font-medium rounded-md py-2 px-4&#x22; data-toast=&#x22;success&#x22; data-message=&#x22;This is success Toast&#x22;&#x3E;Success Toast&#x3C;/button&#x3E;
+  &#x3C;button class=&#x22;bg-error text-n0 font-medium rounded-md py-2 px-4&#x22; data-toast=&#x22;error&#x22; data-message=&#x22;This is error Toast&#x22;&#x3E;Error Taost&#x3C;/button&#x3E;
+  &#x3C;/div&#x3E;
+  </code>
+                      </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tooltip -->
+          <div class="white-box">
+            <h4 class="mb-4">Tooltip</h4>
+
+            <div class="tabs">
+              <ul class="tab-navigation" role="tablist">
+                <li class="mr-1">
+                  <a href="#" class="tab-link active">Preview</a>
+                </li>
+                <li class="mr-1">
+                  <a href="#" class="tab-link">Code</a>
+                </li>
+              </ul>
+              <div class="tab-content mt-4">
+                <div class="tab-panel active">
+                  <div class="flex flex-wrap gap-6">
+                    <button class="hint--top hint--rounded bg-primary px-4 py-2 text-n0 font-medium rounded-md" aria-label="Tooltip on Top">Top</button>
+                    <button class="hint--bottom hint--rounded bg-primary px-4 py-2 text-n0 font-medium rounded-md" aria-label="Tooltip on Bottom">Bottom</button>
+                    <button class="hint--left hint--rounded bg-primary px-4 py-2 text-n0 font-medium rounded-md" aria-label="Tooltip on Left Side">Left</button>
+                    <button class="hint--right hint--rounded bg-primary px-4 py-2 text-n0 font-medium rounded-md" aria-label="Tooltip on Right Side">Right</button>
+                    <button class="hint--top hint--error hint--rounded bg-error px-4 py-2 text-n0 font-medium rounded-md" aria-label="Error Tooltip">Error</button>
+                    <button class="hint--top hint--warning hint--rounded bg-warning px-4 py-2 text-n0 font-medium rounded-md" aria-label="Warning Tooltip">Warning</button>
+                  </div>
+                </div>
+                <div class="tab-panel hidden">
+                  <div class="code relative">
+                    <button class="copy-code px-2 py-1 f-center gap-2 border text-sm rounded-lg border-primary absolute top-9 z-2 text-primary right-3"><i class="las la-copy"></i><span class="btn-text">Copy</span></button>
+                    <pre>
+    <code class="rounded-lg">&#x3C;div class=&#x22;flex flex-wrap gap-6&#x22;&#x3E;
+  &#x3C;button class=&#x22;hint--top hint--rounded bg-primary px-4 py-2 text-n0 font-medium rounded-md&#x22; aria-label=&#x22;Tooltip on Top&#x22;&#x3E;Top&#x3C;/button&#x3E;
+  &#x3C;button class=&#x22;hint--bottom hint--rounded bg-primary px-4 py-2 text-n0 font-medium rounded-md&#x22; aria-label=&#x22;Tooltip on Bottom&#x22;&#x3E;Bottom&#x3C;/button&#x3E;
+  &#x3C;button class=&#x22;hint--left hint--rounded bg-primary px-4 py-2 text-n0 font-medium rounded-md&#x22; aria-label=&#x22;Tooltip on Left Side&#x22;&#x3E;Left&#x3C;/button&#x3E;
+  &#x3C;button class=&#x22;hint--right hint--rounded bg-primary px-4 py-2 text-n0 font-medium rounded-md&#x22; aria-label=&#x22;Tooltip on Right Side&#x22;&#x3E;Right&#x3C;/button&#x3E;
+  &#x3C;button class=&#x22;hint--top hint--error hint--rounded bg-error px-4 py-2 text-n0 font-medium rounded-md&#x22; aria-label=&#x22;Error Tooltip&#x22;&#x3E;Error&#x3C;/button&#x3E;
+  &#x3C;button class=&#x22;hint--top hint--warning hint--rounded bg-warning px-4 py-2 text-n0 font-medium rounded-md&#x22; aria-label=&#x22;Warning Tooltip&#x22;&#x3E;Warning&#x3C;/button&#x3E;
+&#x3C;/div&#x3E;</code>
+                        </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer class="footer bg-n0">
+      <div class="flex flex-col items-center justify-center gap-3 px-4 py-5 lg:flex-row lg:justify-between xxl:px-8">
+        <p class="text-sm max-md:w-full max-md:text-center lg:text-base">
+          Copyright @ <span id="current-year"></span>
+          <a class="text-primary" href="https://softivuspro.com/"> Bankhub </a>
+          . Designed By
+          <a href="#" class="text-secondary"> Pixelaxis </a>
+        </p>
+        <div class="justify-center max-md:flex max-md:w-full"></div>
+        <ul class="flex gap-2 3xl:gap-3">
+  <li>
+    <a href="#" aria-label="social link" class="inline-flex rounded-full border border-primary p-1 text-primary duration-300 hover:bg-primary hover:text-n0 md:p-1.5 3xl:p-2">
+      <i class="lab la-facebook-f"></i>
+    </a>
+  </li>
+  <li>
+    <a href="#" aria-label="social link" class="inline-flex rounded-full border border-primary p-1 text-primary duration-300 hover:bg-primary hover:text-n0 md:p-1.5 3xl:p-2">
+      <i class="lab la-twitter"></i>
+    </a>
+  </li>
+  <li>
+    <a href="#" aria-label="social link" class="inline-flex rounded-full border border-primary p-1 text-primary duration-300 hover:bg-primary hover:text-n0 md:p-1.5 3xl:p-2">
+      <i class="lab la-skype"></i>
+    </a>
+  </li>
+  <li>
+    <a href="#" aria-label="social link" class="inline-flex rounded-full border border-primary p-1 text-primary duration-300 hover:bg-primary hover:text-n0 md:p-1.5 3xl:p-2">
+      <i class="lab la-instagram"></i>
+    </a>
+  </li>
+  <li>
+    <a href="#" aria-label="social link" class="inline-flex rounded-full border border-primary p-1 text-primary duration-300 hover:bg-primary hover:text-n0 md:p-1.5 3xl:p-2">
+      <i class="lab la-linkedin-in"></i>
+    </a>
+  </li>
+</ul>
+
+        <ul class="flex gap-3 text-sm max-lg:w-full max-lg:justify-center lg:gap-4 lg:text-base">
+          <li>
+            <a href="#">Privacy Policy</a>
+          </li>
+          <li>
+            <a href="#">Terms of condition</a>
+          </li>
+        </ul>
+      </div>
+    </footer>
+
+    <script src="../../cdn.jsdelivr.net/npm/notyf%403/notyf.min.js"></script>
+    <script src="../../cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="assets/js/main.js"></script>
+  </body>
+
+<!-- Mirrored from softivuspro.com/bankhub-html/components.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 23 May 2026 00:03:56 GMT -->
+</html>
