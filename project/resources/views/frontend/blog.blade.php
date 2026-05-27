@@ -30,7 +30,9 @@
 			<div class="row justify-content-center gy-4">
 				@if (count($blogs) == 0)
 					<div class="col-12 text-center">
+						<div class="front-empty-state">
 							<h3 class="m-0">{{__('No Blog Found')}}</h3>
+						</div>
 					</div>
 				@else
 					@foreach ($blogs as $key=>$data)

@@ -1,23 +1,18 @@
-<section class="ctas-section bg--overlay bg_img bg_fixed" data-img="{{ asset('assets/images/'.$ps->quick_background) }}">
+<section class="front-inline-cta pt-100 pb-100 pt-md-70 pb-md-70 pt-sm-50 pb-sm-50"
+    data-background="{{ asset('assets/front/fincatch/img/banner/v7/banner-bg.jpg') }}">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <div class="cta-img">
-                    <img src="{{ asset('assets/images/'.$ps->quick_photo) }}" alt="about">
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-5">
+                <div class="front-inline-cta-img">
+                    <img src="{{ asset('assets/front/fincatch/img/invoices/v1/middle-img.png') }}" alt="{{ $ps->quick_title }}">
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="ctas-content">
-                    <div class="section-title text-white">
-                        <h6 class="subtitle text--base">@lang('Quick Start')</h6>
-                        <h3 class="title">{{ $ps->quick_title }}</h3>
-                        <p>
-                            {{ $ps->quick_subtitle }}
-                        </p>
-                    </div>
-                    <div>
-                        <a href="{{ $ps->quick_link }}" class="cmn--btn">@lang('Get Started Now')</a>
-                    </div>
+            <div class="col-lg-7">
+                <div class="section-title-white v9">
+                    <h5 class="sub-title v12">@lang('Quick Start')</h5>
+                    <h2 class="big-title">{{ $ps->quick_title }}</h2>
+                    <p class="title-para">{{ $ps->quick_subtitle }}</p>
+                    <a href="{{ $ps->quick_link }}" class="link-anime v24 round-border-sm">@lang('Get Started Now')</a>
                 </div>
             </div>
         </div>

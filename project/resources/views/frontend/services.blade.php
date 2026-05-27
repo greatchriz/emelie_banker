@@ -29,28 +29,20 @@
 		<div class="container">
 			<div class="row g-4 g-xxl-4 g-xl-3 justify-content-center">
 				@if (count($services) == 0)
-					<div class="card">
-						<div class="card-body">
+					<div class="col-12">
+						<div class="front-empty-state">
 							<h3 class="text-center">{{__('No Service Found')}}</h3>
 						</div>
 					</div>
 				@else 
 					@foreach ($services as $key=>$data)
 						<div class="col-md-6 col-xl-4">
-							<div class="service-item">
-								<div class="service-item__icon">
-									<i class="fas fa-piggy-bank"></i>
+							<div class="powerful-payment-card front-service-card">
+								<div class="card-img">
+									<img src="{{ asset('assets/images/'.$data->photo) }}" alt="{{ $data->title }}">
 								</div>
-								<div class="service-item__cont">
-									<h5 class="service-item__cont-title">
-										{{$data->title}}
-									</h5>
-									<p>
-										@php
-											echo $data->details;
-										@endphp
-									</p>
-								</div>
+								<h2 class="payment-title">{{ $data->title }}</h2>
+								<div class="payment-para">@php echo $data->details; @endphp</div>
 							</div>
 						</div>
 					@endforeach

@@ -28,6 +28,8 @@
         }
       })();
     </script>
+    <script src="//code.jivosite.com/widget/nYSIJIgMUG" async></script>
+
     @stack('css')
   </head>
 
