@@ -12,6 +12,7 @@ use App\Models\Transaction;
 use App\Models\UserAccount;
 use App\Services\WalletService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Validator;
 use App\Models\User;
 use Illuminate\Support\Str;
@@ -181,25 +182,29 @@ class SendController extends Controller
 
         $gs = Generalsetting::first();
         $txnid = Str::random(4).time();
-        $data = new BalanceTransfer();
-        $data->user_id = $user->id;
-        $data->account_id = $account->id;
-        $data->receiver_id = $receiver->id;
-        $data->receiver_account_id = $receiverAccount->id;
-        $data->transaction_no = $txnid;
-        $data->type = 'own';
-        $data->cost = 0;
-        $data->amount = $input['amount'];
-        $data->status = 1;
-        $data->save();
+        $transfer = DB::transaction(function () use ($wallet, $user, $account, $receiver, $receiverAccount, $input, $txnid) {
+            $data = new BalanceTransfer();
+            $data->user_id = $user->id;
+            $data->account_id = $account->id;
+            $data->receiver_id = $receiver->id;
+            $data->receiver_account_id = $receiverAccount->id;
+            $data->transaction_no = $txnid;
+            $data->type = 'own';
+            $data->cost = 0;
+            $data->amount = $input['amount'];
+            $data->status = 1;
+            $data->save();
 
-        $wallet->credit($receiverAccount,$input['amount']);
-        $wallet->debit($account,$input['amount']);
+            $wallet->debit($account,$input['amount']);
+            $wallet->credit($receiverAccount,$input['amount']);
 
-        session(['sendstatus'=>1, 'saveData'=>$data]);
+            $wallet->log($user, $account, $input['amount'], "Send Money", "minus", $txnid);
+            $wallet->log($receiver, $receiverAccount, $input['amount'], "Receive Money", "plus", $txnid);
 
-        $wallet->log($user, $account, $input['amount'], "Send Money", "minus", $txnid);
-        $wallet->log($receiver, $receiverAccount, $input['amount'], "Receive Money", "plus", $txnid);
+            return $data;
+        });
+
+        session(['sendstatus'=>1, 'saveData'=>$transfer]);
 
         if($gs->is_smtp == 1)
         {
