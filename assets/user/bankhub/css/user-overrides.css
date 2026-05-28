@@ -328,6 +328,303 @@ html.dark .user-shell .status-warning {
   vertical-align: middle;
 }
 
+.user-shell .page-pretitle {
+  color: var(--color-n700);
+}
+
+.user-shell .page-title {
+  color: var(--color-n900);
+}
+
+.user-shell .card,
+.user-shell .card-body,
+.user-shell .card-header,
+.user-shell .modal-content,
+.user-shell .dropdown-menu {
+  background-color: var(--color-n0) !important;
+  color: var(--color-n900) !important;
+  border-color: var(--color-n30) !important;
+}
+
+.user-shell .table-responsive,
+.user-shell .table-responsive-sm {
+  border-radius: 0.5rem;
+  background-color: var(--color-n0);
+  color: var(--color-n900);
+}
+
+.user-shell .table,
+.user-shell .card-table {
+  --tblr-table-bg: var(--color-n0);
+  --tblr-table-color: var(--color-n900);
+  --tblr-table-border-color: var(--color-n30);
+  margin-bottom: 0;
+  background-color: var(--color-n0) !important;
+  color: var(--color-n900) !important;
+  border-color: var(--color-n30) !important;
+}
+
+.user-shell .table thead,
+.user-shell .table thead tr,
+.user-shell .table thead th,
+.user-shell table thead,
+.user-shell table thead tr,
+.user-shell table thead th {
+  background-color: var(--color-n10) !important;
+  color: var(--color-n700) !important;
+  border-color: var(--color-n30) !important;
+}
+
+.user-shell .table tbody,
+.user-shell .table tbody tr,
+.user-shell .table tbody td,
+.user-shell table tbody,
+.user-shell table tbody tr,
+.user-shell table tbody td {
+  background-color: var(--color-n0) !important;
+  color: var(--color-n900) !important;
+  border-color: var(--color-n30) !important;
+}
+
+.user-shell .table tbody tr:nth-child(even),
+.user-shell .table tbody tr:nth-child(even) td,
+.user-shell table tbody tr.even\:bg-secondary\/5:nth-child(even),
+.user-shell table tbody tr.even\:bg-secondary\/5:nth-child(even) td {
+  background-color: var(--color-n10) !important;
+}
+
+.user-shell .table tbody th,
+.user-shell table tbody th {
+  background-color: var(--color-n0) !important;
+  color: var(--color-n900) !important;
+  border-color: var(--color-n30) !important;
+}
+
+.user-shell .table td div,
+.user-shell .table th div,
+.user-shell .card p,
+.user-shell .card span:not(.badge):not(.status-pill):not(.btn),
+.user-shell .card label {
+  color: inherit;
+}
+
+.user-shell .bg-white,
+.user-shell .bg-light {
+  background-color: var(--color-n0) !important;
+  color: var(--color-n900) !important;
+}
+
+.user-shell .text-dark,
+.user-shell .text-black {
+  color: var(--color-n900) !important;
+}
+
+.user-shell .text-muted {
+  color: var(--color-n700) !important;
+}
+
+.user-shell .form-label,
+.user-shell .form-check-label {
+  color: var(--color-n900);
+}
+
+.user-shell .form-control,
+.user-shell .form-select,
+.user-shell textarea,
+.user-shell input[type="text"],
+.user-shell input[type="email"],
+.user-shell input[type="number"],
+.user-shell input[type="password"],
+.user-shell input[type="file"] {
+  background-color: var(--color-n10) !important;
+  color: var(--color-n900) !important;
+  border-color: var(--color-n30) !important;
+}
+
+.user-shell .form-control::placeholder,
+.user-shell textarea::placeholder,
+.user-shell input::placeholder {
+  color: var(--color-n700) !important;
+  opacity: 0.8;
+}
+
+.user-shell .form-control:focus,
+.user-shell .form-select:focus,
+.user-shell textarea:focus,
+.user-shell input:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 0.15rem color-mix(in srgb, var(--color-primary) 18%, transparent) !important;
+}
+
+.user-shell .badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  color: var(--color-white) !important;
+}
+
+.user-shell .badge.bg-warning {
+  background-color: #f97316 !important;
+  color: #ffffff !important;
+}
+
+.user-shell .badge.bg-success {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+}
+
+.user-shell .badge.bg-danger {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+}
+
+.user-shell .pagination,
+.user-shell nav[role="navigation"] {
+  color: var(--color-n900);
+}
+
+.user-shell .page-link {
+  background-color: var(--color-n0) !important;
+  color: var(--color-n900) !important;
+  border-color: var(--color-n30) !important;
+}
+
+.user-shell .page-item.active .page-link,
+.user-shell .page-link:hover {
+  background-color: var(--color-primary) !important;
+  color: var(--color-white) !important;
+  border-color: var(--color-primary) !important;
+}
+
+html.dark body.user-shell {
+  background-color: #0f172a;
+  color: #ebecef;
+}
+
+html.dark .user-shell .box,
+html.dark .user-shell .navbar-top,
+html.dark .user-shell .sidebar,
+html.dark .user-shell .footer,
+html.dark .user-shell #profile,
+html.dark .user-shell #language,
+html.dark .user-shell #mobile-search {
+  background-color: #14161c !important;
+  color: #ebecef !important;
+  border-color: #31394f !important;
+}
+
+html.dark .user-shell .page-pretitle,
+html.dark .user-shell .text-muted,
+html.dark .user-shell .text-n700,
+html.dark .user-shell .text-n100,
+html.dark .user-shell .text-xs {
+  color: #98a4b8 !important;
+}
+
+html.dark .user-shell .page-title,
+html.dark .user-shell h1,
+html.dark .user-shell h2,
+html.dark .user-shell h3,
+html.dark .user-shell h4,
+html.dark .user-shell h5,
+html.dark .user-shell h6,
+html.dark .user-shell .h4,
+html.dark .user-shell .h5,
+html.dark .user-shell .h6,
+html.dark .user-shell .font-medium,
+html.dark .user-shell .font-semibold,
+html.dark .user-shell .card,
+html.dark .user-shell .card-body,
+html.dark .user-shell .card-header,
+html.dark .user-shell .modal-content,
+html.dark .user-shell .dropdown-menu,
+html.dark .user-shell .form-label,
+html.dark .user-shell .form-check-label {
+  color: #ebecef !important;
+}
+
+html.dark .user-shell .card,
+html.dark .user-shell .card-body,
+html.dark .user-shell .modal-content,
+html.dark .user-shell .dropdown-menu,
+html.dark .user-shell .table-responsive,
+html.dark .user-shell .table-responsive-sm,
+html.dark .user-shell .table,
+html.dark .user-shell .card-table {
+  background-color: #14161c !important;
+  border-color: #31394f !important;
+}
+
+html.dark .user-shell .card-header,
+html.dark .user-shell .table thead,
+html.dark .user-shell .table thead tr,
+html.dark .user-shell .table thead th,
+html.dark .user-shell table thead,
+html.dark .user-shell table thead tr,
+html.dark .user-shell table thead th {
+  background-color: #1b232d !important;
+  color: #b7c0d1 !important;
+  border-color: #31394f !important;
+}
+
+html.dark .user-shell .table tbody,
+html.dark .user-shell .table tbody tr,
+html.dark .user-shell .table tbody td,
+html.dark .user-shell table tbody,
+html.dark .user-shell table tbody tr,
+html.dark .user-shell table tbody td,
+html.dark .user-shell .table tbody th,
+html.dark .user-shell table tbody th {
+  background-color: #14161c !important;
+  color: #ebecef !important;
+  border-color: #31394f !important;
+}
+
+html.dark .user-shell .table tbody tr:nth-child(even),
+html.dark .user-shell .table tbody tr:nth-child(even) td,
+html.dark .user-shell table tbody tr.even\:bg-secondary\/5:nth-child(even),
+html.dark .user-shell table tbody tr.even\:bg-secondary\/5:nth-child(even) td {
+  background-color: #18202b !important;
+}
+
+html.dark .user-shell .bg-white,
+html.dark .user-shell .bg-light {
+  background-color: #14161c !important;
+  color: #ebecef !important;
+}
+
+html.dark .user-shell .text-dark,
+html.dark .user-shell .text-black {
+  color: #ebecef !important;
+}
+
+html.dark .user-shell .form-control,
+html.dark .user-shell .form-select,
+html.dark .user-shell textarea,
+html.dark .user-shell input[type="text"],
+html.dark .user-shell input[type="email"],
+html.dark .user-shell input[type="number"],
+html.dark .user-shell input[type="password"],
+html.dark .user-shell input[type="file"] {
+  background-color: #101827 !important;
+  color: #ebecef !important;
+  border-color: #31394f !important;
+}
+
+html.dark .user-shell .form-control::placeholder,
+html.dark .user-shell textarea::placeholder,
+html.dark .user-shell input::placeholder {
+  color: #98a4b8 !important;
+}
+
+html.dark .user-shell .page-link {
+  background-color: #14161c !important;
+  color: #ebecef !important;
+  border-color: #31394f !important;
+}
+
 .user-shell .progress-chart,
 .user-shell #asset-chart,
 .user-shell #revenue-expense-chart {
