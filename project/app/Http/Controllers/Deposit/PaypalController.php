@@ -9,6 +9,8 @@ use App\Models\Deposit;
 use App\Models\Generalsetting;
 use App\Models\PaymentGateway;
 use App\Models\Transaction as AppTransaction;
+use App\Models\UserAccount;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -34,11 +36,15 @@ class PaypalController extends Controller
         $this->gateway->setTestMode(true);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, WalletService $wallet)
     {
 
         if (!in_array($request->currency_code, $this->support_currencies)) {
             return redirect()->back()->with('warning', 'Please Select USD Or EUR Currency For Paypal.');
+        }
+        $account = $wallet->activeAccount(auth()->user());
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->back()->with('warning', $message);
         }
 
         $settings = Generalsetting::findOrFail(1);
@@ -54,6 +60,7 @@ class PaypalController extends Controller
         $amountToAdd = $request->amount / $currency->value;
 
         $deposit['user_id'] = auth()->user()->id;
+        $deposit['account_id'] = $account->id;
         $deposit['currency_id'] = $request->currency_id;
         $deposit['amount'] = $amountToAdd;
         $deposit['method'] = $request->method;
@@ -62,7 +69,7 @@ class PaypalController extends Controller
 
         $deposit->save();
 
-        Session::put('deposit_data', $request->all());
+        Session::put('deposit_data', $request->all() + ['account_id' => $account->id]);
         Session::put('deposit_number', $item_number);
         try {
             $response = $this->gateway->purchase(array(
@@ -144,17 +151,10 @@ class PaypalController extends Controller
             $deposit->status = "complete";
             $deposit->save();
 
-            $user->balance += $deposit->amount;
-            $user->save();
-
-            $trans = new AppTransaction();
-            $trans->email = $user->email;
-            $trans->amount = $deposit->amount;
-            $trans->type = "Deposit";
-            $trans->profit = "plus";
-            $trans->txnid = $deposit->deposit_number;
-            $trans->user_id = $user->id;
-            $trans->save();
+            $wallet = app(WalletService::class);
+            $account = UserAccount::where('user_id', $user->id)->where('id', $deposit->account_id)->first() ?: $wallet->defaultAccount($user);
+            $wallet->credit($account, $deposit->amount);
+            $wallet->log($user, $account, $deposit->amount, "Deposit", "plus", $deposit->deposit_number);
 
             Session::forget('deposit_data');
             Session::forget('deposit_number');

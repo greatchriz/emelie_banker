@@ -9,6 +9,7 @@ use App\Models\InstallmentLog;
 use App\Models\LoanPlan;
 use App\Models\Transaction;
 use App\Models\UserLoan;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -19,28 +20,53 @@ class UserLoanController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(){
-        $data['loans'] = UserLoan::whereUserId(auth()->id())->orderby('id','desc')->paginate(10);
+    public function index(WalletService $wallet){
+        $account = $wallet->activeAccount();
+        $data['loans'] = UserLoan::whereUserId(auth()->id())->when($account, function ($query) use ($account) {
+            $query->where('account_id', $account->id);
+        }, function ($query) {
+            $query->whereRaw('1 = 0');
+        })->orderby('id','desc')->paginate(10);
         return view('user.loan.index',$data);
     }
 
-    public function pending(){
-        $data['loans'] = UserLoan::whereStatus(0)->whereUserId(auth()->id())->orderby('id','desc')->paginate(10);
+    public function pending(WalletService $wallet){
+        $account = $wallet->activeAccount();
+        $data['loans'] = UserLoan::whereStatus(0)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
+            $query->where('account_id', $account->id);
+        }, function ($query) {
+            $query->whereRaw('1 = 0');
+        })->orderby('id','desc')->paginate(10);
         return view('user.loan.pending',$data);
     }
 
-    public function running(){
-        $data['loans'] = UserLoan::whereStatus(1)->whereUserId(auth()->id())->orderby('id','desc')->paginate(10);
+    public function running(WalletService $wallet){
+        $account = $wallet->activeAccount();
+        $data['loans'] = UserLoan::whereStatus(1)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
+            $query->where('account_id', $account->id);
+        }, function ($query) {
+            $query->whereRaw('1 = 0');
+        })->orderby('id','desc')->paginate(10);
         return view('user.loan.running',$data);
     }
 
-    public function paid(){
-        $data['loans'] = UserLoan::whereStatus(3)->whereUserId(auth()->id())->orderby('id','desc')->paginate(10); 
+    public function paid(WalletService $wallet){
+        $account = $wallet->activeAccount();
+        $data['loans'] = UserLoan::whereStatus(3)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
+            $query->where('account_id', $account->id);
+        }, function ($query) {
+            $query->whereRaw('1 = 0');
+        })->orderby('id','desc')->paginate(10);
         return view('user.loan.paid',$data);
     }
 
-    public function rejected(){
-        $data['loans'] = UserLoan::whereStatus(2)->whereUserId(auth()->id())->orderby('id','desc')->paginate(10);
+    public function rejected(WalletService $wallet){
+        $account = $wallet->activeAccount();
+        $data['loans'] = UserLoan::whereStatus(2)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
+            $query->where('account_id', $account->id);
+        }, function ($query) {
+            $query->whereRaw('1 = 0');
+        })->orderby('id','desc')->paginate(10);
         return view('user.loan.rejected',$data);
     }
 
@@ -64,20 +90,20 @@ class UserLoanController extends Controller
         }
     }
 
-    public function loanRequest(Request $request){
+    public function loanRequest(Request $request, WalletService $wallet){
 
         $user = auth()->user();
-
-        if($user->bank_plan_id === null){
-            return redirect()->route('user.loans.plan')->with('warning','You have to buy a plan to loan');
+        $account = $wallet->activeAccount($user);
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->route('user.loans.plan')->with('warning', $message);
         }
 
-        if(now()->gt($user->plan_end_date)){
-            return redirect()->route('user.loans.plan')->with('warning','Plan Date Expired.');
+        if($message = $wallet->hasValidPlan($account)){
+            return redirect()->route('user.loans.plan')->with('warning',$message);
         }
 
-        $bank_plan = BankPlan::whereId($user->bank_plan_id)->first();
-        $monthlyLoans = UserLoan::whereUserId(auth()->id())->whereMonth('created_at', '=', date('m'))->whereStatus('approve')->sum('loan_amount');
+        $bank_plan = $wallet->bankPlan($account);
+        $monthlyLoans = UserLoan::where('account_id',$account->id)->whereMonth('created_at', '=', date('m'))->whereStatus('approve')->sum('loan_amount');
 
         if($monthlyLoans > $bank_plan->loan_amount){
             return redirect()->route('user.loans.plan')->with('warning','Monthly loan limit over.');
@@ -123,20 +149,14 @@ class UserLoanController extends Controller
         $txnid = Str::random(4).time();
         $input['transaction_no'] = $txnid;
         $input['user_id'] = auth()->id();
+        $input['account_id'] = $account->id;
         $input['next_installment'] = now()->addDays($loan->installment_interval);
         $input['given_installment'] = 0;
         $input['paid_amount'] = 0;
         $input['total_amount'] = $request->loan_amount;
         $data->fill($input)->save();
 
-        $trans = new Transaction();
-        $trans->email = $user->email;
-        $trans->amount = $request->loan_amount;
-        $trans->type = "Loan";
-        $trans->profit = "plus";
-        $trans->txnid = $txnid;
-        $trans->user_id = $user->id;
-        $trans->save();
+        $wallet->log($user, $account, $request->loan_amount, "Loan", "plus", $txnid);
 
         return redirect()->route('user.loans.index')->with('message','Loan Requesting Successfully');
     }

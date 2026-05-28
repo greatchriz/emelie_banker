@@ -10,4 +10,9 @@ class Transaction extends Model
     {
         return $this->belongsTo('App\Models\User')->withDefault();
     }
+
+    public function account()
+    {
+        return $this->belongsTo(UserAccount::class, 'account_id')->withDefault();
+    }
 }

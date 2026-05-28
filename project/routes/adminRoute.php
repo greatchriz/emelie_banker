@@ -57,6 +57,7 @@ use App\Http\Controllers\Admin\SubscriberController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\UserTransferAccessController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\UserAccountController;
 use App\Http\Controllers\Admin\WireTransferBankController;
 use App\Http\Controllers\Admin\WireTransferController as AdminWireTransferController;
 use App\Http\Controllers\Admin\WithdrawMethodController;
@@ -116,6 +117,12 @@ Route::prefix('admin')->group(function(){
         Route::get('/users/deposit/{id}', [UserController::class,'deposit'])->name('admin-user-deposit');
         Route::post('/user/deposit/{id}', [UserController::class,'depositUpdate'])->name('admin-user-deposit-update');
         Route::post('/user/balance/add/deduct', [UserController::class,'adddeduct'])->name('admin.user.balance.add.deduct');
+        Route::get('/user-accounts', [UserAccountController::class,'index'])->name('admin.user.accounts.index');
+        Route::get('/user-accounts/create', [UserAccountController::class,'create'])->name('admin.user.accounts.create');
+        Route::post('/user-accounts/store', [UserAccountController::class,'store'])->name('admin.user.accounts.store');
+        Route::get('/user-accounts/{id}/edit', [UserAccountController::class,'edit'])->name('admin.user.accounts.edit');
+        Route::post('/user-accounts/{id}/update', [UserAccountController::class,'update'])->name('admin.user.accounts.update');
+        Route::get('/user-accounts/{id}/status/{status}', [UserAccountController::class,'status'])->name('admin.user.accounts.status');
 
         Route::get('/bank-plan/datatables', [BankPlanController::class,'datatables'])->name('admin.bank.plan.datatables');
         Route::get('/bank-plans', [BankPlanController::class,'index'])->name('admin.bank.plan.index');

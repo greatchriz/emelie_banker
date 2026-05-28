@@ -11,6 +11,8 @@ use App\Models\PaymentGateway;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use App\Models\UserAccount;
+use App\Services\WalletService;
 
 class FlutterwaveController extends Controller
 {
@@ -25,8 +27,13 @@ class FlutterwaveController extends Controller
         $this->secret_key = $paydata['secret_key'];
     }
 
-    public function store(Request $request)
+    public function store(Request $request, WalletService $wallet)
     {
+        $account = $wallet->activeAccount(auth()->user());
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->back()->with('warning', $message);
+        }
+
         $curl = curl_init();
 
         $customer_email = auth()->user()->email;
@@ -43,6 +50,7 @@ class FlutterwaveController extends Controller
 
         $deposit = new Deposit();
         $deposit['user_id'] = auth()->user()->id;
+        $deposit['account_id'] = $account->id;
         $deposit['currency_id'] = $request->currency_id;
         $deposit['amount'] = $request->amount;
         $deposit['method'] = $request->method;
@@ -52,7 +60,7 @@ class FlutterwaveController extends Controller
         $deposit->save();
 
         Session::put('deposit_number', $item_number);
-        Session::put('deposit_data', $request->all());
+        Session::put('deposit_data', $request->all() + ['account_id' => $account->id]);
 
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://api.ravepay.co/flwv3-pug/getpaidx/api/v2/hosted/pay",
@@ -138,8 +146,10 @@ class FlutterwaveController extends Controller
                     $amountToAdd = $deposit_data['amount'] / $currency->value;
 
                     $user = auth()->user();
-                    $user->balance += $amountToAdd;
-                    $user->save();
+                    $wallet = app(WalletService::class);
+                    $account = UserAccount::where('user_id', $user->id)->where('id', $deposit->account_id)->first() ?: $wallet->defaultAccount($user);
+                    $wallet->credit($account, $amountToAdd);
+                    $wallet->log($user, $account, $amountToAdd, "Deposit", "plus", $deposit->deposit_number);
 
                     if ($gs->is_smtp == 1) {
                         $data = [

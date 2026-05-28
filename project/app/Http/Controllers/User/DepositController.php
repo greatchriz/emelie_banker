@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Deposit;
 use App\Models\PaymentGateway;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 
 class DepositController extends Controller
@@ -14,8 +15,15 @@ class DepositController extends Controller
         $this->middleware('auth');
     }
     
-    public function index(){
-        $data['deposits'] = Deposit::orderby('id','desc')->whereUserId(auth()->id())->paginate(10);
+    public function index(WalletService $wallet){
+        $account = $wallet->activeAccount();
+        $data['deposits'] = Deposit::orderby('id','desc')->whereUserId(auth()->id())
+            ->when($account, function ($query) use ($account) {
+                $query->where('account_id', $account->id);
+            }, function ($query) {
+                $query->whereRaw('1 = 0');
+            })
+            ->paginate(10);
         return view('user.deposit.index',$data);
     }
 

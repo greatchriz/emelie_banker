@@ -10,6 +10,7 @@ use App\Models\BalanceTransfer;
 use App\Models\Order;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\UserAccount;
 use App\Traits\Payout;
 use Auth;
 use Brian2694\Toastr\Facades\Toastr;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Input;
 use Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Services\WalletService;
 use PDF;
 
 class UserController extends Controller
@@ -27,22 +29,37 @@ class UserController extends Controller
         $this->middleware('auth');
     }
     
-    public function index()
+    public function index(WalletService $wallet)
     {
         $data['user'] = Auth::user();  
-        $data['transactions'] = Transaction::whereUserId(auth()->id())->orderBy('id','desc')->limit(5)->get();
+        $data['activeAccount'] = $wallet->activeAccount($data['user']);
+        $data['accounts'] = $data['user']->accounts()->orderByDesc('is_default')->orderBy('id')->get();
+        $data['transactions'] = $data['activeAccount']
+            ? Transaction::whereUserId(auth()->id())->where('account_id', $data['activeAccount']->id)->orderBy('id','desc')->limit(5)->get()
+            : collect();
         $data['recentTransfers'] = BalanceTransfer::with(['receiver', 'beneficiary.bank', 'bank'])
             ->whereUserId(auth()->id())
+            ->when($data['activeAccount'], function ($query) use ($data) {
+                $query->where('account_id', $data['activeAccount']->id);
+            })
             ->orderBy('id','desc')
             ->limit(5)
             ->get();
         return view('user.dashboard',$data);
     }
 
-    public function transaction()
+    public function transaction(WalletService $wallet)
     {
         $user = Auth::user();
-        $transactions = Transaction::whereUserId(auth()->id())->orderBy('id','desc')->paginate(20);  
+        $activeAccount = $wallet->activeAccount($user);
+        $transactions = Transaction::whereUserId(auth()->id())
+            ->when($activeAccount, function ($query) use ($activeAccount) {
+                $query->where('account_id', $activeAccount->id);
+            }, function ($query) {
+                $query->whereRaw('1 = 0');
+            })
+            ->orderBy('id','desc')
+            ->paginate(20);
         return view('user.transactions',compact('user','transactions'));
     }
 
@@ -166,7 +183,9 @@ class UserController extends Controller
     }
 
     public function username($number){
-       if($data = User::where('account_number',$number)->first()){
+       if($account = UserAccount::where('account_number',$number)->where('status','active')->with('user')->first()){
+           return $account->user->name;
+       }elseif($data = User::where('account_number',$number)->first()){
            return $data->name;
        }else{
            return false;

@@ -7,6 +7,8 @@ use App\Models\BalanceTransfer;
 use App\Models\BankPlan;
 use App\Models\WireTransfer;
 use App\Models\WireTransferBank;
+use App\Models\UserAccount;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -18,8 +20,16 @@ class WireTransferController extends Controller
         $this->middleware('auth');
     }
     
-    public function index(){
-        $data['transfers'] = WireTransfer::where('user_id',auth()->id())->orderBy('id','desc')->paginate(20);
+    public function index(WalletService $wallet){
+        $account = $wallet->activeAccount();
+        $data['transfers'] = WireTransfer::where('user_id',auth()->id())
+            ->when($account, function ($query) use ($account) {
+                $query->where('account_id', $account->id);
+            }, function ($query) {
+                $query->whereRaw('1 = 0');
+            })
+            ->orderBy('id','desc')
+            ->paginate(20);
         return view('user.wiretransfer.index',$data);
     }
 
@@ -28,7 +38,7 @@ class WireTransferController extends Controller
         return view('user.wiretransfer.create',$data);
     }
 
-    public function store(Request $request){
+    public function store(Request $request, WalletService $wallet){
         $request->validate([
             'wire_transfer_bank_id' => 'required',
             'currency' => 'required',
@@ -40,18 +50,18 @@ class WireTransferController extends Controller
         ]);
 
         $user = auth()->user();
-
-        if($user->bank_plan_id === null){
-            return redirect()->back()->with('unsuccess','You have to buy a plan to withdraw.');
+        $account = $wallet->activeAccount($user);
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->back()->with('unsuccess', $message);
         }
 
-        if(now()->gt($user->plan_end_date)){
-            return redirect()->back()->with('unsuccess','Plan Date Expired.');
+        if($message = $wallet->hasValidPlan($account)){
+            return redirect()->back()->with('unsuccess',$message);
         }
 
-        $bank_plan = BankPlan::whereId($user->bank_plan_id)->first();
-        $dailySend = BalanceTransfer::whereUserId(auth()->id())->whereDate('created_at', '=', date('Y-m-d'))->whereStatus(1)->sum('amount');
-        $monthlySend = BalanceTransfer::whereUserId(auth()->id())->whereMonth('created_at', '=', date('m'))->whereStatus(1)->sum('amount');
+        $bank_plan = $wallet->bankPlan($account);
+        $dailySend = BalanceTransfer::where('account_id',$account->id)->whereDate('created_at', '=', date('Y-m-d'))->whereStatus(1)->sum('amount');
+        $monthlySend = BalanceTransfer::where('account_id',$account->id)->whereMonth('created_at', '=', date('m'))->whereStatus(1)->sum('amount');
 
         if($dailySend > $bank_plan->daily_send){
             return redirect()->back()->with('unsuccess','Daily send limit over.');
@@ -61,7 +71,7 @@ class WireTransferController extends Controller
             return redirect()->back()->with('unsuccess','Monthly send limit over.');
         }
         
-        if($request->amount > $user->balance){
+        if($request->amount > $account->balance){
             return redirect()->back()->with('unsuccess','Insufficient Account Balance.');
         }
 
@@ -80,7 +90,7 @@ class WireTransferController extends Controller
                     'account_holder_name',
                     'amount',
                     'note'
-                ),
+                ) + ['account_id' => $account->id],
             ],
         ]);
 
@@ -107,19 +117,23 @@ class WireTransferController extends Controller
             return redirect()->route('user.wire.transfer.create')->with('unsuccess','Invalid wire transfer details.');
         }
 
+        $wallet = app(WalletService::class);
         $user = auth()->user()->fresh();
+        $account = isset($input['account_id'])
+            ? UserAccount::where('user_id', $user->id)->where('id', $input['account_id'])->first()
+            : $wallet->activeAccount($user);
 
-        if($user->bank_plan_id === null){
-            return redirect()->route('user.wire.transfer.create')->with('unsuccess','You have to buy a plan to withdraw.');
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->route('user.wire.transfer.create')->with('unsuccess', $message);
         }
 
-        if(now()->gt($user->plan_end_date)){
-            return redirect()->route('user.wire.transfer.create')->with('unsuccess','Plan Date Expired.');
+        if($message = $wallet->hasValidPlan($account)){
+            return redirect()->route('user.wire.transfer.create')->with('unsuccess',$message);
         }
 
-        $bank_plan = BankPlan::whereId($user->bank_plan_id)->first();
-        $dailySend = BalanceTransfer::whereUserId(auth()->id())->whereDate('created_at', '=', date('Y-m-d'))->whereStatus(1)->sum('amount');
-        $monthlySend = BalanceTransfer::whereUserId(auth()->id())->whereMonth('created_at', '=', date('m'))->whereStatus(1)->sum('amount');
+        $bank_plan = $wallet->bankPlan($account);
+        $dailySend = BalanceTransfer::where('account_id',$account->id)->whereDate('created_at', '=', date('Y-m-d'))->whereStatus(1)->sum('amount');
+        $monthlySend = BalanceTransfer::where('account_id',$account->id)->whereMonth('created_at', '=', date('m'))->whereStatus(1)->sum('amount');
 
         if($dailySend > $bank_plan->daily_send){
             return redirect()->route('user.wire.transfer.create')->with('unsuccess','Daily send limit over.');
@@ -129,13 +143,14 @@ class WireTransferController extends Controller
             return redirect()->route('user.wire.transfer.create')->with('unsuccess','Monthly send limit over.');
         }
         
-        if($input['amount'] > $user->balance){
+        if($input['amount'] > $account->balance){
             return redirect()->route('user.wire.transfer.create')->with('unsuccess','Insufficient Account Balance.');
         }
 
         $data = new WireTransfer();
         $data->transaction_no = Str::random(4).time();
         $data->user_id = auth()->id();
+        $data->account_id = $account->id;
         $data->wire_transfer_bank_id = $input['wire_transfer_bank_id'];
         $data->currency = $input['currency'];
         $data->routing_number = $input['routing_number'];
@@ -147,7 +162,7 @@ class WireTransferController extends Controller
         $data->note = $input['note'] ?? null;
         $data->save();
 
-        $user->decrement('balance',$input['amount']);
+        $wallet->debit($account,$input['amount']);
        
         return redirect()->route('user.wire.transfer.create')->with('success','Wire Transfer Request Sent Successfully');
     }

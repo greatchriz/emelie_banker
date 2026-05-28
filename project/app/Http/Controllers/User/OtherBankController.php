@@ -9,6 +9,8 @@ use App\Models\Beneficiary;
 use App\Models\Generalsetting;
 use App\Models\OtherBank;
 use App\Models\Transaction;
+use App\Models\UserAccount;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -29,23 +31,24 @@ class OtherBankController extends Controller
         return view('user.otherbank.send',$data);
     }
 
-    public function store(Request $request){
+    public function store(Request $request, WalletService $wallet){
         $request->validate([
             'amount' => 'required|numeric|min:0'
         ]);
 
         $user = auth()->user();
-        if($user->bank_plan_id === null){
-            return redirect()->back()->with('unsuccess','You have to buy a plan to withdraw.');
+        $account = $wallet->activeAccount($user);
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->back()->with('unsuccess', $message);
         }
 
-        if(now()->gt($user->plan_end_date)){
-            return redirect()->back()->with('unsuccess','Plan Date Expired.');
+        if($message = $wallet->hasValidPlan($account)){
+            return redirect()->back()->with('unsuccess',$message);
         }
 
-        $bank_plan = BankPlan::whereId($user->bank_plan_id)->first();
-        $dailySend = BalanceTransfer::whereUserId(auth()->id())->whereDate('created_at', '=', date('Y-m-d'))->whereStatus(1)->sum('amount');
-        $monthlySend = BalanceTransfer::whereUserId(auth()->id())->whereMonth('created_at', '=', date('m'))->whereStatus(1)->sum('amount');
+        $bank_plan = $wallet->bankPlan($account);
+        $dailySend = BalanceTransfer::where('account_id',$account->id)->whereDate('created_at', '=', date('Y-m-d'))->whereStatus(1)->sum('amount');
+        $monthlySend = BalanceTransfer::where('account_id',$account->id)->whereMonth('created_at', '=', date('m'))->whereStatus(1)->sum('amount');
 
         if($dailySend > $bank_plan->daily_send){
             return redirect()->back()->with('unsuccess','Daily send limit over.');
@@ -58,8 +61,8 @@ class OtherBankController extends Controller
 
         $gs = Generalsetting::first();
         $otherBank = OtherBank::whereId($request->other_bank_id)->first();
-        $dailyTransactions = BalanceTransfer::whereType('other')->whereUserId(auth()->user()->id)->whereDate('created_at', now())->get();
-        $monthlyTransactions = BalanceTransfer::whereType('other')->whereUserId(auth()->user()->id)->whereMonth('created_at', now()->month())->get();
+        $dailyTransactions = BalanceTransfer::whereType('other')->where('account_id',$account->id)->whereDate('created_at', now())->get();
+        $monthlyTransactions = BalanceTransfer::whereType('other')->where('account_id',$account->id)->whereMonth('created_at', now()->month())->get();
 
         if ($otherBank ) {
             $cost = $otherBank->fixed_charge + ($request->amount/100) * $otherBank->percent_charge;
@@ -73,7 +76,7 @@ class OtherBankController extends Controller
                 return redirect()->back()->with('unsuccess','Request Amount should be less than this');
             }
 
-            if($user->balance<0 && $finalAmount > $user->balance){
+            if($account->balance<0 && $finalAmount > $account->balance){
                 return redirect()->back()->with('unsuccess','Insufficient Balance!');
             }
 
@@ -97,7 +100,7 @@ class OtherBankController extends Controller
                 return redirect()->back()->with('unsuccess','Your monthly number of transaction is over!');
             }
 
-            if($request->amount > $user->balance){
+            if($request->amount > $account->balance){
                 return redirect()->back()->with('unsuccess','Insufficient Account Balance.');
             }
 
@@ -105,6 +108,7 @@ class OtherBankController extends Controller
 
             $data = new BalanceTransfer();
             $data->user_id = auth()->user()->id;
+            $data->account_id = $account->id;
             $data->transaction_no = $txnid;
             $data->other_bank_id = $request->other_bank_id;
             $data->beneficiary_id = $request->beneficiary_id;
@@ -115,16 +119,9 @@ class OtherBankController extends Controller
             $data->status = 0;
             $data->save();
 
-            $trans = new Transaction();
-            $trans->email = $user->email;
-            $trans->amount = $finalAmount;
-            $trans->type = "Send Money";
-            $trans->profit = "minus";
-            $trans->txnid = $txnid;
-            $trans->user_id = $user->id;
-            $trans->save();
+            $wallet->log($user, $account, $finalAmount, "Send Money", "minus", $txnid);
     
-            $user->decrement('balance',$finalAmount);
+            $wallet->debit($account,$finalAmount);
             
             return redirect()->back()->with('success','Money Send successfully.');
 

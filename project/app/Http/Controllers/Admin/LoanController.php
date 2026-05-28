@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Models\InstallmentLog;
 use App\Models\User;
+use App\Models\UserAccount;
 use App\Models\UserLoan;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Datatables;
 use Illuminate\Support\Carbon;
@@ -166,8 +168,8 @@ class LoanController extends Controller
 
       if($id2 == 1){
         if($user = User::where('id',$data->user_id)->first()){
-          $user->balance += $data->loan_amount;
-          $user->update();
+          $account = ($data->account_id ? UserAccount::where('user_id',$user->id)->where('id',$data->account_id)->first() : null) ?: app(WalletService::class)->defaultAccount($user);
+          app(WalletService::class)->credit($account,$data->loan_amount);
         }
         $data->next_installment = Carbon::now()->addDays($data->plan->installment_interval);
       }
@@ -204,7 +206,7 @@ class LoanController extends Controller
           return false;
         }
         if($now->gt($data->next_installment)){
-          $this->takeLoanAmount($data->user_id,$data->per_installment_amount);
+          $this->takeLoanAmount($data->user_id,$data->per_installment_amount,$data->account_id);
           $this->logCreate($data->transaction_no,$data->per_installment_amount,$data->user_id);
 
           $data->next_installment = Carbon::now()->addDays($data->plan->installment_interval);
@@ -219,11 +221,11 @@ class LoanController extends Controller
       }
     }
 
-    public function takeLoanAmount($userId,$installment){
+    public function takeLoanAmount($userId,$installment,$accountId = null){
       $user = User::whereId($userId)->first();
-      if($user && $user->balance>=$installment){
-        $user->balance -= $installment;
-        $user->update();
+      $account = $user ? (($accountId ? UserAccount::where('user_id',$userId)->where('id',$accountId)->first() : null) ?: app(WalletService::class)->defaultAccount($user)) : null;
+      if($account && $account->balance>=$installment){
+        app(WalletService::class)->debit($account,$installment);
       }
     }
 

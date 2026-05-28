@@ -18,6 +18,7 @@
     <div id="customer" class="collapse" aria-labelledby="headingTable" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
         <a class="collapse-item" href="{{ route('admin.user.index') }}">{{ __('User List') }}</a>
+        <a class="collapse-item" href="{{ route('admin.user.accounts.index') }}">{{ __('User Accounts') }}</a>
         <a class="collapse-item" href="{{ route('admin.bank.plan.index') }}">{{ __('Bank Plans') }}</a>
         <a class="collapse-item" href="{{route('admin.kyc.info','user')}}">{{ __('User KYC Info') }}</a>
         <a class="collapse-item" href="{{route('admin.manage.module')}}">{{ __('User KYC Modules') }}</a>

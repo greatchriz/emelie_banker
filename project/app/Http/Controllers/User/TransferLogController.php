@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\BalanceTransfer;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use PDF;
@@ -15,9 +16,12 @@ class TransferLogController extends Controller
         $this->middleware('auth');
     }
     
-    public function index(){
+    public function index(WalletService $wallet){
+        $account = $wallet->activeAccount(auth()->user());
         $data['logs'] = BalanceTransfer::with(['receiver', 'beneficiary.bank', 'bank'])
             ->whereUserId(auth()->id())
+            ->when($account, fn ($query) => $query->where('account_id', $account->id))
+            ->when(!$account, fn ($query) => $query->whereRaw('1 = 0'))
             ->orderBy('id','desc')
             ->paginate(10);
         return view('user.transfer.index',$data);
@@ -50,8 +54,12 @@ class TransferLogController extends Controller
 
     private function findUserTransfer($id)
     {
+        $account = app(WalletService::class)->activeAccount(auth()->user());
+
         return BalanceTransfer::with(['user', 'receiver', 'beneficiary.bank', 'bank'])
             ->whereUserId(auth()->id())
+            ->when($account, fn ($query) => $query->where('account_id', $account->id))
+            ->when(!$account, fn ($query) => $query->whereRaw('1 = 0'))
             ->whereId($id)
             ->firstOrFail();
     }

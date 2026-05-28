@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Models\User;
+use App\Models\UserAccount;
 use App\Models\WireTransfer;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Datatables;
 
@@ -114,7 +116,8 @@ class WireTransferController extends Controller
         if($id2 == 2){
           $user = User::whereId($data->user_id)->first();
           if($user){
-            $user->increment('balance',$data->amount);
+            $account = ($data->account_id ? UserAccount::where('user_id',$user->id)->where('id',$data->account_id)->first() : null) ?: app(WalletService::class)->defaultAccount($user);
+            app(WalletService::class)->credit($account,$data->amount);
           }
         }
   

@@ -44,6 +44,16 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(BalanceTransfer::class);
     }
 
+    public function accounts()
+    {
+        return $this->hasMany(UserAccount::class);
+    }
+
+    public function defaultAccount()
+    {
+        return $this->hasOne(UserAccount::class)->where('is_default', 1);
+    }
+
     public function fdr()
     {
         return $this->hasMany(UserFdr::class);

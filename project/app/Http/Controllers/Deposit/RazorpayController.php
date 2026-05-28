@@ -9,6 +9,8 @@ use App\Models\Deposit;
 use App\Models\Generalsetting;
 use App\Models\PaymentGateway;
 use App\Models\Transaction;
+use App\Models\UserAccount;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -28,17 +30,22 @@ class RazorpayController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(Request $request, WalletService $wallet)
     {
         if($request->currency_code != "INR")
         {
             return redirect()->back()->with('warning','Please Select INR Currency For Rezorpay.');
         }
         
+        $account = $wallet->activeAccount(auth()->user());
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->back()->with('warning', $message);
+        }
+
         $settings = Generalsetting::findOrFail(1);
         $deposit = new Deposit();
         
-        $input = $request->all();
+        $input = $request->all() + ['account_id' => $account->id];
         $item_name = $settings->title." Deposit";
         $item_number = Str::random(12);
         $item_amount = $request->amount;
@@ -150,6 +157,7 @@ class RazorpayController extends Controller
             $deposit = new Deposit();
             $deposit['deposit_number'] = $order_data['item_number'];
             $deposit['user_id'] = auth()->user()->id;
+            $deposit['account_id'] = $input['account_id'] ?? null;
             $deposit['currency_id'] = $request->currency_id;
             $deposit['amount'] = $amountToAdd;
             $deposit['method'] = $input['method'];
@@ -162,17 +170,10 @@ class RazorpayController extends Controller
             $gs =  Generalsetting::findOrFail(1);
 
             $user = auth()->user();
-            $user->balance += $amountToAdd;
-            $user->save();
-
-            $trans = new Transaction();
-            $trans->email = $user->email;
-            $trans->amount = $amountToAdd;
-            $trans->type = "Deposit";
-            $trans->profit = "plus";
-            $trans->txnid = $deposit->deposit_number;
-            $trans->user_id = $user->id;
-            $trans->save();
+            $wallet = app(WalletService::class);
+            $account = UserAccount::where('user_id', $user->id)->where('id', $deposit->account_id)->first() ?: $wallet->defaultAccount($user);
+            $wallet->credit($account, $amountToAdd);
+            $wallet->log($user, $account, $amountToAdd, "Deposit", "plus", $deposit->deposit_number);
 
             if($gs->is_smtp == 1)
             {

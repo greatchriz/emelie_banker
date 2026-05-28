@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Models\User;
+use App\Models\UserAccount;
 use App\Models\UserFdr;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Datatables;
 use Illuminate\Support\Carbon;
@@ -129,7 +131,7 @@ class FdrController extends Controller
     public function getPartialProfit($id){
         $fdr = UserFdr::findOrFail($id);
         if($fdr){
-            $this->getUserProfit($fdr->user_id,$fdr->profit_amount);
+            $this->getUserProfit($fdr->user_id,$fdr->profit_amount,$fdr->account_id);
 
             $fdr->next_profit_time = Carbon::now()->addDays($fdr->plan->interest_interval);
             $fdr->update();
@@ -140,31 +142,35 @@ class FdrController extends Controller
         $fdr = UserFdr::findOrFail($data->id);
 
         if($fdr){
-            $this->getUserProfit($fdr->user_id,$fdr->profit_amount);
-            $this->getMainAmount($fdr->user_id,$fdr->amount);
+            $this->getUserProfit($fdr->user_id,$fdr->profit_amount,$fdr->account_id);
+            $this->getMainAmount($fdr->user_id,$fdr->amount,$fdr->account_id);
 
             $fdr->status = 2;
             $fdr->update();
         }
     }
 
-    public function getUserProfit($userId,$profitAmount){
+    public function getUserProfit($userId,$profitAmount,$accountId = null){
         $user = User::whereId($userId)->first();
-        $user->balance += $profitAmount;
-        $user->update();
+        if($user){
+          $account = ($accountId ? UserAccount::where('user_id',$userId)->where('id',$accountId)->first() : null) ?: app(WalletService::class)->defaultAccount($user);
+          app(WalletService::class)->credit($account,$profitAmount);
+        }
     }
 
     public function closedFdr($id){
         $fdr = UserFdr::findOrFail($id);
-        $this->getMainAmount($fdr->user_id,$fdr->amount);
+        $this->getMainAmount($fdr->user_id,$fdr->amount,$fdr->account_id);
         $fdr->next_profit_time = NULL;
         $fdr->status = 2;
         $fdr->update();
     }
 
-    public function getMainAmount($userId,$amount){
+    public function getMainAmount($userId,$amount,$accountId = null){
         $user = User::whereId($userId)->first();
-        $user->balance += $amount;
-        $user->update();
+        if($user){
+          $account = ($accountId ? UserAccount::where('user_id',$userId)->where('id',$accountId)->first() : null) ?: app(WalletService::class)->defaultAccount($user);
+          app(WalletService::class)->credit($account,$amount);
+        }
     }
 }

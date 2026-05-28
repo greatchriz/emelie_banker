@@ -15,9 +15,15 @@ class Deposit extends Model
         'method',
         'charge_id',
         'status',
+        'account_id',
     ];
 
     public function user(){
         return $this->belongsTo(User::class)->withDefault();
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(UserAccount::class, 'account_id')->withDefault();
     }
 }

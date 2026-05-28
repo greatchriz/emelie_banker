@@ -11,6 +11,7 @@ class UserLoan extends Model
     protected $fillable = [
         'transaction_no',
         'user_id',
+        'account_id',
         'plan_id',
         'loan_amount',
         'per_installment_amount',
@@ -31,5 +32,10 @@ class UserLoan extends Model
 
     public function user(){
         return $this->belongsTo(User::class)->withDefault();
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(UserAccount::class, 'account_id')->withDefault();
     }
 }

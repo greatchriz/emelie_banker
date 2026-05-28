@@ -12,6 +12,7 @@ use App\Models\Notification;
 use App\Models\ReferralBonus;
 use App\Models\Transaction;
 use App\Models\UserSubscription;
+use App\Services\WalletService;
 use Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Input;
@@ -62,6 +63,8 @@ class RegisterController extends Controller
         $input['verification_link'] = $token;
         $input['affilate_code'] = md5($request->name.$request->email);
         $user->fill($input)->save();
+        $wallet = app(WalletService::class);
+        $wallet->createDefaultAccount($user);
 
         if($gs->is_verification_email == 1)
         {
@@ -119,11 +122,11 @@ class RegisterController extends Controller
                 if(Session::has('affilate')){
 
                     $mainUser = User::findOrFail(Session::get('affilate'));
-                    $mainUser->balance += $gs->affilate_user;
-                    $mainUser->update();
+                    $mainAccount = $wallet->defaultAccount($mainUser);
+                    $wallet->credit($mainAccount, $gs->affilate_user);
 
-                    $user->balance += $gs->affilate_new_user;
-                    $user->update();
+                    $userAccount = $wallet->defaultAccount($user);
+                    $wallet->credit($userAccount, $gs->affilate_new_user);
 
                     $bonus = new ReferralBonus();
                     $bonus->from_user_id = $user->id;
@@ -139,15 +142,17 @@ class RegisterController extends Controller
                     $mainUserTrans->profit = "plus";
                     $mainUserTrans->txnid = Str::random(12);
                     $mainUserTrans->user_id =$mainUser->id;
+                    $mainUserTrans->account_id = $mainAccount?->id;
                     $mainUserTrans->save();
 
                     $newUserTrans = new Transaction();
                     $newUserTrans->email = $user->email;
-                    $newUserTrans->amount = $gs->affilate_user;
+                    $newUserTrans->amount = $gs->affilate_new_user;
                     $newUserTrans->type = "Referral Bonus";
                     $newUserTrans->profit = "plus";
                     $newUserTrans->txnid = Str::random(12);
                     $newUserTrans->user_id =$user->id;
+                    $newUserTrans->account_id = $userAccount?->id;
                     $newUserTrans->save();
                 }
             }

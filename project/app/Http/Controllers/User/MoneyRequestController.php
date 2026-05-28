@@ -9,6 +9,8 @@ use App\Models\Generalsetting;
 use App\Models\MoneyRequest;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\UserAccount;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -19,13 +21,23 @@ class MoneyRequestController extends Controller
         $this->middleware('auth');
     }
     
-    public function index(){
-        $data['requests'] = MoneyRequest::orderby('id','desc')->whereUserId(auth()->id())->paginate(10);
+    public function index(WalletService $wallet){
+        $account = $wallet->activeAccount(auth()->user());
+        $data['requests'] = MoneyRequest::orderby('id','desc')
+            ->whereUserId(auth()->id())
+            ->when($account, fn ($query) => $query->where('account_id', $account->id))
+            ->when(!$account, fn ($query) => $query->whereRaw('1 = 0'))
+            ->paginate(10);
         return view('user.requestmoney.index',$data);
     }
 
-    public function receive(){
-        $data['requests'] = MoneyRequest::orderby('id','desc')->whereReceiverId(auth()->id())->paginate(10);
+    public function receive(WalletService $wallet){
+        $account = $wallet->activeAccount(auth()->user());
+        $data['requests'] = MoneyRequest::orderby('id','desc')
+            ->whereReceiverId(auth()->id())
+            ->when($account, fn ($query) => $query->where('receiver_account_id', $account->id))
+            ->when(!$account, fn ($query) => $query->whereRaw('1 = 0'))
+            ->paginate(10);
         return view('user.requestmoney.receive',$data);
     }
 
@@ -33,34 +45,35 @@ class MoneyRequestController extends Controller
         return view('user.requestmoney.create');
     }
 
-    public function store(Request $request){
+    public function store(Request $request, WalletService $wallet){
         $request->validate([
             'account_name' => 'required',
             'amount' => 'required|gt:0',
         ]);
 
-        $user = auth()->user();
+        $requester = auth()->user();
+        $requesterAccount = $wallet->activeAccount($requester);
 
-        if($user->bank_plan_id === null){
-            return redirect()->back()->with('unsuccess','You have to buy a plan to withdraw.');
+        if(!$requesterAccount){
+            return redirect()->back()->with('unsuccess','No active account available.');
         }
 
-        if(now()->gt($user->plan_end_date)){
-            return redirect()->back()->with('unsuccess','Plan Date Expired.');
+        if(!$wallet->hasValidPlan($requesterAccount)){
+            return redirect()->back()->with('unsuccess','Your selected account has no active plan.');
         }
 
-        $bank_plan = BankPlan::whereId($user->bank_plan_id)->first();
-        $dailyRequests = MoneyRequest::whereUserId(auth()->id())->whereDate('created_at', '=', date('Y-m-d'))->whereStatus('success')->sum('amount');
-        $monthlyRequests = MoneyRequest::whereUserId(auth()->id())->whereMonth('created_at', '=', date('m'))->whereStatus('success')->sum('amount');
+        $bank_plan = $wallet->bankPlan($requesterAccount);
+        $dailyRequests = MoneyRequest::whereUserId(auth()->id())->where('account_id', $requesterAccount->id)->whereDate('created_at', '=', date('Y-m-d'))->whereStatus(1)->sum('amount');
+        $monthlyRequests = MoneyRequest::whereUserId(auth()->id())->where('account_id', $requesterAccount->id)->whereMonth('created_at', '=', date('m'))->whereStatus(1)->sum('amount');
 
         $gs = Generalsetting::first();
 
-        if($request->account_number == $user->account_number){
+        if($request->account_number == $requesterAccount->account_number){
             return redirect()->back()->with('unsuccess','You can not send money yourself!');
         }
 
-        $user = User::where('account_number',$request->account_number)->first();
-        if($user === null){
+        $receiverAccount = UserAccount::where('account_number', $request->account_number)->active()->first();
+        if($receiverAccount === null){
             return redirect()->back()->with('unsuccess','No register user with this email!');
         }
 
@@ -76,13 +89,15 @@ class MoneyRequestController extends Controller
         $finalAmount = $request->amount + $cost;
 
 
-        $receiver = User::where('account_number',$request->account_number)->first();
+        $receiver = $receiverAccount->user;
 
         $txnid = Str::random(4).time();
 
         $data = new MoneyRequest();
         $data->user_id = auth()->user()->id;
         $data->receiver_id = $receiver->id;
+        $data->account_id = $requesterAccount->id;
+        $data->receiver_account_id = $receiverAccount->id;
         $data->receiver_name = $receiver->name;
         $data->transaction_no = $txnid;
         $data->cost = $cost;
@@ -92,34 +107,48 @@ class MoneyRequestController extends Controller
         $data->save();
 
         $trans = new Transaction();
-        $trans->email = $user->email;
+        $trans->email = $receiver->email;
         $trans->amount = $finalAmount;
         $trans->type = "Request Money";
         $trans->profit = "plus";
         $trans->txnid = $txnid;
-        $trans->user_id = $user->id;
+        $trans->user_id = $receiver->id;
+        $trans->account_id = $receiverAccount->id;
         $trans->save();
 
         return redirect()->back()->with('success','Request Money Send Successfully.');
         
     }
 
-    public function send($id){
+    public function send($id, WalletService $wallet){
         $data = MoneyRequest::findOrFail($id);
         $gs = Generalsetting::first();
     
         $sender = User::whereId($data->receiver_id)->first();
         $receiver = User::whereId($data->user_id)->first();
+        $senderAccount = $data->receiver_account_id
+            ? UserAccount::where('id', $data->receiver_account_id)->where('user_id', auth()->id())->first()
+            : $wallet->activeAccount(auth()->user());
+        $receiverAccount = $data->account_id
+            ? UserAccount::where('id', $data->account_id)->where('user_id', $receiver->id)->first()
+            : $wallet->defaultAccount($receiver);
 
+        if(!$senderAccount || !$senderAccount->isActive()){
+            return back()->with('warning','The requested source account is not active.');
+        }
 
-        if($data->amount > $sender->balance){
+        if(!$receiverAccount || !$receiverAccount->isActive()){
+            return back()->with('warning','The receiver account is not active.');
+        }
+
+        if($data->amount > $senderAccount->balance){
             return back()->with('warning','You don,t have sufficient balance!');
         }
 
         $finalAmount = $data->amount - $data->cost;
 
-        $sender->decrement('balance',$data->amount);
-        $receiver->increment('balance',$finalAmount);
+        $wallet->debit($senderAccount, $data->amount);
+        $wallet->credit($receiverAccount, $finalAmount);
 
         $data->update(['status'=>1]);
 
@@ -130,6 +159,7 @@ class MoneyRequestController extends Controller
         $trans->profit = "minus";
         $trans->txnid = $data->transaction_no;
         $trans->user_id = auth()->id();
+        $trans->account_id = $senderAccount->id;
         $trans->save();
 
         $trans = new Transaction();
@@ -139,6 +169,7 @@ class MoneyRequestController extends Controller
         $trans->profit = "plus";
         $trans->txnid = $data->transaction_no;
         $trans->user_id = $receiver->id;
+        $trans->account_id = $receiverAccount->id;
         $trans->save();
 
         if($gs->is_smtp == 1)

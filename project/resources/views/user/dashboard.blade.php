@@ -6,11 +6,23 @@
       <h3>{{ __('Dashboard') }}</h3>
       <p class="mt-1 text-sm text-n100">{{ __('Welcome back') }}, {{ $user->name }}</p>
     </div>
-    <a href="{{ route('user.deposit.create') }}" class="btn-primary">
+    <a href="{{ route('user.deposit.create') }}" class="btn-primary {{ !$activeAccount ? 'pointer-events-none opacity-50' : '' }}">
       <i class="las la-plus-circle text-base md:text-lg"></i>
       {{ __('Add Balance') }}
     </a>
   </div>
+
+  @if(!$activeAccount)
+    <div class="kyc-alert box mb-4">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h5 class="h5">{{ __('No Active Account Available') }}</h5>
+          <p class="text-sm text-n700">{{ __('You can view your dashboard, but transactions are disabled until an account is active.') }}</p>
+        </div>
+        <a href="{{ route('user.accounts.create') }}" class="btn-primary">{{ __('Request Account') }}</a>
+      </div>
+    </div>
+  @endif
 
   @if (auth()->user()->kyc_status != 1)
     <div class="kyc-alert box mb-4">
@@ -34,14 +46,29 @@
       <div class="bb-dashed mb-5 flex flex-wrap items-center justify-between gap-3 pb-4">
         <div>
           <span class="text-sm text-n100">{{ __('Available Balance') }}</span>
-          <h2 class="mt-2 text-3xl font-semibold">{{ showprice($user->balance,$currency) }}</h2>
+          <h2 class="mt-2 text-3xl font-semibold">{{ showprice($activeAccount->balance ?? 0,$currency) }}</h2>
         </div>
         <span class="account-number-copy flex items-center gap-2 rounded-xl bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
-          <span>{{ __('Account') }}: <span id="accountNumberText">{{ $user->account_number }}</span></span>
+          <span>{{ __('Account') }}: <span id="accountNumberText">{{ $activeAccount->account_number ?? __('None') }}</span></span>
           <button class="account-copy-btn" type="button" onclick="copyAccountNumber()" aria-label="{{ __('Copy account number') }}">
             <i class="las la-copy"></i>
           </button>
         </span>
+      </div>
+      <div class="mb-4 flex flex-wrap items-center gap-2">
+        <span class="text-sm text-n700">{{ __('Active Account') }}:</span>
+        @foreach($accounts as $account)
+          @if($account->status == 'active')
+            <a href="{{ route('user.accounts.switch', $account->id) }}" class="rounded-full border border-n30 px-3 py-1 text-sm {{ optional($activeAccount)->id == $account->id ? 'bg-primary text-white' : 'bg-secondary/5' }}">
+              {{ $account->label ?: $account->account_number }}
+            </a>
+          @else
+            <span class="rounded-full border border-n30 bg-secondary/5 px-3 py-1 text-sm text-n700">
+              {{ $account->label ?: $account->account_number }} - {{ ucfirst($account->status) }}
+            </span>
+          @endif
+        @endforeach
+        <a href="{{ route('user.accounts.index') }}" class="text-sm text-primary">{{ __('Manage Accounts') }}</a>
       </div>
       <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
         <a href="{{ route('send.money.create') }}" class="flex flex-col items-center gap-3 rounded-xl border border-n30 bg-primary/5 p-4 text-center duration-300 hover:border-primary hover:bg-primary/10">
@@ -91,7 +118,7 @@
       </div>
       <div class="flex items-center justify-between">
         <div>
-          <h4 class="h4 mb-4">{{ count($user->deposits) }}</h4>
+          <h4 class="h4 mb-4">{{ $activeAccount ? $activeAccount->deposits()->count() : 0 }}</h4>
           <a href="{{ route('user.deposit.index') }}" class="flex items-center gap-1 whitespace-nowrap text-primary">{{ __('View Deposits') }} <i class="las la-arrow-right text-lg"></i></a>
         </div>
         <div class="-my-3 shrink-0 ltr:translate-x-3 xl:ltr:translate-x-7 3xl:ltr:translate-x-2 4xl:ltr:translate-x-9 rtl:-translate-x-3 xl:rtl:-translate-x-7 3xl:rtl:-translate-x-2 4xl:rtl:-translate-x-9">
@@ -107,7 +134,7 @@
       </div>
       <div class="flex items-center justify-between">
         <div>
-          <h4 class="h4 mb-4">{{ count($user->withdraws) }}</h4>
+          <h4 class="h4 mb-4">{{ $activeAccount ? $activeAccount->withdraws()->count() : 0 }}</h4>
           <a href="{{ route('user.withdraw.index') }}" class="flex items-center gap-1 whitespace-nowrap text-primary">{{ __('View Withdraws') }} <i class="las la-arrow-right text-lg"></i></a>
         </div>
         <div class="-my-3 shrink-0 ltr:translate-x-3 xl:ltr:translate-x-7 3xl:ltr:translate-x-2 4xl:ltr:translate-x-9 rtl:-translate-x-3 xl:rtl:-translate-x-7 3xl:rtl:-translate-x-2 4xl:rtl:-translate-x-9">
@@ -123,7 +150,7 @@
       </div>
       <div class="flex items-center justify-between">
         <div>
-          <h4 class="h4 mb-4">{{ count($user->transactions) }}</h4>
+          <h4 class="h4 mb-4">{{ $activeAccount ? $activeAccount->transactions()->count() : 0 }}</h4>
           <a href="{{ route('user.transaction') }}" class="flex items-center gap-1 whitespace-nowrap text-primary">{{ __('View Transactions') }} <i class="las la-arrow-right text-lg"></i></a>
         </div>
         <div class="-my-3 shrink-0 ltr:translate-x-3 xl:ltr:translate-x-7 3xl:ltr:translate-x-2 4xl:ltr:translate-x-9 rtl:-translate-x-3 xl:rtl:-translate-x-7 3xl:rtl:-translate-x-2 4xl:rtl:-translate-x-9">
@@ -139,15 +166,15 @@
       </div>
       <div class="grid grid-cols-3 gap-2 text-center">
         <div class="rounded-xl bg-primary/5 p-3">
-          <h5 class="h5">{{ count($user->loans) }}</h5>
+          <h5 class="h5">{{ $activeAccount ? $user->loans()->where('account_id', $activeAccount->id)->count() : 0 }}</h5>
           <span class="text-xs text-n700">{{ __('Loan') }}</span>
         </div>
         <div class="rounded-xl bg-[#20B757]/5 p-3">
-          <h5 class="h5">{{ count($user->dps) }}</h5>
+          <h5 class="h5">{{ $activeAccount ? $user->dps()->where('account_id', $activeAccount->id)->count() : 0 }}</h5>
           <span class="text-xs text-n700">{{ __('DPS') }}</span>
         </div>
         <div class="rounded-xl bg-[#FFC861]/5 p-3">
-          <h5 class="h5">{{ count($user->fdr) }}</h5>
+          <h5 class="h5">{{ $activeAccount ? $user->fdr()->where('account_id', $activeAccount->id)->count() : 0 }}</h5>
           <span class="text-xs text-n700">{{ __('FDR') }}</span>
         </div>
       </div>

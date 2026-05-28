@@ -14,12 +14,18 @@ use App\Classes\Instamojo;
 use App\Models\Currency;
 use App\Models\Deposit;
 use App\Models\Transaction;
+use App\Models\UserAccount;
+use App\Services\WalletService;
 
 class InstamojoController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request, WalletService $wallet)
     {
-        $input = $request->all();
+        $account = $wallet->activeAccount(auth()->user());
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->back()->with('warning', $message);
+        }
+        $input = $request->all() + ['account_id' => $account->id];
         $data = PaymentGateway::whereKeyword('instamojo')->first();
         $gs = Generalsetting::first();
         $total =  $request->amount;
@@ -90,6 +96,7 @@ class InstamojoController extends Controller
 
             $deposit['deposit_number'] = $order_data['item_number'];
             $deposit['user_id'] = auth()->user()->id;
+            $deposit['account_id'] = $input['account_id'] ?? null;
             $deposit['currency_id'] = $input['currency_id'];
             $deposit['amount'] = $amountToAdd;
             $deposit['method'] = $input['method'];
@@ -102,17 +109,10 @@ class InstamojoController extends Controller
             $gs =  Generalsetting::findOrFail(1);
 
             $user = auth()->user();
-            $user->balance += $amountToAdd;
-            $user->save();
-
-            $trans = new Transaction();
-            $trans->email = $user->email;
-            $trans->amount = $amountToAdd;
-            $trans->type = "Deposit";
-            $trans->profit = "plus";
-            $trans->txnid = $order_data['item_number'];
-            $trans->user_id = $user->id;
-            $trans->save();
+            $wallet = app(WalletService::class);
+            $account = UserAccount::where('user_id', $user->id)->where('id', $deposit->account_id)->first() ?: $wallet->defaultAccount($user);
+            $wallet->credit($account, $amountToAdd);
+            $wallet->log($user, $account, $amountToAdd, "Deposit", "plus", $order_data['item_number']);
 
 
             if($gs->is_smtp == 1)

@@ -12,6 +12,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Withdraw;
 use App\Models\WithdrawMethod;
+use App\Services\WalletService;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Str;
 use Validator;
@@ -23,9 +24,17 @@ class WithdrawController extends Controller
         $this->middleware('auth:web');
     }
 
-  	public function index()
+    public function index(WalletService $wallet)
     {
-        $withdraws = Withdraw::whereUserId(auth()->id())->orderBy('id','desc')->paginate(10);     
+        $account = $wallet->activeAccount();
+        $withdraws = Withdraw::whereUserId(auth()->id())
+            ->when($account, function ($query) use ($account) {
+                $query->where('account_id', $account->id);
+            }, function ($query) {
+                $query->whereRaw('1 = 0');
+            })
+            ->orderBy('id','desc')
+            ->paginate(10);
         return view('user.withdraw.index',compact('withdraws'));
     }
 
@@ -37,25 +46,25 @@ class WithdrawController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(Request $request, WalletService $wallet)
     {
         $request->validate([
             'amount' => 'required|gt:0',
         ]);
 
         $user = auth()->user();
-
-        if($user->bank_plan_id === null){
-            return redirect()->back()->with('unsuccess','You have to buy a plan to withdraw.');
+        $account = $wallet->activeAccount($user);
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->back()->with('unsuccess', $message);
         }
 
-        if(now()->gt($user->plan_end_date)){
-            return redirect()->back()->with('unsuccess','Plan Date Expired.');
+        if($message = $wallet->hasValidPlan($account)){
+            return redirect()->back()->with('unsuccess',$message);
         }
 
-        $bank_plan = BankPlan::whereId($user->bank_plan_id)->first();
-        $dailyWithdraws = Withdraw::whereDate('created_at', '=', date('Y-m-d'))->whereStatus('completed')->sum('amount');
-        $monthlyWithdraws = Withdraw::whereMonth('created_at', '=', date('m'))->whereStatus('completed')->sum('amount');
+        $bank_plan = $wallet->bankPlan($account);
+        $dailyWithdraws = Withdraw::where('account_id',$account->id)->whereDate('created_at', '=', date('Y-m-d'))->whereStatus('completed')->sum('amount');
+        $monthlyWithdraws = Withdraw::where('account_id',$account->id)->whereMonth('created_at', '=', date('m'))->whereStatus('completed')->sum('amount');
 
         if($dailyWithdraws > $bank_plan->daily_withdraw){
             return redirect()->back()->with('unsuccess','Daily withdraw limit over.');
@@ -65,7 +74,7 @@ class WithdrawController extends Controller
             return redirect()->back()->with('unsuccess','Monthly withdraw limit over.');
         }
         
-        if($request->amount > $user->balance){
+        if($request->amount > $account->balance){
             return redirect()->back()->with('unsuccess','Insufficient Account Balance.');
         }
 
@@ -86,18 +95,18 @@ class WithdrawController extends Controller
             return redirect()->back()->with('unsuccess','Request Amount should be greater than this '.$amountToAdd.' (USD)');
         }
 
-        if($finalamount > $user->balance){
+        if($finalamount > $account->balance){
             return redirect()->back()->with('unsuccess','Insufficient Balance.');
         }
 
         $finalamount = number_format((float)$finalamount,2,'.','');
 
-        $user->balance = $user->balance - $amount;
-        $user->update();
+        $wallet->debit($account, $amount);
 
         $txnid = Str::random(12);
         $newwithdraw = new Withdraw();
         $newwithdraw['user_id'] = auth()->id();
+        $newwithdraw['account_id'] = $account->id;
         $newwithdraw['method'] = $request->methods;
         $newwithdraw['txnid'] = $txnid;
 
@@ -108,14 +117,7 @@ class WithdrawController extends Controller
 
         $total_amount = $newwithdraw->amount + $newwithdraw->fee;
 
-        $trans = new Transaction();
-        $trans->email = $user->email;
-        $trans->amount = $finalamount;
-        $trans->type = "Payout";
-        $trans->profit = "minus";
-        $trans->txnid = $txnid;
-        $trans->user_id = $user->id;
-        $trans->save();
+        $wallet->log($user, $account, $finalamount, "Payout", "minus", $txnid);
 
         return redirect()->back()->with('success','Withdraw Request Amount : '.$request->amount.' Fee : '.$messagefee.' = '.$messagefinal.' ('.$currency->name.') Sent Successfully.');
 

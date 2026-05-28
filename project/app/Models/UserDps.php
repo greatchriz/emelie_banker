@@ -11,6 +11,7 @@ class UserDps extends Model
     protected $fillable = [
         'transaction_no',
         'user_id',
+        'account_id',
         'dps_plan_id',
         'per_installment',
         'installment_interval',
@@ -33,5 +34,10 @@ class UserDps extends Model
 
     public function user(){
         return $this->belongsTo(User::class)->withDefault();
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(UserAccount::class, 'account_id')->withDefault();
     }
 }

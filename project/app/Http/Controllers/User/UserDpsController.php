@@ -8,6 +8,7 @@ use App\Models\DpsPlan;
 use App\Models\InstallmentLog;
 use App\Models\Transaction;
 use App\Models\UserDps;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -19,18 +20,33 @@ class UserDpsController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(){
-        $data['dps'] = UserDps::whereUserId(auth()->id())->orderby('id','desc')->paginate(10);
+    public function index(WalletService $wallet){
+        $account = $wallet->activeAccount();
+        $data['dps'] = UserDps::whereUserId(auth()->id())->when($account, function ($query) use ($account) {
+            $query->where('account_id', $account->id);
+        }, function ($query) {
+            $query->whereRaw('1 = 0');
+        })->orderby('id','desc')->paginate(10);
         return view('user.dps.index',$data);
     }
 
-    public function running(){
-        $data['dps'] = UserDps::whereStatus(1)->whereUserId(auth()->id())->orderby('id','desc')->paginate(10);
+    public function running(WalletService $wallet){
+        $account = $wallet->activeAccount();
+        $data['dps'] = UserDps::whereStatus(1)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
+            $query->where('account_id', $account->id);
+        }, function ($query) {
+            $query->whereRaw('1 = 0');
+        })->orderby('id','desc')->paginate(10);
         return view('user.dps.running',$data);
     }
 
-    public function matured(){
-        $data['dps'] = UserDps::whereStatus(2)->whereUserId(auth()->id())->orderby('id','desc')->paginate(10);
+    public function matured(WalletService $wallet){
+        $account = $wallet->activeAccount();
+        $data['dps'] = UserDps::whereStatus(2)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
+            $query->where('account_id', $account->id);
+        }, function ($query) {
+            $query->whereRaw('1 = 0');
+        })->orderby('id','desc')->paginate(10);
         return view('user.dps.matured',$data);
     }
 
@@ -44,14 +60,19 @@ class UserDpsController extends Controller
         return view('user.dps.apply',$data);
     }
 
-    public function dpsSubmit(Request $request){
+    public function dpsSubmit(Request $request, WalletService $wallet){
         $user = auth()->user();
-        if($user->balance >= $request->per_installment){
+        $account = $wallet->activeAccount($user);
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->back()->with('warning', $message);
+        }
+        if($account->balance >= $request->per_installment){
             $data = new UserDps();
 
             $plan = DpsPlan::findOrFail($request->dps_plan_id);
             $data->transaction_no = Str::random(4).time();
             $data->user_id = auth()->id();
+            $data->account_id = $account->id;
             $data->dps_plan_id = $plan->id;
             $data->per_installment = $plan->per_installment;
             $data->installment_interval = $plan->installment_interval;
@@ -65,7 +86,7 @@ class UserDpsController extends Controller
             $data->next_installment = Carbon::now()->addDays($plan->installment_interval);
             $data->save();
 
-            $user->decrement('balance',$request->per_installment);
+            $wallet->debit($account,$request->per_installment);
 
             $log = new InstallmentLog();
             $log->user_id = auth()->id();
@@ -74,14 +95,7 @@ class UserDpsController extends Controller
             $log->amount = $request->per_installment;
             $log->save();
 
-            $trans = new Transaction();
-            $trans->email = auth()->user()->email;
-            $trans->amount = $request->per_installment;
-            $trans->type = "Dps";
-            $trans->profit = "minus";
-            $trans->txnid = $data->transaction_no;
-            $trans->user_id = auth()->id();
-            $trans->save();
+            $wallet->log($user, $account, $request->per_installment, "Dps", "minus", $data->transaction_no);
             
             return redirect()->route('user.dps.index')->with('success','DPS application submitted');
         }else{

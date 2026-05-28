@@ -7,12 +7,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Models\Deposit;
 use App\Models\Generalsetting;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class ManualController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request, WalletService $wallet){
+
+        $account = $wallet->activeAccount(auth()->user());
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->back()->with('unsuccess', $message);
+        }
 
         $currency = Currency::where('id',$request->currency_id)->first();
         $amountToAdd = $request->amount/$currency->value;
@@ -20,6 +26,7 @@ class ManualController extends Controller
         $deposit = new Deposit();
         $deposit['deposit_number'] = Str::random(12);
         $deposit['user_id'] = auth()->id();
+        $deposit['account_id'] = $account->id;
         $deposit['currency_id'] = $request->currency_id;
         $deposit['amount'] = $amountToAdd;
         $deposit['method'] = $request->method;

@@ -84,6 +84,15 @@
                 <input type="hidden" name="user_id" value="{{ $data->id }}">
 
                 <div class="form-group">
+                  <label>@lang('Account')</label>
+                  <select class="form-control" name="account_id">
+                    @foreach($accounts as $account)
+                      <option value="{{ $account->id }}">{{ $account->account_number }} - {{ $account->label }} ({{ ucfirst($account->status) }})</option>
+                    @endforeach
+                  </select>
+                </div>
+
+                <div class="form-group">
                   <label for="exampleFormControlSelect1">@lang('Select Method')</label>
                   <select class="form-control" name="type" id="exampleFormControlSelect1" required>
                     <option value="add">@lang('add amount')</option>
@@ -98,6 +107,59 @@
 	</div>
   </div>
 
+</div>
+
+<div class="row mb-3">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">{{ __('User Accounts') }}</h5>
+        <a href="{{ route('admin.user.accounts.create') }}" class="btn btn-primary btn-sm">{{ __('Create Account') }}</a>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>{{ __('Account') }}</th>
+                <th>{{ __('Balance') }}</th>
+                <th>{{ __('Plan') }}</th>
+                <th>{{ __('Status') }}</th>
+                <th>{{ __('Action') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @forelse($accounts as $account)
+                <tr>
+                  <td>
+                    {{ $account->account_number }}
+                    @if($account->is_default)
+                      <span class="badge badge-info">{{ __('Default') }}</span>
+                    @endif
+                    <br><small>{{ $account->label }}</small>
+                  </td>
+                  <td>{{ $account->balance }}</td>
+                  <td>{{ $account->plan->title ?? __('No Plan') }}</td>
+                  <td><span class="badge badge-{{ $account->status == 'active' ? 'success' : ($account->status == 'pending' ? 'warning' : 'danger') }}">{{ ucfirst($account->status) }}</span></td>
+                  <td>
+                    <a href="{{ route('admin.user.accounts.edit', $account->id) }}" class="btn btn-primary btn-sm">{{ __('Edit') }}</a>
+                    @if($account->status != 'active')
+                      <a href="{{ route('admin.user.accounts.status', [$account->id, 'active']) }}" class="btn btn-success btn-sm">{{ __('Enable') }}</a>
+                    @endif
+                    @if($account->status != 'disabled')
+                      <a href="{{ route('admin.user.accounts.status', [$account->id, 'disabled']) }}" class="btn btn-warning btn-sm">{{ __('Disable') }}</a>
+                    @endif
+                  </td>
+                </tr>
+              @empty
+                <tr><td colspan="5" class="text-center">{{ __('No accounts found.') }}</td></tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="row mb-3">
@@ -268,6 +330,5 @@ aria-labelledby="deleteModalTitle" aria-hidden="true">
 {{-- DELETE MODAL ENDS --}}
 
 @endsection
-
 
 

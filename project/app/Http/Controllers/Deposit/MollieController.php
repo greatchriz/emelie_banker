@@ -10,6 +10,8 @@ use App\Models\Generalsetting;
 use Illuminate\Http\Request;
 use App\Models\Deposit;
 use App\Models\Transaction;
+use App\Models\UserAccount;
+use App\Services\WalletService;
 use Carbon\Carbon;
 use Session;
 use Auth;
@@ -17,7 +19,7 @@ use Str;
 
 class MollieController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request, WalletService $wallet){
         $support = [
             'AED',
             'AUD',
@@ -54,7 +56,11 @@ class MollieController extends Controller
             return redirect()->back()->with('warning','Please Select USD Or EUR Currency For Paypal.');
         }
 
-        $input = $request->all();
+        $account = $wallet->activeAccount(auth()->user());
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->back()->with('warning', $message);
+        }
+        $input = $request->all() + ['account_id' => $account->id];
         $item_amount = $request->amount;
 
         $item_name = "Deposit via Molly Payment";
@@ -90,6 +96,7 @@ class MollieController extends Controller
             $deposit = new Deposit();
             $deposit['deposit_number'] = Str::random(12);
             $deposit['user_id'] = auth()->id();
+            $deposit['account_id'] = $input['account_id'] ?? null;
             $deposit['currency_id'] = $input['currency_id'];
             $deposit['amount'] = $amountToAdd;
             $deposit['method'] = $input['method'];
@@ -98,17 +105,10 @@ class MollieController extends Controller
             $deposit->save();
 
             $user = auth()->user();
-            $user->balance += $amountToAdd;
-            $user->save();
-
-            $trans = new Transaction();
-            $trans->email = $user->email;
-            $trans->amount = $amountToAdd;
-            $trans->type = "Deposit";
-            $trans->profit = "plus";
-            $trans->txnid = $deposit->deposit_number;
-            $trans->user_id = $user->id;
-            $trans->save();
+            $wallet = app(WalletService::class);
+            $account = UserAccount::where('user_id', $user->id)->where('id', $deposit->account_id)->first() ?: $wallet->defaultAccount($user);
+            $wallet->credit($account, $amountToAdd);
+            $wallet->log($user, $account, $amountToAdd, "Deposit", "plus", $deposit->deposit_number);
 
 
             $gs =  Generalsetting::findOrFail(1);

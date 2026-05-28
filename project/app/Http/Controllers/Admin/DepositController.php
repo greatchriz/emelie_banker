@@ -9,6 +9,8 @@ use App\Models\Deposit;
 use App\Models\Generalsetting;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\UserAccount;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Datatables;
 
@@ -71,8 +73,9 @@ class DepositController extends Controller
         }
   
         $user = User::findOrFail($data->user_id);
-        $user->balance += $data->amount;
-        $user->save();
+        $wallet = app(WalletService::class);
+        $account = UserAccount::where('user_id', $user->id)->where('id', $data->account_id)->first() ?: $wallet->defaultAccount($user);
+        $wallet->credit($account, $data->amount);
 
         $trans = new Transaction();
         $trans->email = $user->email;
@@ -81,6 +84,7 @@ class DepositController extends Controller
         $trans->profit = "plus";
         $trans->txnid = $data->deposit_number;
         $trans->user_id = $user->id;
+        $trans->account_id = $account->id;
         $trans->save();
 
         $data->update(['status' => 'complete']);
@@ -113,4 +117,3 @@ class DepositController extends Controller
         return response()->json($msg);
       }
 }
-

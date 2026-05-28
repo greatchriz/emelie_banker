@@ -17,4 +17,9 @@ class WireTransfer extends Model
     public function user(){
         return $this->belongsTo(User::class)->withDefault();
     }
+
+    public function account()
+    {
+        return $this->belongsTo(UserAccount::class, 'account_id')->withDefault();
+    }
 }

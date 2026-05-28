@@ -11,12 +11,18 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Services\WalletService;
 use net\authorize\api\contract\v1 as AnetAPI;
 use net\authorize\api\controller as AnetController;
 
 class AuthorizeController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request, WalletService $wallet){
+        $account = $wallet->activeAccount(auth()->user());
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->back()->with('unsuccess', $message);
+        }
+
         $settings = Generalsetting::find(1);
         
         $authorizeinfo    = PaymentGateway::whereKeyword('authorize.net')->first();
@@ -84,6 +90,7 @@ class AuthorizeController extends Controller
                         $deposit = new Deposit();
                         $deposit['deposit_number'] = Str::random(12);
                         $deposit['user_id'] = auth()->user()->id;
+                        $deposit['account_id'] = $account->id;
                         $deposit['currency_id'] = $request->currency_id;
                         $deposit['amount'] = $request->amount;
                         $deposit['method'] = $request->method;
@@ -94,9 +101,8 @@ class AuthorizeController extends Controller
 
                         $gs =  Generalsetting::findOrFail(1);
                         $user = auth()->user();
-
-                        $user->balance += $request->amount;
-                        $user->save();
+                        $wallet->credit($account, $request->amount);
+                        $wallet->log($user, $account, $request->amount, "Deposit", "plus", $deposit->deposit_number);
             
                         if($gs->is_smtp == 1)
                         {

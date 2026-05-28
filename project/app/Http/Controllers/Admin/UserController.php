@@ -13,8 +13,10 @@ use App\Models\User;
 use App\Models\UserDps;
 use App\Models\UserFdr;
 use App\Models\UserLoan;
+use App\Models\UserAccount;
 use App\Models\Wishlist;
 use App\Models\Withdraw;
+use App\Services\WalletService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -79,6 +81,7 @@ class UserController extends Controller
             $data['dps'] = UserDps::whereUserId($data->id)->get();
             $data['fdr'] = UserFdr::whereUserId($data->id)->get();
             $data['withdraws'] = Withdraw::whereUserId($data->id)->get();
+            $data['accounts'] = UserAccount::whereUserId($data->id)->orderByDesc('is_default')->orderBy('id')->get();
             $data['data'] = $data;
             return view('admin.user.show',$data);
         }
@@ -135,11 +138,16 @@ class UserController extends Controller
             $user = User::whereId($request->user_id)->first();
             if($user){
                 if($request->type == 'add'){
-                    $user->increment('balance',$request->amount);
+                    $account = ($request->account_id ? UserAccount::where('user_id',$user->id)->where('id',$request->account_id)->first() : null) ?: app(WalletService::class)->defaultAccount($user);
+                    if(!$account){
+                        return redirect()->back()->with('warning','Account not found!');
+                    }
+                    app(WalletService::class)->credit($account,$request->amount);
                     return redirect()->back()->with('message','User balance added');
                 }else{
-                    if($user->balance>=$request->amount){
-                        $user->decrement('balance',$request->amount);
+                    $account = ($request->account_id ? UserAccount::where('user_id',$user->id)->where('id',$request->account_id)->first() : null) ?: app(WalletService::class)->defaultAccount($user);
+                    if($account && $account->balance>=$request->amount){
+                        app(WalletService::class)->debit($account,$request->amount);
                         return redirect()->back()->with('message','User balance deduct!');
                     }else{
                         return redirect()->back()->with('warning','User don,t have sufficient balance!');
@@ -228,9 +236,9 @@ class UserController extends Controller
     public function reject($id)
     {
         $withdraw = Withdraw::findOrFail($id);
-        $account = User::findOrFail($withdraw->user->id);
-        $account->balance = $account->balance + $withdraw->amount + $withdraw->fee;
-        $account->update();
+        $user = User::findOrFail($withdraw->user->id);
+        $account = ($withdraw->account_id ? UserAccount::where('user_id',$user->id)->where('id',$withdraw->account_id)->first() : null) ?: app(WalletService::class)->defaultAccount($user);
+        app(WalletService::class)->credit($account, $withdraw->amount + $withdraw->fee);
         $data['status'] = "rejected";
         $withdraw->update($data);
 

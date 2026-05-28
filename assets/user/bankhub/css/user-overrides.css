@@ -120,6 +120,16 @@ html.dark .user-shell #mobile-search {
   flex: 1 1 18rem;
 }
 
+.user-shell .topbar-account {
+  flex: 0 0 12rem;
+}
+
+.user-shell .topbar-account .form-select {
+  min-height: 2.5rem;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+}
+
 .user-shell .topbar-actions {
   min-width: 0;
   flex: 0 0 auto;

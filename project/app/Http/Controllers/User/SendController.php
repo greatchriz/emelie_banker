@@ -9,6 +9,8 @@ use App\Models\BankPlan;
 use App\Models\Generalsetting;
 use App\Models\SaveAccount;
 use App\Models\Transaction;
+use App\Models\UserAccount;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\User;
@@ -30,7 +32,11 @@ class SendController extends Controller
     }
 
     public function savedUser($no){
-        $data['savedUser'] = User::whereAccountNumber($no)->first();
+        $account = UserAccount::where('account_number', $no)->with('user')->first();
+        $data['savedUser'] = $account ? $account->user : User::whereAccountNumber($no)->first();
+        if ($data['savedUser'] && $account) {
+            $data['savedUser']->account_number = $account->account_number;
+        }
         $data['saveAccounts'] = SaveAccount::whereUserId(auth()->id())->orderBy('id','desc')->get();
 
         return view('user.sendmoney.create',$data);
@@ -51,7 +57,7 @@ class SendController extends Controller
         }
     }
 
-    public function store(Request $request){
+    public function store(Request $request, WalletService $wallet){
         $request->validate([
             'account_number' => 'required',
             'account_name' => 'required',
@@ -59,18 +65,18 @@ class SendController extends Controller
         ]);
 
         $user = auth()->user();
-
-        if($user->bank_plan_id === null){
-            return redirect()->back()->with('unsuccess','You have to buy a plan to withdraw.');
+        $account = $wallet->activeAccount($user);
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->back()->with('unsuccess', $message);
         }
 
-        if(now()->gt($user->plan_end_date)){
-            return redirect()->back()->with('unsuccess','Plan Date Expired.');
+        if($message = $wallet->hasValidPlan($account)){
+            return redirect()->back()->with('unsuccess',$message);
         }
 
-        $bank_plan = BankPlan::whereId($user->bank_plan_id)->first();
-        $dailySend = BalanceTransfer::whereUserId(auth()->id())->whereDate('created_at', '=', date('Y-m-d'))->whereStatus(1)->sum('amount');
-        $monthlySend = BalanceTransfer::whereUserId(auth()->id())->whereMonth('created_at', '=', date('m'))->whereStatus(1)->sum('amount');
+        $bank_plan = $wallet->bankPlan($account);
+        $dailySend = BalanceTransfer::where('account_id',$account->id)->whereDate('created_at', '=', date('Y-m-d'))->whereStatus(1)->sum('amount');
+        $monthlySend = BalanceTransfer::where('account_id',$account->id)->whereMonth('created_at', '=', date('m'))->whereStatus(1)->sum('amount');
 
         if($dailySend > $bank_plan->daily_send){
             return redirect()->back()->with('unsuccess','Daily send limit over.');
@@ -80,12 +86,12 @@ class SendController extends Controller
             return redirect()->back()->with('unsuccess','Monthly send limit over.');
         }
 
-        if($request->amount > $user->balance){
+        if($request->amount > $account->balance){
             return redirect()->back()->with('unsuccess','Insufficient Account Balance.');
         }
 
 
-        if($request->account_number == $user->account_number){
+        if($request->account_number == $account->account_number){
             return redirect()->back()->with('unsuccess','You can not send money yourself!!');
         }
 
@@ -93,18 +99,18 @@ class SendController extends Controller
             return redirect()->back()->with('unsuccess','Request Amount should be greater than this!');
         }
 
-        if($request->amount > $user->balance){
+        if($request->amount > $account->balance){
             return redirect()->back()->with('unsuccess','Insufficient Balance.');
         }
 
 
-        if($receiver = User::where('account_number',$request->account_number)->first()){
+        if($receiverAccount = UserAccount::where('account_number',$request->account_number)->where('status','active')->first()){
             session([
                 'pending_transaction' => [
                     'type' => 'send_money',
                     'title' => 'Send Money',
                     'amount' => $request->amount,
-                    'data' => $request->only('account_number', 'account_name', 'amount'),
+                    'data' => $request->only('account_number', 'account_name', 'amount') + ['account_id' => $account->id],
                 ],
             ]);
 
@@ -130,19 +136,23 @@ class SendController extends Controller
             return redirect()->route('send.money.create')->with('unsuccess','Invalid transfer details.');
         }
 
+        $wallet = app(WalletService::class);
         $user = auth()->user()->fresh();
+        $account = isset($input['account_id'])
+            ? UserAccount::where('user_id', $user->id)->where('id', $input['account_id'])->first()
+            : $wallet->activeAccount($user);
 
-        if($user->bank_plan_id === null){
-            return redirect()->route('send.money.create')->with('unsuccess','You have to buy a plan to withdraw.');
+        if ($message = $wallet->ensureActive($account)) {
+            return redirect()->route('send.money.create')->with('unsuccess',$message);
         }
 
-        if(now()->gt($user->plan_end_date)){
-            return redirect()->route('send.money.create')->with('unsuccess','Plan Date Expired.');
+        if($message = $wallet->hasValidPlan($account)){
+            return redirect()->route('send.money.create')->with('unsuccess',$message);
         }
 
-        $bank_plan = BankPlan::whereId($user->bank_plan_id)->first();
-        $dailySend = BalanceTransfer::whereUserId(auth()->id())->whereDate('created_at', '=', date('Y-m-d'))->whereStatus(1)->sum('amount');
-        $monthlySend = BalanceTransfer::whereUserId(auth()->id())->whereMonth('created_at', '=', date('m'))->whereStatus(1)->sum('amount');
+        $bank_plan = $wallet->bankPlan($account);
+        $dailySend = BalanceTransfer::where('account_id',$account->id)->whereDate('created_at', '=', date('Y-m-d'))->whereStatus(1)->sum('amount');
+        $monthlySend = BalanceTransfer::where('account_id',$account->id)->whereMonth('created_at', '=', date('m'))->whereStatus(1)->sum('amount');
 
         if($dailySend > $bank_plan->daily_send){
             return redirect()->route('send.money.create')->with('unsuccess','Daily send limit over.');
@@ -152,7 +162,7 @@ class SendController extends Controller
             return redirect()->route('send.money.create')->with('unsuccess','Monthly send limit over.');
         }
 
-        if($input['account_number'] == $user->account_number){
+        if($input['account_number'] == $account->account_number){
             return redirect()->route('send.money.create')->with('unsuccess','You can not send money yourself!!');
         }
 
@@ -160,19 +170,22 @@ class SendController extends Controller
             return redirect()->route('send.money.create')->with('unsuccess','Request Amount should be greater than this!');
         }
 
-        if($input['amount'] > $user->balance){
+        if($input['amount'] > $account->balance){
             return redirect()->route('send.money.create')->with('unsuccess','Insufficient Balance.');
         }
 
-        if(! $receiver = User::where('account_number',$input['account_number'])->first()){
+        if(! $receiverAccount = UserAccount::where('account_number',$input['account_number'])->where('status','active')->first()){
             return redirect()->route('send.money.create')->with('unsuccess','Sender not found!');
         }
+        $receiver = $receiverAccount->user;
 
         $gs = Generalsetting::first();
         $txnid = Str::random(4).time();
         $data = new BalanceTransfer();
-        $data->user_id = auth()->user()->id;
+        $data->user_id = $user->id;
+        $data->account_id = $account->id;
         $data->receiver_id = $receiver->id;
+        $data->receiver_account_id = $receiverAccount->id;
         $data->transaction_no = $txnid;
         $data->type = 'own';
         $data->cost = 0;
@@ -180,19 +193,13 @@ class SendController extends Controller
         $data->status = 1;
         $data->save();
 
-        $receiver->increment('balance',$input['amount']);
-        $user->decrement('balance',$input['amount']);
+        $wallet->credit($receiverAccount,$input['amount']);
+        $wallet->debit($account,$input['amount']);
 
         session(['sendstatus'=>1, 'saveData'=>$data]);
 
-        $trans = new Transaction();
-        $trans->email = $user->email;
-        $trans->amount = $input['amount'];
-        $trans->type = "Send Money";
-        $trans->profit = "minus";
-        $trans->txnid = $txnid;
-        $trans->user_id = $user->id;
-        $trans->save();
+        $wallet->log($user, $account, $input['amount'], "Send Money", "minus", $txnid);
+        $wallet->log($receiver, $receiverAccount, $input['amount'], "Receive Money", "plus", $txnid);
 
         if($gs->is_smtp == 1)
         {

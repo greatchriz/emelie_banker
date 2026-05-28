@@ -10,17 +10,24 @@ use App\Models\Deposit;
 use App\Models\Generalsetting;
 use App\Models\PaymentGateway;
 use App\Models\Transaction;
+use App\Models\UserAccount;
+use App\Services\WalletService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 
 class PaytmController extends Controller
 {
-    public function store(Request $request){
+    public function store(Request $request, WalletService $wallet){
 
         if($request->currency_code != "INR")
         {
             return back()->with('warning','Please Select INR Currency For Paytm.');
+        }
+
+        $account = $wallet->activeAccount(auth()->user());
+        if ($message = $wallet->ensureActive($account)) {
+            return back()->with('warning', $message);
         }
 
         $settings = Generalsetting::findOrFail(1);
@@ -33,6 +40,7 @@ class PaytmController extends Controller
         $amountToAdd =  $request->amount/$currency->value;
 
         $deposit['user_id'] = auth()->user()->id;
+        $deposit['account_id'] = $account->id;
         $deposit['currency_id'] = $request->currency_id;
         $deposit['amount'] = $amountToAdd;
         $deposit['method'] = $request->method;
@@ -42,7 +50,7 @@ class PaytmController extends Controller
         $deposit->save();
 
         Session::put('deposit_number',$item_number);
-        Session::put('input_data',$request->all());
+        Session::put('input_data',$request->all() + ['account_id' => $account->id]);
 
         $data_for_request = $this->handlePaytmRequest( $item_number, $item_amount );
 	    $paytm_txn_url = 'https://securegw-stage.paytm.in/theia/processTransaction';
@@ -377,17 +385,10 @@ class PaytmController extends Controller
 
 
             $user = auth()->user();
-            $user->balance += $deposit->amount;
-            $user->save();
-
-            $trans = new Transaction();
-            $trans->email = $user->email;
-            $trans->amount = $deposit->amount;
-            $trans->type = "Deposit";
-            $trans->profit = "plus";
-            $trans->txnid = $deposit_number;
-            $trans->user_id = $user->id;
-            $trans->save();
+            $wallet = app(WalletService::class);
+            $account = UserAccount::where('user_id', $user->id)->where('id', $deposit->account_id)->first() ?: $wallet->defaultAccount($user);
+            $wallet->credit($account, $deposit->amount);
+            $wallet->log($user, $account, $deposit->amount, "Deposit", "plus", $deposit_number);
 
             if($gs->is_smtp == 1)
             {

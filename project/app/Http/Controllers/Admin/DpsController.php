@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Currency;
 use App\Models\InstallmentLog;
 use App\Models\User;
+use App\Models\UserAccount;
 use App\Models\UserDps;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Datatables;
 use Illuminate\Support\Carbon;
@@ -119,7 +121,7 @@ class DpsController extends Controller
             return false;
           }
           if($now->gt($data->next_installment)){
-            $this->takeLoanAmount($data->user_id,$data->per_installment);
+            $this->takeLoanAmount($data->user_id,$data->per_installment,$data->account_id);
             $this->logCreate($data->transaction_no,$data->per_installment,$data->user_id);
             
             $data->next_installment = Carbon::now()->addDays($data->plan->installment_interval);
@@ -131,11 +133,11 @@ class DpsController extends Controller
         }
       }
   
-    public function takeLoanAmount($userId,$installment){
+    public function takeLoanAmount($userId,$installment,$accountId = null){
       $user = User::whereId($userId)->first();
-      if($user && $user->balance>=$installment){
-        $user->balance -= $installment;
-        $user->update();
+      $account = $user ? (($accountId ? UserAccount::where('user_id',$userId)->where('id',$accountId)->first() : null) ?: app(WalletService::class)->defaultAccount($user)) : null;
+      if($account && $account->balance>=$installment){
+        app(WalletService::class)->debit($account,$installment);
       }
     }
 
@@ -147,15 +149,15 @@ class DpsController extends Controller
           $dps->next_installment = NULL;
           $dps->update();
 
-          $this->sendMaturedMoney($dps->user_id,$dps->matured_amount);
+          $this->sendMaturedMoney($dps->user_id,$dps->matured_amount,$dps->account_id);
       }
     }
 
-    public function sendMaturedMoney($userId,$maturedAmount){
+    public function sendMaturedMoney($userId,$maturedAmount,$accountId = null){
       $user = User::findOrfail($userId);
       if($user){
-        $user->balance += $maturedAmount;
-        $user->update();
+        $account = ($accountId ? UserAccount::where('user_id',$userId)->where('id',$accountId)->first() : null) ?: app(WalletService::class)->defaultAccount($user);
+        app(WalletService::class)->credit($account,$maturedAmount);
       }
     }
 

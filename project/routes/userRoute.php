@@ -24,6 +24,7 @@ use App\Http\Controllers\User\SendController;
 use App\Http\Controllers\User\TransactionPinController;
 use App\Http\Controllers\User\TransferLogController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\User\UserAccountController;
 use App\Http\Controllers\User\UserDpsController;
 use App\Http\Controllers\User\UserFdrController;
 use App\Http\Controllers\User\UserLoanController;
@@ -65,6 +66,12 @@ Route::prefix('user')->group(function() {
       Route::get('/username/{number}', [UserController::class,'username'])->name('user.username');
       Route::get('/transactions', [UserController::class,'transaction'])->name('user.transaction'); 
       Route::get('/export-pdf', [UserController::class,'generatePDF'])->name('user.export.pdf'); 
+
+      Route::get('/accounts', [UserAccountController::class,'index'])->name('user.accounts.index');
+      Route::get('/accounts/create', [UserAccountController::class,'create'])->name('user.accounts.create');
+      Route::post('/accounts/store', [UserAccountController::class,'store'])->name('user.accounts.store');
+      Route::get('/accounts/{id}/switch', [UserAccountController::class,'switch'])->name('user.accounts.switch');
+      Route::get('/accounts/{id}', [UserAccountController::class,'show'])->name('user.accounts.show');
   
       Route::get('/two-factor', [UserController::class,'showTwoFactorForm'])->name('user.show2faForm');
       Route::post('/createTwoFactor', [UserController::class,'createTwoFactor'])->name('user.createTwoFactor');
