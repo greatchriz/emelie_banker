@@ -114,41 +114,14 @@
                 <span class="{{ $statusClass }} rounded-full px-3 py-1 text-xs font-semibold">{{ $statusText }}</span>
               </div>
 
-              <div class="mb-4 grid gap-3 md:grid-cols-3">
+              <div class="mb-4">
                 <div>
                   <span class="text-xs text-n100">{{ __('Balance') }}</span>
                   <h3 class="mt-1 text-2xl font-semibold">{{ showprice($account->balance, $currency) }}</h3>
                 </div>
-                <div>
-                  <span class="text-xs text-n100">{{ __('Plan') }}</span>
-                  <p class="mt-1 font-medium">{{ $account->plan->title ?? __('No Plan') }}</p>
-                </div>
-                <div>
-                  <span class="text-xs text-n100">{{ __('Created') }}</span>
-                  <p class="mt-1 font-medium">{{ optional($account->created_at)->format('d M Y') }}</p>
-                </div>
               </div>
 
               <div class="mb-4 grid grid-cols-2 gap-2 md:grid-cols-4">
-                <div class="rounded-lg bg-secondary/5 p-3">
-                  <span class="text-xs text-n100">{{ __('Deposits') }}</span>
-                  <p class="mt-1 font-semibold">{{ $account->deposits_count }}</p>
-                </div>
-                <div class="rounded-lg bg-secondary/5 p-3">
-                  <span class="text-xs text-n100">{{ __('Transfers') }}</span>
-                  <p class="mt-1 font-semibold">{{ $account->transfers_count }}</p>
-                </div>
-                <div class="rounded-lg bg-secondary/5 p-3">
-                  <span class="text-xs text-n100">{{ __('Withdrawals') }}</span>
-                  <p class="mt-1 font-semibold">{{ $account->withdraws_count }}</p>
-                </div>
-                <div class="rounded-lg bg-secondary/5 p-3">
-                  <span class="text-xs text-n100">{{ __('Transactions') }}</span>
-                  <p class="mt-1 font-semibold">{{ $account->transactions_count }}</p>
-                </div>
-              </div>
-
-              <div class="mb-4 grid grid-cols-4 gap-2">
                 @foreach($actionRoutes as $action)
                   @if($isActive)
                     <a href="{{ $action['url'] }}" class="group flex min-h-20 flex-col items-center justify-center gap-2 rounded-lg border border-n30 bg-white p-3 text-center duration-300 hover:border-primary hover:bg-primary/5">
