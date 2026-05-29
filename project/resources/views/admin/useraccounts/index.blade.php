@@ -39,7 +39,7 @@
               </td>
               <td>{{ showprice($account->balance, defaultCurr()) }}</td>
               <td>{{ $account->plan->title ?? __('No Plan') }}</td>
-              <td><span class="badge badge-{{ $account->status == 'active' ? 'success' : ($account->status == 'pending' ? 'warning' : 'danger') }}">{{ ucfirst($account->status) }}</span></td>
+              <td><span class="badge badge-{{ $account->status == 'active' ? 'success' : ($account->status == 'pending' ? 'warning' : 'danger') }}">{{ $account->status === 'disabled' ? __('Restricted') : ucfirst($account->status) }}</span></td>
               <td>
                 <div class="btn-group">
                   <a href="{{ route('admin.user.accounts.edit', $account->id) }}" class="btn btn-primary btn-sm">{{ __('Edit') }}</a>
@@ -47,7 +47,7 @@
                     <a href="{{ route('admin.user.accounts.status', [$account->id, 'active']) }}" class="btn btn-success btn-sm">{{ __('Enable') }}</a>
                   @endif
                   @if($account->status != 'disabled')
-                    <a href="{{ route('admin.user.accounts.status', [$account->id, 'disabled']) }}" class="btn btn-warning btn-sm">{{ __('Disable') }}</a>
+                    <a href="{{ route('admin.user.accounts.status', [$account->id, 'disabled']) }}" class="btn btn-warning btn-sm">{{ __('Restrict') }}</a>
                   @endif
                   @if($account->status == 'pending')
                     <a href="{{ route('admin.user.accounts.status', [$account->id, 'rejected']) }}" class="btn btn-danger btn-sm">{{ __('Reject') }}</a>

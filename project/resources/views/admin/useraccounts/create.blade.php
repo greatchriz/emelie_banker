@@ -41,7 +41,7 @@
         <select name="status" class="form-control" required>
           <option value="active">{{ __('Active') }}</option>
           <option value="pending">{{ __('Pending') }}</option>
-          <option value="disabled">{{ __('Disabled') }}</option>
+          <option value="disabled">{{ __('Restricted') }}</option>
           <option value="rejected">{{ __('Rejected') }}</option>
         </select>
       </div>

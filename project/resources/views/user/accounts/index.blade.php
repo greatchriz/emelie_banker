@@ -28,7 +28,7 @@
                 <p class="text-muted mb-2">{{ $account->account_number }}</p>
               </div>
               <span class="badge bg-{{ $account->status == 'active' ? 'success' : ($account->status == 'pending' ? 'warning' : 'danger') }}">
-                {{ ucfirst($account->status) }}
+                {{ $account->status === 'disabled' ? __('Restricted') : ucfirst($account->status) }}
               </span>
             </div>
             <div class="my-3 d-flex align-items-center gap-2">

@@ -23,7 +23,7 @@
     <div class="row row-cards">
       <div class="col-lg-4">
         <div class="card p-4">
-          <p>{{ __('Status') }}: <span class="badge bg-{{ $account->status == 'active' ? 'success' : ($account->status == 'pending' ? 'warning' : 'danger') }}">{{ ucfirst($account->status) }}</span></p>
+          <p>{{ __('Status') }}: <span class="badge bg-{{ $account->status == 'active' ? 'success' : ($account->status == 'pending' ? 'warning' : 'danger') }}">{{ $account->status === 'disabled' ? __('Restricted') : ucfirst($account->status) }}</span></p>
           <div class="d-flex align-items-center gap-2 mb-2">
             <h2 class="mb-0" data-balance-value>{{ showprice($account->balance, $currency) }}</h2>
             <button type="button" class="btn btn-outline-primary btn-icon" data-balance-toggle aria-label="{{ __('Hide balance') }}" title="{{ __('Hide balance') }}">

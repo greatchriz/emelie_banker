@@ -40,7 +40,7 @@
         <label>{{ __('Status') }}</label>
         <select name="status" class="form-control" required>
           @foreach(['pending','active','disabled','rejected'] as $status)
-            <option value="{{ $status }}" {{ $account->status == $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>
+            <option value="{{ $status }}" {{ $account->status == $status ? 'selected' : '' }}>{{ $status === 'disabled' ? __('Restricted') : ucfirst($status) }}</option>
           @endforeach
         </select>
       </div>

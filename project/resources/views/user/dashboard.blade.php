@@ -73,14 +73,14 @@
             $isPending = $account->status === 'pending';
             $isBlocked = !$isActive && !$isPending;
             $accountName = $account->label ?: __('Account');
-            $statusText = ucfirst($account->status);
+            $statusText = $account->status === 'disabled' ? __('Restricted') : ucfirst($account->status);
             $statusClass = $isActive
               ? 'bg-[#20B757]/10 text-[#20B757]'
               : ($isPending ? 'bg-[#FFC861]/15 text-[#8A6100]' : 'bg-[#EF4444]/10 text-[#EF4444]');
             $panelStyle = $isBlocked ? 'filter: grayscale(.18);' : '';
-            $disabledTitle = $isBlocked ? __('Account Blocked') : __('Account Unavailable');
+            $disabledTitle = $isBlocked ? __('Account Access Restricted') : __('Account Unavailable');
             $disabledMessage = $isBlocked
-              ? __('This account has been blocked by admin. Please contact support for assistance.')
+              ? __('This account is currently restricted, so deposits, transfers, and withdrawals are unavailable. Please contact support for help resolving this.')
               : __('This account is not active yet. Financial actions will be available after approval.');
             $actionRoutes = [
               ['label' => __('Deposit'), 'icon' => 'la-plus-circle', 'color' => 'bg-[#4371E9]', 'url' => route('user.deposit.create', ['account_id' => $account->id])],
@@ -90,19 +90,24 @@
             ];
           @endphp
 
-          <div class="relative overflow-hidden rounded-lg border {{ $isBlocked ? 'border-[#EF4444]/40 bg-[#FFF7F7] dark:bg-[#2A171A]' : 'border-n30 bg-n0' }} p-4 shadow-sm">
+          <div class="relative overflow-hidden rounded-lg border {{ $isBlocked ? 'border-[#EF4444] bg-[#FFF1F1] shadow-[0_0_0_1px_rgba(239,68,68,.22),0_18px_44px_rgba(239,68,68,.14)] dark:bg-[#211518]' : 'border-n30 bg-n0 shadow-sm' }} p-3 md:p-4">
             @if($isBlocked)
-              <div class="mb-4 flex items-center justify-between gap-3 rounded-lg border border-[#EF4444]/25 bg-[#EF4444]/10 px-3 py-2 text-[#EF4444]">
+              <div class="pointer-events-none absolute inset-0 bg-[#EF4444]/[.055]"></div>
+              <div class="pointer-events-none absolute left-0 top-0 h-full w-1.5 bg-[#EF4444]"></div>
+            @endif
+
+            @if($isBlocked)
+              <div class="relative z-10 mb-3 flex items-center justify-between gap-3 rounded-lg border border-[#EF4444]/35 bg-[#EF4444]/15 px-3 py-2 text-[#EF4444]">
                 <span class="inline-flex items-center gap-2 text-sm font-semibold">
                   <i class="las la-lock"></i>
-                  {{ __('Blocked Account') }}
+                  {{ __('Restricted Account') }}
                 </span>
                 <span class="text-xs font-medium">{{ __('Contact support') }}</span>
               </div>
             @endif
 
             <div class="relative z-0" style="{{ $panelStyle }}">
-              <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
+              <div class="mb-3 flex flex-wrap items-start justify-between gap-3">
                 <div class="min-w-0">
                   <div class="mb-2 flex flex-wrap items-center gap-2">
                     <h4 class="h4 truncate">{{ $accountName }}</h4>
@@ -117,7 +122,7 @@
                 <span class="{{ $statusClass }} rounded-full px-3 py-1 text-xs font-semibold">{{ $statusText }}</span>
               </div>
 
-              <div class="mb-4">
+              <div class="mb-3">
                 <div>
                   <span class="text-xs text-n100">{{ __('Balance') }}</span>
                   <div class="mt-1 flex items-center gap-3">
@@ -129,18 +134,18 @@
                 </div>
               </div>
 
-              <div class="mb-4 grid grid-cols-2 gap-2 md:grid-cols-4">
+              <div class="mb-3 grid grid-cols-2 gap-2 md:grid-cols-4">
                 @foreach($actionRoutes as $action)
                   @if($isActive)
-                    <a href="{{ $action['url'] }}" class="group flex min-h-20 flex-col items-center justify-center gap-2 rounded-lg border border-n30 bg-white p-3 text-center duration-300 hover:border-primary hover:bg-primary/5">
-                      <span class="{{ $action['color'] }} flex size-10 items-center justify-center rounded-full text-white">
+                    <a href="{{ $action['url'] }}" class="group flex min-h-16 flex-col items-center justify-center gap-1.5 rounded-lg border border-n30 bg-white p-2.5 text-center duration-300 hover:border-primary hover:bg-primary/5">
+                      <span class="{{ $action['color'] }} flex size-9 items-center justify-center rounded-full text-white">
                         <i class="las {{ $action['icon'] }} text-xl"></i>
                       </span>
                       <span class="text-xs font-medium">{{ $action['label'] }}</span>
                     </a>
                   @else
-                    <button type="button" class="flex min-h-20 flex-col items-center justify-center gap-2 rounded-lg border {{ $isBlocked ? 'border-[#EF4444]/25 bg-[#2F2F35] text-white' : 'border-n30 bg-white text-n700' }} p-3 text-center" onclick="openAccountStatusModal(@js($disabledTitle), @js($disabledMessage), @js($isBlocked))">
-                      <span class="flex size-10 items-center justify-center rounded-full {{ $isBlocked ? 'bg-white/10 text-white' : 'bg-secondary/20 text-n700' }}">
+                    <button type="button" class="flex min-h-16 flex-col items-center justify-center gap-1.5 rounded-lg border {{ $isBlocked ? 'border-[#EF4444]/25 bg-[#2F2F35] text-white' : 'border-n30 bg-white text-n700' }} p-2.5 text-center" onclick="openAccountStatusModal(@js($disabledTitle), @js($disabledMessage), @js($isBlocked))">
+                      <span class="flex size-9 items-center justify-center rounded-full {{ $isBlocked ? 'bg-white/10 text-white' : 'bg-secondary/20 text-n700' }}">
                         <i class="las {{ $isBlocked ? 'la-lock' : $action['icon'] }} text-xl"></i>
                       </span>
                       <span class="text-xs font-medium">{{ $action['label'] }}</span>
@@ -149,40 +154,13 @@
                 @endforeach
               </div>
 
-              <div class="mb-4 flex flex-wrap gap-2 text-sm">
+              <div class="flex flex-wrap gap-2 text-sm">
                 @if($isActive)
                   <a href="{{ route('user.deposit.index', ['account_id' => $account->id]) }}" class="rounded-full border border-n30 px-3 py-1 text-primary">{{ __('Deposit History') }}</a>
-                  <a href="{{ route('tranfer.logs.index', ['account_id' => $account->id]) }}" class="rounded-full border border-n30 px-3 py-1 text-primary">{{ __('Transfer Logs') }}</a>
+                  <a href="{{ route('tranfer.logs.index', ['account_id' => $account->id]) }}" class="rounded-full border border-n30 px-3 py-1 text-primary">{{ __('Transfer History') }}</a>
                   <a href="{{ route('user.withdraw.index', ['account_id' => $account->id]) }}" class="rounded-full border border-n30 px-3 py-1 text-primary">{{ __('Withdrawals') }}</a>
                 @endif
                 <a href="{{ route('user.accounts.show', $account->id) }}" class="rounded-full border border-n30 px-3 py-1 text-primary">{{ __('Account Details') }}</a>
-              </div>
-
-              <div class="rounded-lg border border-n30">
-                <div class="flex items-center justify-between border-b border-n30 px-3 py-2">
-                  <span class="text-sm font-semibold">{{ __('Latest Transactions') }}</span>
-                  @if($isActive)
-                    <a href="{{ route('user.transaction', ['account_id' => $account->id]) }}" class="text-xs font-medium text-primary">{{ __('View All') }}</a>
-                  @endif
-                </div>
-                <div class="divide-y divide-n30">
-                  @forelse($account->latestTransactions as $transaction)
-                    <div class="flex items-center justify-between gap-3 px-3 py-3">
-                      <div class="flex min-w-0 items-center gap-3">
-                        <span class="flex size-9 shrink-0 items-center justify-center rounded-full {{ $transaction->profit == 'plus' ? 'bg-[#20B757]/10 text-[#20B757]' : 'bg-[#EF4444]/10 text-[#EF4444]' }}">
-                          <i class="las {{ $transaction->profit == 'plus' ? 'la-arrow-down' : 'la-arrow-up' }}"></i>
-                        </span>
-                        <div class="min-w-0">
-                          <p class="truncate text-sm font-medium">{{ $transaction->type }}</p>
-                          <p class="truncate text-xs text-n100">{{ $transaction->txnid }} - {{ date('d M Y', strtotime($transaction->created_at)) }}</p>
-                        </div>
-                      </div>
-                      <span class="shrink-0 text-sm font-semibold {{ $transaction->profit == 'plus' ? 'text-[#20B757]' : 'text-[#EF4444]' }}">{{ showprice($transaction->amount, $currency) }}</span>
-                    </div>
-                  @empty
-                    <p class="px-3 py-6 text-center text-sm text-n100">{{ __('No recent transactions') }}</p>
-                  @endforelse
-                </div>
               </div>
             </div>
           </div>
@@ -240,13 +218,13 @@
           <i class="las la-lock text-2xl"></i>
         </span>
         <div>
-          <h4 id="accountStatusModalTitle" class="h4">{{ __('Account Blocked') }}</h4>
-          <p id="accountStatusModalMessage" class="mt-2 text-sm text-n700">{{ __('This account has been blocked by admin. Please contact support for assistance.') }}</p>
+          <h4 id="accountStatusModalTitle" class="h4">{{ __('Account Access Restricted') }}</h4>
+          <p id="accountStatusModalMessage" class="mt-2 text-sm text-n700">{{ __('This account is currently restricted, so deposits, transfers, and withdrawals are unavailable. Please contact support for help resolving this.') }}</p>
         </div>
       </div>
       <div class="flex flex-wrap justify-end gap-3">
         <button type="button" class="rounded-lg border border-n30 px-4 py-2 font-medium" onclick="closeAccountStatusModal()">{{ __('Close') }}</button>
-        <a href="{{ route('user.message.index') }}" class="btn-primary">{{ __('Contact Support') }}</a>
+        <button type="button" class="btn-primary" onclick="openJivoSupportChat()">{{ __('Contact Support') }}</button>
       </div>
     </div>
   </div>
@@ -300,6 +278,17 @@
       var modal = document.getElementById('accountStatusModal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
+    }
+
+    function openJivoSupportChat() {
+      closeAccountStatusModal();
+
+      if (window.jivo_api && typeof window.jivo_api.open === 'function') {
+        window.jivo_api.open();
+        return;
+      }
+
+      window.location.href = "{{ route('user.message.index') }}";
     }
 
     document.getElementById('accountStatusModal').addEventListener('click', function (event) {

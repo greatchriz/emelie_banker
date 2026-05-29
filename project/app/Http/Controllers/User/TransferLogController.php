@@ -20,10 +20,19 @@ class TransferLogController extends Controller
         $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
         $data['accounts'] = auth()->user()->accounts()->orderByDesc('created_at')->orderByDesc('id')->get();
         $data['selectedAccount'] = $account;
-        $data['logs'] = BalanceTransfer::with(['receiver', 'beneficiary.bank', 'bank'])
+        $query = BalanceTransfer::with(['receiver', 'beneficiary.bank', 'bank', 'account'])
             ->whereUserId(auth()->id())
             ->when($account, fn ($query) => $query->where('account_id', $account->id))
-            ->orderBy('id','desc')
+            ->orderBy('id','desc');
+
+        $data['transferSummary'] = [
+            'total' => (clone $query)->count(),
+            'completed' => (clone $query)->where('status', 1)->count(),
+            'pending' => (clone $query)->where('status', 0)->count(),
+            'amount' => (clone $query)->sum('amount'),
+        ];
+
+        $data['logs'] = $query
             ->paginate(10)
             ->appends($request->only('account_id'));
         return view('user.transfer.index',$data);
