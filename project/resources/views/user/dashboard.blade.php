@@ -9,6 +9,104 @@
     .quick-action-dropdown > summary::-webkit-details-marker {
       display: none;
     }
+
+    .quick-action-card {
+      position: relative;
+      display: flex;
+      min-height: 118px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, .22);
+      background: rgba(15, 23, 42, .035);
+      padding: 16px 12px;
+      text-align: center;
+      transition: border-color .25s ease, background-color .25s ease, transform .25s ease;
+    }
+
+    .quick-action-card:hover {
+      border-color: rgba(32, 183, 87, .58);
+      background: rgba(32, 183, 87, .08);
+      transform: translateY(-1px);
+    }
+
+    .quick-action-icon {
+      display: flex;
+      width: 42px;
+      height: 42px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .quick-action-label {
+      display: flex;
+      min-height: 34px;
+      align-items: center;
+      justify-content: center;
+      color: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .quick-action-chevron {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      color: #20B757;
+      font-size: 16px;
+      transition: transform .25s ease;
+    }
+
+    .quick-action-dropdown[open] .quick-action-chevron {
+      transform: rotate(180deg);
+    }
+
+    .quick-action-menu {
+      position: absolute;
+      left: 0;
+      right: 0;
+      z-index: 30;
+      margin-top: 8px;
+      display: grid;
+      gap: 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(148, 163, 184, .24);
+      background: var(--quick-action-menu-bg, #fff);
+      padding: 8px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, .18);
+    }
+
+    .dark .quick-action-card {
+      border-color: rgba(148, 163, 184, .16);
+      background: rgba(255, 255, 255, .025);
+    }
+
+    .dark .quick-action-card:hover {
+      border-color: rgba(32, 183, 87, .52);
+      background: rgba(32, 183, 87, .08);
+    }
+
+    .dark .quick-action-menu {
+      --quick-action-menu-bg: #111827;
+    }
+
+    @media (max-width: 420px) {
+      .quick-action-card {
+        min-height: 110px;
+        padding: 14px 8px;
+      }
+
+      .quick-action-icon {
+        width: 38px;
+        height: 38px;
+      }
+    }
   </style>
 @endpush
 
@@ -204,50 +302,51 @@
       </div>
       @php
         $modules = explode(" , ", $gs->user_module);
-        $quickActionCard = 'flex min-h-32 flex-col items-center justify-center gap-3 rounded-lg border border-n30 bg-primary/5 p-4 text-center duration-300 hover:border-primary hover:bg-primary/10';
-        $quickActionIcon = 'flex size-12 items-center justify-center rounded-full text-white';
+        $quickActionCard = 'quick-action-card';
+        $quickActionIcon = 'quick-action-icon';
+        $quickActionLabel = 'quick-action-label';
         $quickDropdownLink = 'flex items-center justify-between gap-3 rounded-lg border border-n30 bg-secondary/5 px-3 py-2 text-sm font-medium text-n700 duration-300 hover:border-primary hover:text-primary';
       @endphp
       <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
         <a href="{{ route('user.accounts.index') }}" class="{{ $quickActionCard }}">
           <span class="{{ $quickActionIcon }} bg-[#4371E9]"><i class="las la-credit-card text-2xl"></i></span>
-          <span class="font-medium">{{ __('My Accounts') }}</span>
+          <span class="{{ $quickActionLabel }}">{{ __('My Accounts') }}</span>
         </a>
 
         @if (!in_array('Deposit',$modules))
           <a href="{{ route('user.deposit.index') }}" class="{{ $quickActionCard }}">
             <span class="{{ $quickActionIcon }} bg-[#20B757]"><i class="las la-piggy-bank text-2xl"></i></span>
-            <span class="font-medium">{{ __('Deposit') }}</span>
+            <span class="{{ $quickActionLabel }}">{{ __('Deposit') }}</span>
           </a>
         @endif
 
         @if ($gs->withdraw_status == 1 && !in_array('Withdraw',$modules))
           <a href="{{ route('user.withdraw.index') }}" class="{{ $quickActionCard }}">
             <span class="{{ $quickActionIcon }} bg-[#8B5CF6]"><i class="las la-wallet text-2xl"></i></span>
-            <span class="font-medium">{{ __('Withdraw') }}</span>
+            <span class="{{ $quickActionLabel }}">{{ __('Withdraw') }}</span>
           </a>
         @endif
 
         @if (!in_array('Wire Transfer',$modules))
           <a href="{{ route('user.wire.transfer.index') }}" class="{{ $quickActionCard }}">
             <span class="{{ $quickActionIcon }} bg-[#4371E9]"><i class="las la-university text-2xl"></i></span>
-            <span class="font-medium">{{ __('Wire Transfer') }}</span>
+            <span class="{{ $quickActionLabel }}">{{ __('Wire Transfer') }}</span>
           </a>
         @endif
 
         <a href="{{ route('user.beneficiaries.index') }}" class="{{ $quickActionCard }}">
           <span class="{{ $quickActionIcon }} bg-[#FFC861]"><i class="las la-user-friends text-2xl"></i></span>
-          <span class="font-medium">{{ __('Beneficiaries') }}</span>
+          <span class="{{ $quickActionLabel }}">{{ __('Beneficiaries') }}</span>
         </a>
 
         @if (!in_array('Transfer',$modules))
           <details class="quick-action-dropdown relative">
             <summary class="{{ $quickActionCard }} cursor-pointer list-none">
               <span class="{{ $quickActionIcon }} bg-[#0EA5E9]"><i class="las la-exchange-alt text-2xl"></i></span>
-              <span class="font-medium">{{ __('Transfer') }}</span>
-              <i class="las la-angle-down text-lg text-primary"></i>
+              <span class="{{ $quickActionLabel }}">{{ __('Transfer') }}</span>
+              <i class="las la-angle-down quick-action-chevron"></i>
             </summary>
-            <div class="absolute left-0 right-0 z-30 mt-2 space-y-2 rounded-lg border border-n30 bg-n0 p-2 shadow-xl">
+            <div class="quick-action-menu">
               <a href="{{ route('send.money.create') }}" class="{{ $quickDropdownLink }}">{{ __('Send Money') }} <i class="las la-arrow-right"></i></a>
               <a href="{{ route('user.other.bank') }}" class="{{ $quickDropdownLink }}">{{ __('Other Bank Transfer') }} <i class="las la-arrow-right"></i></a>
               <a href="{{ route('tranfer.logs.index') }}" class="{{ $quickDropdownLink }}">{{ __('Transfer History') }} <i class="las la-arrow-right"></i></a>
@@ -259,10 +358,10 @@
           <details class="quick-action-dropdown relative">
             <summary class="{{ $quickActionCard }} cursor-pointer list-none">
               <span class="{{ $quickActionIcon }} bg-[#20B757]"><i class="las la-download text-2xl"></i></span>
-              <span class="font-medium">{{ __('Request Money') }}</span>
-              <i class="las la-angle-down text-lg text-primary"></i>
+              <span class="{{ $quickActionLabel }}">{{ __('Request Money') }}</span>
+              <i class="las la-angle-down quick-action-chevron"></i>
             </summary>
-            <div class="absolute left-0 right-0 z-30 mt-2 space-y-2 rounded-lg border border-n30 bg-n0 p-2 shadow-xl">
+            <div class="quick-action-menu">
               <a href="{{ route('user.money.request.create') }}" class="{{ $quickDropdownLink }}">{{ __('Create Request') }} <i class="las la-arrow-right"></i></a>
               <a href="{{ route('user.money.request.index') }}" class="{{ $quickDropdownLink }}">{{ __('Sent Requests') }} <i class="las la-arrow-right"></i></a>
               <a href="{{ route('user.request.money.receive') }}" class="{{ $quickDropdownLink }}">{{ __('Received Requests') }} <i class="las la-arrow-right"></i></a>
@@ -274,10 +373,10 @@
           <details class="quick-action-dropdown relative">
             <summary class="{{ $quickActionCard }} cursor-pointer list-none">
               <span class="{{ $quickActionIcon }} bg-[#F59E0B]"><i class="las la-hand-holding-usd text-2xl"></i></span>
-              <span class="font-medium">{{ __('Loan') }}</span>
-              <i class="las la-angle-down text-lg text-primary"></i>
+              <span class="{{ $quickActionLabel }}">{{ __('Loan') }}</span>
+              <i class="las la-angle-down quick-action-chevron"></i>
             </summary>
-            <div class="absolute left-0 right-0 z-30 mt-2 space-y-2 rounded-lg border border-n30 bg-n0 p-2 shadow-xl">
+            <div class="quick-action-menu">
               <a href="{{ route('user.loans.plan') }}" class="{{ $quickDropdownLink }}">{{ __('Loan Plan') }} <i class="las la-arrow-right"></i></a>
               <a href="{{ route('user.loans.index') }}" class="{{ $quickDropdownLink }}">{{ __('All Loans') }} <i class="las la-arrow-right"></i></a>
               <a href="{{ route('user.loans.pending') }}" class="{{ $quickDropdownLink }}">{{ __('Pending Loans') }} <i class="las la-arrow-right"></i></a>
@@ -292,10 +391,10 @@
           <details class="quick-action-dropdown relative">
             <summary class="{{ $quickActionCard }} cursor-pointer list-none">
               <span class="{{ $quickActionIcon }} bg-[#14B8A6]"><i class="las la-warehouse text-2xl"></i></span>
-              <span class="font-medium">{{ __('DPS') }}</span>
-              <i class="las la-angle-down text-lg text-primary"></i>
+              <span class="{{ $quickActionLabel }}">{{ __('DPS') }}</span>
+              <i class="las la-angle-down quick-action-chevron"></i>
             </summary>
-            <div class="absolute left-0 right-0 z-30 mt-2 space-y-2 rounded-lg border border-n30 bg-n0 p-2 shadow-xl">
+            <div class="quick-action-menu">
               <a href="{{ route('user.dps.plan') }}" class="{{ $quickDropdownLink }}">{{ __('DPS Plan') }} <i class="las la-arrow-right"></i></a>
               <a href="{{ route('user.dps.index') }}" class="{{ $quickDropdownLink }}">{{ __('All DPS') }} <i class="las la-arrow-right"></i></a>
               <a href="{{ route('user.dps.running') }}" class="{{ $quickDropdownLink }}">{{ __('Running DPS') }} <i class="las la-arrow-right"></i></a>
@@ -308,10 +407,10 @@
           <details class="quick-action-dropdown relative">
             <summary class="{{ $quickActionCard }} cursor-pointer list-none">
               <span class="{{ $quickActionIcon }} bg-[#6366F1]"><i class="las la-user-shield text-2xl"></i></span>
-              <span class="font-medium">{{ __('FDR') }}</span>
-              <i class="las la-angle-down text-lg text-primary"></i>
+              <span class="{{ $quickActionLabel }}">{{ __('FDR') }}</span>
+              <i class="las la-angle-down quick-action-chevron"></i>
             </summary>
-            <div class="absolute left-0 right-0 z-30 mt-2 space-y-2 rounded-lg border border-n30 bg-n0 p-2 shadow-xl">
+            <div class="quick-action-menu">
               <a href="{{ route('user.fdr.plan') }}" class="{{ $quickDropdownLink }}">{{ __('FDR Plan') }} <i class="las la-arrow-right"></i></a>
               <a href="{{ route('user.fdr.index') }}" class="{{ $quickDropdownLink }}">{{ __('All FDR') }} <i class="las la-arrow-right"></i></a>
               <a href="{{ route('user.fdr.running') }}" class="{{ $quickDropdownLink }}">{{ __('Running FDR') }} <i class="las la-arrow-right"></i></a>
@@ -323,13 +422,13 @@
         @if (!in_array('Pricing Plan',$modules))
           <a href="{{ route('user.package.index') }}" class="{{ $quickActionCard }}">
             <span class="{{ $quickActionIcon }} bg-[#22C55E]"><i class="las la-layer-group text-2xl"></i></span>
-            <span class="font-medium">{{ __('Pricing Plan') }}</span>
+            <span class="{{ $quickActionLabel }}">{{ __('Pricing Plan') }}</span>
           </a>
         @endif
 
         <button type="button" class="{{ $quickActionCard }}" onclick="openJivoSupportChat()">
           <span class="{{ $quickActionIcon }} bg-[#EF4444]"><i class="las la-life-ring text-2xl"></i></span>
-          <span class="font-medium">{{ __('Support') }}</span>
+          <span class="{{ $quickActionLabel }}">{{ __('Support') }}</span>
         </button>
       </div>
     </div>
