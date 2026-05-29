@@ -27,6 +27,9 @@
         <div class="row row-cards">
             <div class="col-12">
                 <div class="card">
+                    <div class="card-body border-bottom">
+                        @include('user.partials.account-filter', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'action' => route('user.transaction')])
+                    </div>
 					<div class="table-responsive">
 						<table class="table card-table table-vcenter text-nowrap datatable">
 						  <thead>

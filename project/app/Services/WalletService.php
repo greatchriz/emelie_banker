@@ -31,22 +31,7 @@ class WalletService
             return null;
         }
 
-        $selectedId = session('active_user_account_id');
-        if ($selectedId) {
-            $selected = $user->accounts()->where('id', $selectedId)->first();
-            if ($selected && $selected->isActive()) {
-                return $selected;
-            }
-        }
-
-        $fallback = $user->accounts()->active()->orderByDesc('is_default')->orderBy('id')->first();
-        if ($fallback) {
-            session(['active_user_account_id' => $fallback->id]);
-        } else {
-            session()->forget('active_user_account_id');
-        }
-
-        return $fallback;
+        return $user->accounts()->active()->orderByDesc('is_default')->orderBy('id')->first();
     }
 
     public function accountByNumber(string $accountNumber): ?UserAccount
@@ -54,14 +39,38 @@ class WalletService
         return UserAccount::where('account_number', $accountNumber)->first();
     }
 
+    public function accountFromRequest(User $user, $accountId, bool $requireActive = true): ?UserAccount
+    {
+        if (!$accountId) {
+            return null;
+        }
+
+        $account = $user->accounts()->where('id', $accountId)->first();
+
+        if (!$account) {
+            return null;
+        }
+
+        if ($requireActive && !$account->isActive()) {
+            return null;
+        }
+
+        return $account;
+    }
+
+    public function activeAccounts(User $user)
+    {
+        return $user->accounts()->active()->orderByDesc('is_default')->orderBy('label')->orderBy('id')->get();
+    }
+
     public function ensureActive(?UserAccount $account): ?string
     {
         if (!$account) {
-            return __('No active account available. Please request a new account or contact support.');
+            return __('Please select an active account to continue.');
         }
 
         if (!$account->isActive()) {
-            return __('The selected account is not active. Please switch to an active account.');
+            return __('This account is not active. Please select an active account or contact support.');
         }
 
         return null;

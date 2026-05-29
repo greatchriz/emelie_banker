@@ -26,18 +26,21 @@ class OtherBankController extends Controller
         return view('user.otherbank.index',$data);
     }
 
-    public function othersend($id){
+    public function othersend(Request $request, WalletService $wallet, $id){
         $data['data'] = Beneficiary::findOrFail($id);
+        $data['accounts'] = $wallet->activeAccounts(auth()->user());
+        $data['selectedAccount'] = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'));
         return view('user.otherbank.send',$data);
     }
 
     public function store(Request $request, WalletService $wallet){
         $request->validate([
+            'account_id' => 'required',
             'amount' => 'required|numeric|min:0'
         ]);
 
         $user = auth()->user();
-        $account = $wallet->activeAccount($user);
+        $account = $wallet->accountFromRequest($user, $request->account_id);
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->back()->with('unsuccess', $message);
         }

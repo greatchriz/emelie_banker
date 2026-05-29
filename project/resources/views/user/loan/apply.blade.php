@@ -65,6 +65,7 @@
                     
                     <form action="{{route('user.loan.request')}}" method="POST" enctype="multipart/form-data">
                         @csrf
+                        @include('user.partials.account-select', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'label' => __('Loan Account')])
                         <input type="hidden" name="plan_id" value="{{ $data->id }}">
                         <input type="hidden" name="total_installment" value="{{ $data->total_installment }}">
                         <input type="hidden" name="loan_amount" value="{{ $loanAmount }}">

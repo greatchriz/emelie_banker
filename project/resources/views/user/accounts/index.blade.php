@@ -36,10 +36,9 @@
             <p class="mb-3">{{ __('Type') }}: {{ $account->is_default ? __('Default') : __('Additional') }}</p>
             <div class="d-flex flex-wrap gap-2">
               <a href="{{ route('user.accounts.show', $account->id) }}" class="btn btn-outline-primary">{{ __('Details') }}</a>
-              @if($account->status == 'active' && optional($activeAccount)->id != $account->id)
-                <a href="{{ route('user.accounts.switch', $account->id) }}" class="btn btn-primary">{{ __('Select Account') }}</a>
-              @elseif(optional($activeAccount)->id == $account->id)
-                <span class="btn btn-success disabled">{{ __('Selected') }}</span>
+              @if($account->status == 'active')
+                <a href="{{ route('user.deposit.create', ['account_id' => $account->id]) }}" class="btn btn-primary">{{ __('Deposit') }}</a>
+                <a href="{{ route('send.money.create', ['account_id' => $account->id]) }}" class="btn btn-outline-primary">{{ __('Transfer') }}</a>
               @endif
             </div>
           </div>

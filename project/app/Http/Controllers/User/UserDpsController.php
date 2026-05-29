@@ -20,33 +20,21 @@ class UserDpsController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(WalletService $wallet){
-        $account = $wallet->activeAccount();
-        $data['dps'] = UserDps::whereUserId(auth()->id())->when($account, function ($query) use ($account) {
-            $query->where('account_id', $account->id);
-        }, function ($query) {
-            $query->whereRaw('1 = 0');
-        })->orderby('id','desc')->paginate(10);
+    public function index(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['dps'] = UserDps::whereUserId(auth()->id())->when($account, fn ($query) => $query->where('account_id', $account->id))->orderby('id','desc')->paginate(10)->appends($request->only('account_id'));
         return view('user.dps.index',$data);
     }
 
-    public function running(WalletService $wallet){
-        $account = $wallet->activeAccount();
-        $data['dps'] = UserDps::whereStatus(1)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
-            $query->where('account_id', $account->id);
-        }, function ($query) {
-            $query->whereRaw('1 = 0');
-        })->orderby('id','desc')->paginate(10);
+    public function running(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['dps'] = UserDps::whereStatus(1)->whereUserId(auth()->id())->when($account, fn ($query) => $query->where('account_id', $account->id))->orderby('id','desc')->paginate(10)->appends($request->only('account_id'));
         return view('user.dps.running',$data);
     }
 
-    public function matured(WalletService $wallet){
-        $account = $wallet->activeAccount();
-        $data['dps'] = UserDps::whereStatus(2)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
-            $query->where('account_id', $account->id);
-        }, function ($query) {
-            $query->whereRaw('1 = 0');
-        })->orderby('id','desc')->paginate(10);
+    public function matured(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['dps'] = UserDps::whereStatus(2)->whereUserId(auth()->id())->when($account, fn ($query) => $query->where('account_id', $account->id))->orderby('id','desc')->paginate(10)->appends($request->only('account_id'));
         return view('user.dps.matured',$data);
     }
 
@@ -55,14 +43,17 @@ class UserDpsController extends Controller
         return view('user.dps.plan',$data);
     }
 
-    public function planDetails(Request $request, $id){
+    public function planDetails(Request $request, WalletService $wallet, $id){
         $data['data'] = DpsPlan::findOrFail($id);
+        $data['accounts'] = $wallet->activeAccounts(auth()->user());
+        $data['selectedAccount'] = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'));
         return view('user.dps.apply',$data);
     }
 
     public function dpsSubmit(Request $request, WalletService $wallet){
         $user = auth()->user();
-        $account = $wallet->activeAccount($user);
+        $request->validate(['account_id' => 'required']);
+        $account = $wallet->accountFromRequest($user, $request->account_id);
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->back()->with('warning', $message);
         }

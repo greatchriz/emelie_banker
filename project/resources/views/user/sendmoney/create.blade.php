@@ -37,6 +37,7 @@
                             @includeIf('includes.flash')
                             <form action="{{route('send.money.store')}}" method="POST" enctype="multipart/form-data">
                                 @csrf
+                                @include('user.partials.account-select', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'label' => __('Source Account')])
     
                                 <div class="form-group mb-3 mt-3">
                                     <label class="form-label required">{{__('Account Number')}}</label>
@@ -69,7 +70,7 @@
                               @endphp
                                 @if ($reciver)
                                   <div class="col-6">
-                                    <a href="{{ route('send.money.savedUser',$reciver->account_number) }}">
+                                    <a href="{{ route('send.money.savedUser', ['number' => $reciver->account_number, 'account_id' => optional($selectedAccount)->id ?? request('account_id')]) }}">
                                       <div class="row g-3 align-items-center">
                                         <span class="col-auto">
                                           <span class="avatar" style="background-image: url({{ asset('assets/images/'.$reciver->photo) }})">

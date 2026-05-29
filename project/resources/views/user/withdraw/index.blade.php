@@ -33,6 +33,9 @@
         <div class="row row-cards">
             <div class="col-12">
                 <div class="card">
+                    <div class="card-body border-bottom">
+                        @include('user.partials.account-filter', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'action' => route('user.withdraw.index')])
+                    </div>
                     @if (count($withdraws) == 0)
                         <h3 class="text-center py-5">{{__('No Withdraw Data Found')}}</h3>
                     @else 
@@ -80,4 +83,3 @@
 @push('js')
 
 @endpush
-

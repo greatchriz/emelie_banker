@@ -84,6 +84,7 @@
 
                         <input type="hidden" name="other_bank_id" value="{{ $data->other_bank_id }}">
                         <input type="hidden" name="beneficiary_id" value="{{ $data->id }}">
+                        @include('user.partials.account-select', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'label' => __('Source Account')])
                         <div class="form-group mb-3">
                             <label class="form-label required">{{__('Bank Name')}}</label>
                             <input name="bank_name" id="bank_name" class="form-control" autocomplete="off" placeholder="{{__('Wells Fargo')}}" type="text" value="{{ $data->bank->title }}" min="1" required readonly>

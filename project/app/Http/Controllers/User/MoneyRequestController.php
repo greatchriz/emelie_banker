@@ -21,45 +21,53 @@ class MoneyRequestController extends Controller
         $this->middleware('auth');
     }
     
-    public function index(WalletService $wallet){
-        $account = $wallet->activeAccount(auth()->user());
+    public function index(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['accounts'] = auth()->user()->accounts()->orderByDesc('created_at')->orderByDesc('id')->get();
+        $data['selectedAccount'] = $account;
         $data['requests'] = MoneyRequest::orderby('id','desc')
             ->whereUserId(auth()->id())
             ->when($account, fn ($query) => $query->where('account_id', $account->id))
-            ->when(!$account, fn ($query) => $query->whereRaw('1 = 0'))
-            ->paginate(10);
+            ->paginate(10)
+            ->appends($request->only('account_id'));
         return view('user.requestmoney.index',$data);
     }
 
-    public function receive(WalletService $wallet){
-        $account = $wallet->activeAccount(auth()->user());
+    public function receive(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['accounts'] = auth()->user()->accounts()->orderByDesc('created_at')->orderByDesc('id')->get();
+        $data['selectedAccount'] = $account;
         $data['requests'] = MoneyRequest::orderby('id','desc')
             ->whereReceiverId(auth()->id())
             ->when($account, fn ($query) => $query->where('receiver_account_id', $account->id))
-            ->when(!$account, fn ($query) => $query->whereRaw('1 = 0'))
-            ->paginate(10);
+            ->paginate(10)
+            ->appends($request->only('account_id'));
         return view('user.requestmoney.receive',$data);
     }
 
-    public function create(){
-        return view('user.requestmoney.create');
+    public function create(Request $request, WalletService $wallet){
+        $accounts = $wallet->activeAccounts(auth()->user());
+        $selectedAccount = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'));
+        return view('user.requestmoney.create', compact('accounts', 'selectedAccount'));
     }
 
     public function store(Request $request, WalletService $wallet){
         $request->validate([
+            'account_id' => 'required',
+            'account_number' => 'required',
             'account_name' => 'required',
             'amount' => 'required|gt:0',
         ]);
 
         $requester = auth()->user();
-        $requesterAccount = $wallet->activeAccount($requester);
+        $requesterAccount = $wallet->accountFromRequest($requester, $request->account_id);
 
         if(!$requesterAccount){
             return redirect()->back()->with('unsuccess','No active account available.');
         }
 
-        if(!$wallet->hasValidPlan($requesterAccount)){
-            return redirect()->back()->with('unsuccess','Your selected account has no active plan.');
+        if($message = $wallet->hasValidPlan($requesterAccount)){
+            return redirect()->back()->with('unsuccess',$message);
         }
 
         $bank_plan = $wallet->bankPlan($requesterAccount);
@@ -126,9 +134,7 @@ class MoneyRequestController extends Controller
     
         $sender = User::whereId($data->receiver_id)->first();
         $receiver = User::whereId($data->user_id)->first();
-        $senderAccount = $data->receiver_account_id
-            ? UserAccount::where('id', $data->receiver_account_id)->where('user_id', auth()->id())->first()
-            : $wallet->activeAccount(auth()->user());
+        $senderAccount = $wallet->accountFromRequest(auth()->user(), $data->receiver_account_id);
         $receiverAccount = $data->account_id
             ? UserAccount::where('id', $data->account_id)->where('user_id', $receiver->id)->first()
             : $wallet->defaultAccount($receiver);

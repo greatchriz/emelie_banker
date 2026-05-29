@@ -18,7 +18,7 @@
     </div>
   </div>
 
-  @if(!$activeAccount)
+  @if($activeAccounts->isEmpty())
     <div class="kyc-alert box mb-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
@@ -65,7 +65,6 @@
         @forelse($accounts as $account)
           @php
             $isActive = $account->status === 'active';
-            $isSelected = optional($activeAccount)->id === $account->id;
             $isPending = $account->status === 'pending';
             $isBlocked = !$isActive && !$isPending;
             $accountName = $account->label ?: __('Account');
@@ -79,14 +78,14 @@
               ? __('This account has been blocked by admin. Please contact support for assistance.')
               : __('This account is not active yet. Financial actions will be available after approval.');
             $actionRoutes = [
-              ['label' => __('Deposit'), 'icon' => 'la-plus-circle', 'color' => 'bg-[#4371E9]', 'url' => route('user.accounts.switch', ['id' => $account->id, 'redirect' => route('user.deposit.create')])],
-              ['label' => __('Transfer'), 'icon' => 'la-paper-plane', 'color' => 'bg-primary', 'url' => route('user.accounts.switch', ['id' => $account->id, 'redirect' => route('send.money.create')])],
-              ['label' => __('Withdraw'), 'icon' => 'la-wallet', 'color' => 'bg-[#8B5CF6]', 'url' => route('user.accounts.switch', ['id' => $account->id, 'redirect' => route('user.withdraw.create')])],
-              ['label' => __('History'), 'icon' => 'la-list-alt', 'color' => 'bg-[#20B757]', 'url' => route('user.accounts.switch', ['id' => $account->id, 'redirect' => route('user.transaction')])],
+              ['label' => __('Deposit'), 'icon' => 'la-plus-circle', 'color' => 'bg-[#4371E9]', 'url' => route('user.deposit.create', ['account_id' => $account->id])],
+              ['label' => __('Transfer'), 'icon' => 'la-paper-plane', 'color' => 'bg-primary', 'url' => route('send.money.create', ['account_id' => $account->id])],
+              ['label' => __('Withdraw'), 'icon' => 'la-wallet', 'color' => 'bg-[#8B5CF6]', 'url' => route('user.withdraw.create', ['account_id' => $account->id])],
+              ['label' => __('History'), 'icon' => 'la-list-alt', 'color' => 'bg-[#20B757]', 'url' => route('user.transaction', ['account_id' => $account->id])],
             ];
           @endphp
 
-          <div class="relative overflow-hidden rounded-lg border {{ $isBlocked ? 'border-[#EF4444]/30 bg-[#EF4444]/5' : ($isSelected ? 'border-primary bg-primary/5' : 'border-n30 bg-n0') }} p-4 shadow-sm">
+          <div class="relative overflow-hidden rounded-lg border {{ $isBlocked ? 'border-[#EF4444]/30 bg-[#EF4444]/5' : 'border-n30 bg-n0' }} p-4 shadow-sm">
             @if($isBlocked)
               <div class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center" style="background: rgba(255, 255, 255, .58);">
                 <span class="inline-flex items-center gap-2 rounded-full bg-[#EF4444] px-4 py-2 text-sm font-semibold text-white shadow-lg">
@@ -103,9 +102,6 @@
                     <h4 class="h4 truncate">{{ $accountName }}</h4>
                     @if($account->is_default)
                       <span class="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">{{ __('Default') }}</span>
-                    @endif
-                    @if($isSelected)
-                      <span class="rounded-full bg-[#20B757]/10 px-2.5 py-1 text-xs font-medium text-[#20B757]">{{ __('Selected') }}</span>
                     @endif
                   </div>
                   <div class="flex flex-wrap items-center gap-2 text-sm text-n700">
@@ -174,9 +170,9 @@
 
               <div class="mb-4 flex flex-wrap gap-2 text-sm">
                 @if($isActive)
-                  <a href="{{ route('user.accounts.switch', ['id' => $account->id, 'redirect' => route('user.deposit.index')]) }}" class="rounded-full border border-n30 px-3 py-1 text-primary">{{ __('Deposit History') }}</a>
-                  <a href="{{ route('user.accounts.switch', ['id' => $account->id, 'redirect' => route('tranfer.logs.index')]) }}" class="rounded-full border border-n30 px-3 py-1 text-primary">{{ __('Transfer Logs') }}</a>
-                  <a href="{{ route('user.accounts.switch', ['id' => $account->id, 'redirect' => route('user.withdraw.index')]) }}" class="rounded-full border border-n30 px-3 py-1 text-primary">{{ __('Withdrawals') }}</a>
+                  <a href="{{ route('user.deposit.index', ['account_id' => $account->id]) }}" class="rounded-full border border-n30 px-3 py-1 text-primary">{{ __('Deposit History') }}</a>
+                  <a href="{{ route('tranfer.logs.index', ['account_id' => $account->id]) }}" class="rounded-full border border-n30 px-3 py-1 text-primary">{{ __('Transfer Logs') }}</a>
+                  <a href="{{ route('user.withdraw.index', ['account_id' => $account->id]) }}" class="rounded-full border border-n30 px-3 py-1 text-primary">{{ __('Withdrawals') }}</a>
                 @endif
                 <a href="{{ route('user.accounts.show', $account->id) }}" class="rounded-full border border-n30 px-3 py-1 text-primary">{{ __('Account Details') }}</a>
               </div>
@@ -185,7 +181,7 @@
                 <div class="flex items-center justify-between border-b border-n30 px-3 py-2">
                   <span class="text-sm font-semibold">{{ __('Latest Transactions') }}</span>
                   @if($isActive)
-                    <a href="{{ route('user.accounts.switch', ['id' => $account->id, 'redirect' => route('user.transaction')]) }}" class="text-xs font-medium text-primary">{{ __('View All') }}</a>
+                    <a href="{{ route('user.transaction', ['account_id' => $account->id]) }}" class="text-xs font-medium text-primary">{{ __('View All') }}</a>
                   @endif
                 </div>
                 <div class="divide-y divide-n30">

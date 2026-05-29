@@ -34,6 +34,9 @@
         <div class="row row-cards">
             <div class="col-12">
                 <div class="card">
+                    <div class="card-body border-bottom">
+                        @include('user.partials.account-filter', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'action' => route('user.deposit.index')])
+                    </div>
                     @if (count($deposits) == 0)
                         <h3 class="text-center py-5">{{__('No Deposit Data Found')}}</h3>
                     @else 
@@ -63,7 +66,7 @@
                                         </td>
                                         <td data-label="{{ __('Account') }}">
                                           <div>
-                                            {{ auth()->user()->email }}
+                                            {{ $deposit->account->label ?: __('Account') }} - {{ $deposit->account->account_number }}
                                           </div>
                                         </td>
 
@@ -97,4 +100,3 @@
 @push('js')
 
 @endpush
-

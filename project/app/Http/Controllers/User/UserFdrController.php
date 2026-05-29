@@ -19,33 +19,21 @@ class UserFdrController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(WalletService $wallet){
-        $account = $wallet->activeAccount();
-        $data['fdr'] = UserFdr::whereUserId(auth()->id())->when($account, function ($query) use ($account) {
-            $query->where('account_id', $account->id);
-        }, function ($query) {
-            $query->whereRaw('1 = 0');
-        })->orderby('id','desc')->paginate(10);
+    public function index(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['fdr'] = UserFdr::whereUserId(auth()->id())->when($account, fn ($query) => $query->where('account_id', $account->id))->orderby('id','desc')->paginate(10)->appends($request->only('account_id'));
         return view('user.fdr.index',$data);
     }
 
-    public function running(WalletService $wallet){
-        $account = $wallet->activeAccount();
-        $data['fdr'] = UserFdr::whereStatus(1)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
-            $query->where('account_id', $account->id);
-        }, function ($query) {
-            $query->whereRaw('1 = 0');
-        })->orderby('id','desc')->paginate(10);
+    public function running(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['fdr'] = UserFdr::whereStatus(1)->whereUserId(auth()->id())->when($account, fn ($query) => $query->where('account_id', $account->id))->orderby('id','desc')->paginate(10)->appends($request->only('account_id'));
         return view('user.fdr.running',$data);
     }
 
-    public function closed(WalletService $wallet){
-        $account = $wallet->activeAccount();
-        $data['fdr'] = UserFdr::whereStatus(2)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
-            $query->where('account_id', $account->id);
-        }, function ($query) {
-            $query->whereRaw('1 = 0');
-        })->orderby('id','desc')->paginate(10);
+    public function closed(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['fdr'] = UserFdr::whereStatus(2)->whereUserId(auth()->id())->when($account, fn ($query) => $query->where('account_id', $account->id))->orderby('id','desc')->paginate(10)->appends($request->only('account_id'));
         return view('user.fdr.closed',$data);
     }
 
@@ -62,6 +50,9 @@ class UserFdrController extends Controller
             $data['data'] = $plan;
             $data['fdrAmount'] = $amount;
             $data['currency'] = Currency::whereIsDefault(1)->first();
+            $wallet = app(WalletService::class);
+            $data['accounts'] = $wallet->activeAccounts(auth()->user());
+            $data['selectedAccount'] = null;
 
             return view('user.fdr.apply',$data);
         }else{
@@ -71,7 +62,8 @@ class UserFdrController extends Controller
 
     public function fdrRequest(Request $request, WalletService $wallet){
         $user = auth()->user();
-        $account = $wallet->activeAccount($user);
+        $request->validate(['account_id' => 'required']);
+        $account = $wallet->accountFromRequest($user, $request->account_id);
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->back()->with('warning', $message);
         }

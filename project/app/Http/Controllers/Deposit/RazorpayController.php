@@ -32,12 +32,14 @@ class RazorpayController extends Controller
 
     public function store(Request $request, WalletService $wallet)
     {
+        $request->validate(['account_id' => 'required']);
+
         if($request->currency_code != "INR")
         {
             return redirect()->back()->with('warning','Please Select INR Currency For Rezorpay.');
         }
         
-        $account = $wallet->activeAccount(auth()->user());
+        $account = $wallet->accountFromRequest(auth()->user(), $request->account_id);
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->back()->with('warning', $message);
         }
@@ -158,7 +160,7 @@ class RazorpayController extends Controller
             $deposit['deposit_number'] = $order_data['item_number'];
             $deposit['user_id'] = auth()->user()->id;
             $deposit['account_id'] = $input['account_id'] ?? null;
-            $deposit['currency_id'] = $request->currency_id;
+            $deposit['currency_id'] = $input['currency_id'];
             $deposit['amount'] = $amountToAdd;
             $deposit['method'] = $input['method'];
             $deposit['status'] = "complete";
@@ -171,7 +173,10 @@ class RazorpayController extends Controller
 
             $user = auth()->user();
             $wallet = app(WalletService::class);
-            $account = UserAccount::where('user_id', $user->id)->where('id', $deposit->account_id)->first() ?: $wallet->defaultAccount($user);
+            $account = $wallet->accountFromRequest($user, $deposit->account_id);
+            if ($message = $wallet->ensureActive($account)) {
+                return redirect()->route('user.deposit.create')->with('unsuccess', $message);
+            }
             $wallet->credit($account, $amountToAdd);
             $wallet->log($user, $account, $amountToAdd, "Deposit", "plus", $deposit->deposit_number);
 

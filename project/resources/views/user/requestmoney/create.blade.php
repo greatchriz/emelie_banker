@@ -25,6 +25,7 @@
                     @includeIf('includes.flash')
                     <form id="request-form" action="{{ route('user.money.request.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
+                        @include('user.partials.account-select', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'label' => __('Receiving Account')])
 
                         <div class="form-group mb-3 mt-3">
                             <label class="form-label required">{{__('Account Number')}}</label>

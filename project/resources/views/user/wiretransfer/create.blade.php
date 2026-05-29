@@ -27,6 +27,7 @@
                     @includeIf('includes.flash')
                     <form action="{{route('user.wire.transfer.store')}}" method="POST" enctype="multipart/form-data">
                         @csrf
+                        @include('user.partials.account-select', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'label' => __('Source Account')])
 
                         <div class="form-group">
                             <label class="form-label required">{{__('Bank')}}</label>

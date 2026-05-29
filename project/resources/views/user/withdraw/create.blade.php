@@ -30,6 +30,7 @@
                             @includeIf('includes.flash')
                             <form action="{{route('user.withdraw.store')}}" method="POST" enctype="multipart/form-data">
                                 @csrf
+                                @include('user.partials.account-select', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'label' => __('Withdraw From Account')])
 
                                 <div class="form-group">
                                     <label class="form-label required">{{__('Withdraw Method')}}</label>

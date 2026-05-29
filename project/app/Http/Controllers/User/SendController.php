@@ -25,20 +25,24 @@ class SendController extends Controller
     }
 
 
-    public function create(){
+    public function create(Request $request, WalletService $wallet){
         $data['saveAccounts'] = SaveAccount::whereUserId(auth()->id())->orderBy('id','desc')->get();
         $data['savedUser'] = NULL;
+        $data['accounts'] = $wallet->activeAccounts(auth()->user());
+        $data['selectedAccount'] = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'));
 
         return view('user.sendmoney.create',$data);
     }
 
-    public function savedUser($no){
+    public function savedUser(Request $request, WalletService $wallet, $no){
         $account = UserAccount::where('account_number', $no)->with('user')->first();
         $data['savedUser'] = $account ? $account->user : User::whereAccountNumber($no)->first();
         if ($data['savedUser'] && $account) {
             $data['savedUser']->account_number = $account->account_number;
         }
         $data['saveAccounts'] = SaveAccount::whereUserId(auth()->id())->orderBy('id','desc')->get();
+        $data['accounts'] = $wallet->activeAccounts(auth()->user());
+        $data['selectedAccount'] = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'));
 
         return view('user.sendmoney.create',$data);
     }
@@ -53,6 +57,9 @@ class SendController extends Controller
             session(['sendstatus'=>0]);
             $data['savedUser'] =  NULL;
             $data['saveAccounts'] = SaveAccount::whereUserId(auth()->id())->orderBy('id','desc')->get();
+            $wallet = app(WalletService::class);
+            $data['accounts'] = $wallet->activeAccounts(auth()->user());
+            $data['selectedAccount'] = null;
 
             return view('user.sendmoney.create',$data);
         }
@@ -60,13 +67,14 @@ class SendController extends Controller
 
     public function store(Request $request, WalletService $wallet){
         $request->validate([
+            'account_id' => 'required',
             'account_number' => 'required',
             'account_name' => 'required',
             'amount' => 'required|numeric|min:0'
         ]);
 
         $user = auth()->user();
-        $account = $wallet->activeAccount($user);
+        $account = $wallet->accountFromRequest($user, $request->account_id);
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->back()->with('unsuccess', $message);
         }
@@ -130,6 +138,7 @@ class SendController extends Controller
         $validator = Validator::make($input, [
             'account_number' => 'required',
             'account_name' => 'required',
+            'account_id' => 'required',
             'amount' => 'required|numeric|min:0'
         ]);
 
@@ -139,9 +148,7 @@ class SendController extends Controller
 
         $wallet = app(WalletService::class);
         $user = auth()->user()->fresh();
-        $account = isset($input['account_id'])
-            ? UserAccount::where('user_id', $user->id)->where('id', $input['account_id'])->first()
-            : $wallet->activeAccount($user);
+        $account = $wallet->accountFromRequest($user, $input['account_id'] ?? null);
 
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->route('send.money.create')->with('unsuccess',$message);

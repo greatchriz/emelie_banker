@@ -81,6 +81,7 @@
                     
                     <form action="{{ route('user.fdr.request') }}" method="POST" enctype="multipart/form-data">
                         @csrf
+                        @include('user.partials.account-select', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'label' => __('Source Account')])
                         <input type="hidden" name="plan_id" value="{{ $data->id }}">
                         <input type="hidden" name="fdr_amount" value="{{ $fdrAmount }}">
                         <input type="hidden" name="profit_amount" value="{{ ($fdrAmount * $data->interest_rate)/100 }}">

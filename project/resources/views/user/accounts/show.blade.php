@@ -10,7 +10,8 @@
       </div>
       <div class="col-auto ms-auto">
         @if($account->status == 'active')
-          <a href="{{ route('user.accounts.switch', $account->id) }}" class="btn btn-primary">{{ __('Select Account') }}</a>
+          <a href="{{ route('user.deposit.create', ['account_id' => $account->id]) }}" class="btn btn-primary">{{ __('Deposit') }}</a>
+          <a href="{{ route('send.money.create', ['account_id' => $account->id]) }}" class="btn btn-outline-primary">{{ __('Transfer') }}</a>
         @endif
       </div>
     </div>

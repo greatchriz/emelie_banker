@@ -20,53 +20,33 @@ class UserLoanController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(WalletService $wallet){
-        $account = $wallet->activeAccount();
-        $data['loans'] = UserLoan::whereUserId(auth()->id())->when($account, function ($query) use ($account) {
-            $query->where('account_id', $account->id);
-        }, function ($query) {
-            $query->whereRaw('1 = 0');
-        })->orderby('id','desc')->paginate(10);
+    public function index(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['loans'] = UserLoan::whereUserId(auth()->id())->when($account, fn ($query) => $query->where('account_id', $account->id))->orderby('id','desc')->paginate(10)->appends($request->only('account_id'));
         return view('user.loan.index',$data);
     }
 
-    public function pending(WalletService $wallet){
-        $account = $wallet->activeAccount();
-        $data['loans'] = UserLoan::whereStatus(0)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
-            $query->where('account_id', $account->id);
-        }, function ($query) {
-            $query->whereRaw('1 = 0');
-        })->orderby('id','desc')->paginate(10);
+    public function pending(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['loans'] = UserLoan::whereStatus(0)->whereUserId(auth()->id())->when($account, fn ($query) => $query->where('account_id', $account->id))->orderby('id','desc')->paginate(10)->appends($request->only('account_id'));
         return view('user.loan.pending',$data);
     }
 
-    public function running(WalletService $wallet){
-        $account = $wallet->activeAccount();
-        $data['loans'] = UserLoan::whereStatus(1)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
-            $query->where('account_id', $account->id);
-        }, function ($query) {
-            $query->whereRaw('1 = 0');
-        })->orderby('id','desc')->paginate(10);
+    public function running(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['loans'] = UserLoan::whereStatus(1)->whereUserId(auth()->id())->when($account, fn ($query) => $query->where('account_id', $account->id))->orderby('id','desc')->paginate(10)->appends($request->only('account_id'));
         return view('user.loan.running',$data);
     }
 
-    public function paid(WalletService $wallet){
-        $account = $wallet->activeAccount();
-        $data['loans'] = UserLoan::whereStatus(3)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
-            $query->where('account_id', $account->id);
-        }, function ($query) {
-            $query->whereRaw('1 = 0');
-        })->orderby('id','desc')->paginate(10);
+    public function paid(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['loans'] = UserLoan::whereStatus(3)->whereUserId(auth()->id())->when($account, fn ($query) => $query->where('account_id', $account->id))->orderby('id','desc')->paginate(10)->appends($request->only('account_id'));
         return view('user.loan.paid',$data);
     }
 
-    public function rejected(WalletService $wallet){
-        $account = $wallet->activeAccount();
-        $data['loans'] = UserLoan::whereStatus(2)->whereUserId(auth()->id())->when($account, function ($query) use ($account) {
-            $query->where('account_id', $account->id);
-        }, function ($query) {
-            $query->whereRaw('1 = 0');
-        })->orderby('id','desc')->paginate(10);
+    public function rejected(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['loans'] = UserLoan::whereStatus(2)->whereUserId(auth()->id())->when($account, fn ($query) => $query->where('account_id', $account->id))->orderby('id','desc')->paginate(10)->appends($request->only('account_id'));
         return view('user.loan.rejected',$data);
     }
 
@@ -84,6 +64,9 @@ class UserLoanController extends Controller
             $data['loanAmount'] = $amount;
             $data['currency'] = Currency::whereIsDefault(1)->first();
             $data['perInstallment'] = ($amount * $plan->per_installment)/100;
+            $wallet = app(WalletService::class);
+            $data['accounts'] = $wallet->activeAccounts(auth()->user());
+            $data['selectedAccount'] = null;
             return view('user.loan.apply',$data);
         }else{
             return redirect()->back()->with('warning','Request Money should be between minium and maximum amount!');
@@ -93,7 +76,8 @@ class UserLoanController extends Controller
     public function loanRequest(Request $request, WalletService $wallet){
 
         $user = auth()->user();
-        $account = $wallet->activeAccount($user);
+        $request->validate(['account_id' => 'required']);
+        $account = $wallet->accountFromRequest($user, $request->account_id);
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->route('user.loans.plan')->with('warning', $message);
         }

@@ -16,14 +16,16 @@ class TransferLogController extends Controller
         $this->middleware('auth');
     }
     
-    public function index(WalletService $wallet){
-        $account = $wallet->activeAccount(auth()->user());
+    public function index(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['accounts'] = auth()->user()->accounts()->orderByDesc('created_at')->orderByDesc('id')->get();
+        $data['selectedAccount'] = $account;
         $data['logs'] = BalanceTransfer::with(['receiver', 'beneficiary.bank', 'bank'])
             ->whereUserId(auth()->id())
             ->when($account, fn ($query) => $query->where('account_id', $account->id))
-            ->when(!$account, fn ($query) => $query->whereRaw('1 = 0'))
             ->orderBy('id','desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->appends($request->only('account_id'));
         return view('user.transfer.index',$data);
     }
 
@@ -54,12 +56,8 @@ class TransferLogController extends Controller
 
     private function findUserTransfer($id)
     {
-        $account = app(WalletService::class)->activeAccount(auth()->user());
-
         return BalanceTransfer::with(['user', 'receiver', 'beneficiary.bank', 'bank'])
             ->whereUserId(auth()->id())
-            ->when($account, fn ($query) => $query->where('account_id', $account->id))
-            ->when(!$account, fn ($query) => $query->whereRaw('1 = 0'))
             ->whereId($id)
             ->firstOrFail();
     }

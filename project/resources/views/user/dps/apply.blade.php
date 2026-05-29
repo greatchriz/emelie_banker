@@ -73,6 +73,7 @@
                     
                     <form action="{{route('user.loan.dpsSubmit')}}" method="POST" enctype="multipart/form-data">
                         @csrf
+                        @include('user.partials.account-select', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'label' => __('Source Account')])
                         <input type="hidden" name="dps_plan_id" value="{{ $data->id }}">
                         <input type="hidden" name="per_installment" value="{{ $data->per_installment }}">
                         <input type="hidden" name="deposit_amount" value="{{ $data->final_amount }}">

@@ -20,21 +20,24 @@ class WireTransferController extends Controller
         $this->middleware('auth');
     }
     
-    public function index(WalletService $wallet){
-        $account = $wallet->activeAccount();
+    public function index(Request $request, WalletService $wallet){
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $data['accounts'] = auth()->user()->accounts()->orderByDesc('created_at')->orderByDesc('id')->get();
+        $data['selectedAccount'] = $account;
         $data['transfers'] = WireTransfer::where('user_id',auth()->id())
             ->when($account, function ($query) use ($account) {
                 $query->where('account_id', $account->id);
-            }, function ($query) {
-                $query->whereRaw('1 = 0');
             })
             ->orderBy('id','desc')
-            ->paginate(20);
+            ->paginate(20)
+            ->appends($request->only('account_id'));
         return view('user.wiretransfer.index',$data);
     }
 
-    public function create(){
+    public function create(Request $request, WalletService $wallet){
         $data['banks'] = WireTransferBank::whereStatus(1)->orderBy('id','desc')->get();
+        $data['accounts'] = $wallet->activeAccounts(auth()->user());
+        $data['selectedAccount'] = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'));
         return view('user.wiretransfer.create',$data);
     }
 
@@ -46,11 +49,12 @@ class WireTransferController extends Controller
             'country' => 'required',
             'account_number' => 'required',
             'account_holder_name' => 'required',
+            'account_id' => 'required',
             'amount' => 'required|numeric|min:0',
         ]);
 
         $user = auth()->user();
-        $account = $wallet->activeAccount($user);
+        $account = $wallet->accountFromRequest($user, $request->account_id);
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->back()->with('unsuccess', $message);
         }
@@ -110,6 +114,7 @@ class WireTransferController extends Controller
             'country' => 'required',
             'account_number' => 'required',
             'account_holder_name' => 'required',
+            'account_id' => 'required',
             'amount' => 'required|numeric|min:0',
         ]);
 
@@ -119,9 +124,7 @@ class WireTransferController extends Controller
 
         $wallet = app(WalletService::class);
         $user = auth()->user()->fresh();
-        $account = isset($input['account_id'])
-            ? UserAccount::where('user_id', $user->id)->where('id', $input['account_id'])->first()
-            : $wallet->activeAccount($user);
+        $account = $wallet->accountFromRequest($user, $input['account_id'] ?? null);
 
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->route('user.wire.transfer.create')->with('unsuccess', $message);

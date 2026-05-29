@@ -14,22 +14,9 @@
           <i class="las la-search text-lg"></i>
         </button>
       </form>
-      @php
-        $headerWallet = app(\App\Services\WalletService::class);
-        $headerActiveAccount = $headerWallet->activeAccount(auth()->user());
-        $headerAccounts = auth()->user()->accounts()->active()->orderByDesc('is_default')->orderBy('id')->get();
-      @endphp
-      <div class="topbar-account max-[860px]:hidden">
-        <select class="form-select" onchange="if(this.value){ window.location.href=this.value; }">
-          @forelse($headerAccounts as $account)
-            <option value="{{ route('user.accounts.switch', $account->id) }}" {{ optional($headerActiveAccount)->id == $account->id ? 'selected' : '' }}>
-              {{ $account->label ?: $account->account_number }}
-            </option>
-          @empty
-            <option>{{ __('No active account') }}</option>
-          @endforelse
-        </select>
-      </div>
+      <a href="{{ route('user.accounts.index') }}" class="topbar-account max-[860px]:hidden rounded-full bg-primary/5 px-4 py-2 text-sm font-semibold text-primary">
+        {{ __('My Accounts') }}
+      </a>
     </div>
 
     <div class="topbar-actions flex items-center gap-3 md:gap-4">

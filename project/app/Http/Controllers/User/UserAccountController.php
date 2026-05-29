@@ -7,7 +7,6 @@ use App\Models\BankPlan;
 use App\Models\UserAccount;
 use App\Services\WalletService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class UserAccountController extends Controller
 {
@@ -20,9 +19,8 @@ class UserAccountController extends Controller
     {
         $wallet->defaultAccount(auth()->user());
         $accounts = auth()->user()->accounts()->with('plan')->orderByDesc('created_at')->orderByDesc('id')->get();
-        $activeAccount = $wallet->activeAccount();
 
-        return view('user.accounts.index', compact('accounts', 'activeAccount'));
+        return view('user.accounts.index', compact('accounts'));
     }
 
     public function create()
@@ -48,17 +46,12 @@ class UserAccountController extends Controller
         $account = UserAccount::where('user_id', auth()->id())->where('id', $id)->firstOrFail();
 
         if (!$account->isActive()) {
-            return redirect()->back()->with('warning', __('You can only switch to an active account.'));
+            return redirect()->back()->with('warning', __('This account is not active. Please contact support if you need help.'));
         }
 
-        session(['active_user_account_id' => $account->id]);
-
-        $redirect = $request->query('redirect');
-        if ($redirect && (Str::startsWith($redirect, url('/')) || (Str::startsWith($redirect, '/') && !Str::startsWith($redirect, '//')))) {
-            return redirect()->to($redirect)->with('success', __('Selected account updated successfully.'));
-        }
-
-        return redirect()->back()->with('success', __('Selected account updated successfully.'));
+        return redirect()
+            ->route('user.accounts.show', $account->id)
+            ->with('success', __('Account opened successfully.'));
     }
 
     public function show($id)

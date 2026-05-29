@@ -20,6 +20,8 @@ use Str;
 class MollieController extends Controller
 {
     public function store(Request $request, WalletService $wallet){
+        $request->validate(['account_id' => 'required']);
+
         $support = [
             'AED',
             'AUD',
@@ -56,7 +58,7 @@ class MollieController extends Controller
             return redirect()->back()->with('warning','Please Select USD Or EUR Currency For Paypal.');
         }
 
-        $account = $wallet->activeAccount(auth()->user());
+        $account = $wallet->accountFromRequest(auth()->user(), $request->account_id);
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->back()->with('warning', $message);
         }
@@ -106,7 +108,10 @@ class MollieController extends Controller
 
             $user = auth()->user();
             $wallet = app(WalletService::class);
-            $account = UserAccount::where('user_id', $user->id)->where('id', $deposit->account_id)->first() ?: $wallet->defaultAccount($user);
+            $account = $wallet->accountFromRequest($user, $deposit->account_id);
+            if ($message = $wallet->ensureActive($account)) {
+                return redirect()->route('user.deposit.create')->with('unsuccess', $message);
+            }
             $wallet->credit($account, $amountToAdd);
             $wallet->log($user, $account, $amountToAdd, "Deposit", "plus", $deposit->deposit_number);
 

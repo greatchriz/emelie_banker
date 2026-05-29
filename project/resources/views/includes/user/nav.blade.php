@@ -16,7 +16,7 @@
 
       @php
         $modules = explode(" , ", $gs->user_module);
-        $activeSidebarAccount = app(\App\Services\WalletService::class)->activeAccount(auth()->user());
+        $sidebarPortfolioBalance = auth()->user()->accounts()->active()->sum('balance');
       @endphp
 
       <div class="menu-container pb-28">
@@ -218,7 +218,7 @@
                 <a href="{{ route('user.dashboard') }}" class="group flex w-full items-center justify-between rounded-xl px-4 py-2.5 lg:py-3 3xl:px-6">
                   <span class="flex items-center gap-2">
                     <span class="-mb-1 self-center text-primary"><i class="las la-wallet"></i></span>
-                    <span class="font-medium">{{ showprice($activeSidebarAccount->balance ?? 0, $currency) }}</span>
+                    <span class="font-medium">{{ showprice($sidebarPortfolioBalance, $currency) }}</span>
                   </span>
                 </a>
                 @if (!in_array('Deposit',$modules))

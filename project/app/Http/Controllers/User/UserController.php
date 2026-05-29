@@ -32,7 +32,7 @@ class UserController extends Controller
     public function index(WalletService $wallet)
     {
         $data['user'] = Auth::user();  
-        $data['activeAccount'] = $wallet->activeAccount($data['user']);
+        $data['activeAccounts'] = $wallet->activeAccounts($data['user']);
         $data['accounts'] = $data['user']->accounts()
             ->with('plan')
             ->withCount([
@@ -47,33 +47,28 @@ class UserController extends Controller
         $data['accounts']->each(function ($account) {
             $account->setRelation('latestTransactions', $account->transactions()->latest()->limit(5)->get());
         });
-        $data['transactions'] = $data['activeAccount']
-            ? Transaction::whereUserId(auth()->id())->where('account_id', $data['activeAccount']->id)->orderBy('id','desc')->limit(5)->get()
-            : collect();
+        $data['transactions'] = Transaction::whereUserId(auth()->id())->orderBy('id','desc')->limit(5)->get();
         $data['recentTransfers'] = BalanceTransfer::with(['receiver', 'beneficiary.bank', 'bank'])
             ->whereUserId(auth()->id())
-            ->when($data['activeAccount'], function ($query) use ($data) {
-                $query->where('account_id', $data['activeAccount']->id);
-            })
             ->orderBy('id','desc')
             ->limit(5)
             ->get();
         return view('user.dashboard',$data);
     }
 
-    public function transaction(WalletService $wallet)
+    public function transaction(Request $request, WalletService $wallet)
     {
         $user = Auth::user();
-        $activeAccount = $wallet->activeAccount($user);
+        $accounts = $user->accounts()->orderByDesc('created_at')->orderByDesc('id')->get();
+        $selectedAccount = $wallet->accountFromRequest($user, $request->query('account_id'), false);
         $transactions = Transaction::whereUserId(auth()->id())
-            ->when($activeAccount, function ($query) use ($activeAccount) {
-                $query->where('account_id', $activeAccount->id);
-            }, function ($query) {
-                $query->whereRaw('1 = 0');
+            ->when($selectedAccount, function ($query) use ($selectedAccount) {
+                $query->where('account_id', $selectedAccount->id);
             })
             ->orderBy('id','desc')
-            ->paginate(20);
-        return view('user.transactions',compact('user','transactions'));
+            ->paginate(20)
+            ->appends($request->only('account_id'));
+        return view('user.transactions',compact('user','transactions','accounts','selectedAccount'));
     }
 
     public function profile()

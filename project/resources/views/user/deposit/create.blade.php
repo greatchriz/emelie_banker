@@ -25,6 +25,7 @@
                     @includeIf('includes.flash')
                     <form id="deposit-form" action="" method="POST" enctype="multipart/form-data">
                         @csrf
+                        @include('user.partials.account-select', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'label' => __('Deposit Account')])
                         <div class="form-group">
                             <label class="form-label required">{{__('Payment Method')}}</label>
                             <select name="method" id="withmethod" class="form-select" required>

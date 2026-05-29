@@ -18,7 +18,8 @@ use net\authorize\api\controller as AnetController;
 class AuthorizeController extends Controller
 {
     public function store(Request $request, WalletService $wallet){
-        $account = $wallet->activeAccount(auth()->user());
+        $request->validate(['account_id' => 'required']);
+        $account = $wallet->accountFromRequest(auth()->user(), $request->account_id);
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->back()->with('unsuccess', $message);
         }

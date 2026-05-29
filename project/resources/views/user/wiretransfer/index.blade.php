@@ -34,6 +34,9 @@
         <div class="row row-cards">
             <div class="col-12">
                 <div class="card">
+                    <div class="card-body border-bottom">
+                        @include('user.partials.account-filter', ['accounts' => $accounts, 'selectedAccount' => $selectedAccount, 'action' => route('user.wire.transfer.index')])
+                    </div>
                     @if (count($transfers) == 0)
                         <h3 class="text-center py-5">{{__('No Wire Transfer Data Found')}}</h3>
                     @else 

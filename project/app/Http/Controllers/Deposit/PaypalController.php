@@ -38,11 +38,12 @@ class PaypalController extends Controller
 
     public function store(Request $request, WalletService $wallet)
     {
+        $request->validate(['account_id' => 'required']);
 
         if (!in_array($request->currency_code, $this->support_currencies)) {
             return redirect()->back()->with('warning', 'Please Select USD Or EUR Currency For Paypal.');
         }
-        $account = $wallet->activeAccount(auth()->user());
+        $account = $wallet->accountFromRequest(auth()->user(), $request->account_id);
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->back()->with('warning', $message);
         }
@@ -152,7 +153,10 @@ class PaypalController extends Controller
             $deposit->save();
 
             $wallet = app(WalletService::class);
-            $account = UserAccount::where('user_id', $user->id)->where('id', $deposit->account_id)->first() ?: $wallet->defaultAccount($user);
+            $account = $wallet->accountFromRequest($user, $deposit->account_id);
+            if ($message = $wallet->ensureActive($account)) {
+                return redirect()->route('user.deposit.create')->with('unsuccess', $message);
+            }
             $wallet->credit($account, $deposit->amount);
             $wallet->log($user, $account, $deposit->amount, "Deposit", "plus", $deposit->deposit_number);
 

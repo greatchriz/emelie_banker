@@ -24,24 +24,27 @@ class WithdrawController extends Controller
         $this->middleware('auth:web');
     }
 
-    public function index(WalletService $wallet)
+    public function index(Request $request, WalletService $wallet)
     {
-        $account = $wallet->activeAccount();
+        $account = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'), false);
+        $accounts = auth()->user()->accounts()->orderByDesc('created_at')->orderByDesc('id')->get();
+        $selectedAccount = $account;
         $withdraws = Withdraw::whereUserId(auth()->id())
             ->when($account, function ($query) use ($account) {
                 $query->where('account_id', $account->id);
-            }, function ($query) {
-                $query->whereRaw('1 = 0');
             })
             ->orderBy('id','desc')
-            ->paginate(10);
-        return view('user.withdraw.index',compact('withdraws'));
+            ->paginate(10)
+            ->appends($request->only('account_id'));
+        return view('user.withdraw.index',compact('withdraws','accounts','selectedAccount'));
     }
 
-    public function create()
+    public function create(Request $request, WalletService $wallet)
     {
         $data['sign'] = Currency::whereIsDefault(1)->first();
         $data['methods'] = WithdrawMethod::whereStatus(1)->orderBy('id','desc')->get();
+        $data['accounts'] = $wallet->activeAccounts(auth()->user());
+        $data['selectedAccount'] = $wallet->accountFromRequest(auth()->user(), $request->query('account_id'));
         return view('user.withdraw.create' ,$data);
     }
 
@@ -49,11 +52,12 @@ class WithdrawController extends Controller
     public function store(Request $request, WalletService $wallet)
     {
         $request->validate([
+            'account_id' => 'required',
             'amount' => 'required|gt:0',
         ]);
 
         $user = auth()->user();
-        $account = $wallet->activeAccount($user);
+        $account = $wallet->accountFromRequest($user, $request->account_id);
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->back()->with('unsuccess', $message);
         }

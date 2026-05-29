@@ -19,12 +19,14 @@ class PaystackController extends Controller
     }
 
     public function store(Request $request, WalletService $wallet){
+        $request->validate(['account_id' => 'required']);
+
         if($request->currency_code != "NGN")
         {
             return redirect()->back()->with('unsuccess','Please Select NGN Currency For Paystack.');
         }
 
-        $account = $wallet->activeAccount(auth()->user());
+        $account = $wallet->accountFromRequest(auth()->user(), $request->account_id);
         if ($message = $wallet->ensureActive($account)) {
             return redirect()->back()->with('unsuccess', $message);
         }
