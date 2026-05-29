@@ -46,47 +46,47 @@
                         <div class="row g-3">
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label required">{{__('User Name')}}</label>
-                              <input name="name" class="form-control form--control" autocomplete="off" placeholder="{{__('User Name')}}" type="text" value="{{ $user->name }}" required readonly>
+                              <label class="form-label">{{__('User Name')}}</label>
+                              <input name="name" class="form-control form--control" autocomplete="off" placeholder="{{__('User Name')}}" type="text" value="{{ $user->name }}" readonly>
                             </div>
                           </div>
 
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label required">{{__('Email Address')}}</label>
-                              <input name="email" class="form-control form--control" autocomplete="off" placeholder="{{__('Email Address')}}" type="email" value="{{ $user->email }}" required readonly>
+                              <label class="form-label">{{__('Email Address')}}</label>
+                              <input name="email" class="form-control form--control" autocomplete="off" placeholder="{{__('Email Address')}}" type="email" value="{{ $user->email }}" readonly>
                             </div>
                           </div>
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label required">{{__('Phone Number')}}</label>
-                              <input name="phone" class="form-control form--control" autocomplete="off" placeholder="{{__('Phone Number')}}" type="tel" value="{{ $user->phone }}" required>
-                            </div>
-                          </div>
-
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label class="form-label required">{{__('Zip')}}</label>
-                              <input name="zip" class="form-control form--control" autocomplete="off" placeholder="{{__('Zip')}}" type="text" value="{{ $user->zip }}" required>
-                            </div>
-                          </div>
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label class="form-label required">{{__('City')}}</label>
-                              <input name="city" class="form-control form--control" autocomplete="off" placeholder="{{__('City')}}" type="text" value="{{ $user->city }}" required>
+                              <label class="form-label">{{__('Phone Number')}}</label>
+                              <input name="phone" class="form-control form--control" autocomplete="off" placeholder="{{__('Phone Number')}}" type="tel" value="{{ $user->phone }}">
                             </div>
                           </div>
 
                           <div class="col-md-6">
                             <div class="form-group">
-                              <label class="form-label required">{{__('Fax')}}</label>
-                              <input name="fax" class="form-control form--control" autocomplete="off" placeholder="{{__('Fax')}}" type="text" value="{{ $user->fax }}" required>
+                              <label class="form-label">{{__('Zip')}}</label>
+                              <input name="zip" class="form-control form--control" autocomplete="off" placeholder="{{__('Zip')}}" type="text" value="{{ $user->zip }}">
+                            </div>
+                          </div>
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label">{{__('City')}}</label>
+                              <input name="city" class="form-control form--control" autocomplete="off" placeholder="{{__('City')}}" type="text" value="{{ $user->city }}">
+                            </div>
+                          </div>
+
+                          <div class="col-md-6">
+                            <div class="form-group">
+                              <label class="form-label">{{__('Fax')}}</label>
+                              <input name="fax" class="form-control form--control" autocomplete="off" placeholder="{{__('Fax')}}" type="text" value="{{ $user->fax }}">
                             </div>
                           </div>
                           <div class="col-md-12">
                             <div class="form-group">
-                              <label class="form-label required">{{__('Address')}}</label>
-                              <input name="address" class="form-control form--control" autocomplete="off" placeholder="{{__('Address')}}" type="text" value="{{ $user->address }}" required>
+                              <label class="form-label">{{__('Address')}}</label>
+                              <input name="address" class="form-control form--control" autocomplete="off" placeholder="{{__('Address')}}" type="text" value="{{ $user->address }}">
                             </div>
                           </div>
                         </div>

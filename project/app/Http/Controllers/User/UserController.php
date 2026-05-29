@@ -80,11 +80,17 @@ class UserController extends Controller
     public function profileupdate(Request $request)
     {
         $request->validate([
-            'photo' => 'mimes:jpeg,jpg,png,svg',
-            'email' => 'unique:users,email,'.Auth::user()->id
+            'photo' => 'nullable|mimes:jpeg,jpg,png,svg',
+            'name' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:users,email,'.Auth::user()->id,
+            'phone' => 'nullable|string|max:255',
+            'zip' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'fax' => 'nullable|string|max:255',
+            'address' => 'nullable|string|max:255',
         ]);
 
-        $input = $request->all();  
+        $input = $request->only(['name', 'email', 'phone', 'zip', 'city', 'fax', 'address']);
         $data = Auth::user();        
         if ($file = $request->file('photo')) 
         {              
