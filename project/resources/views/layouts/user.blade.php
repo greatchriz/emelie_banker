@@ -68,6 +68,65 @@
     <script src="{{ asset('assets/user/bankhub/js/libs/nice-select2.js') }}"></script>
     <script src="{{ asset('assets/user/bankhub/js/charts.js') }}"></script>
     <script src="{{ asset('assets/user/bankhub/js/main.js') }}"></script>
+    <script>
+      'use strict';
+
+      (function () {
+        var storageKey = 'bankhubBalanceVisible';
+
+        function balancesAreVisible() {
+          try {
+            return localStorage.getItem(storageKey) !== 'false';
+          } catch (error) {
+            return true;
+          }
+        }
+
+        function rememberBalanceVisibility(visible) {
+          try {
+            localStorage.setItem(storageKey, visible ? 'true' : 'false');
+          } catch (error) {
+            return false;
+          }
+        }
+
+        function applyBalanceVisibility(visible) {
+          document.querySelectorAll('[data-balance-value]').forEach(function (element) {
+            if (!element.dataset.visibleValue) {
+              element.dataset.visibleValue = element.textContent.trim();
+            }
+
+            element.textContent = visible ? element.dataset.visibleValue : (element.dataset.hiddenValue || '********');
+          });
+
+          document.querySelectorAll('[data-balance-toggle]').forEach(function (button) {
+            button.setAttribute('aria-pressed', visible ? 'false' : 'true');
+            button.setAttribute('aria-label', visible ? "{{ __('Hide balance') }}" : "{{ __('Show balance') }}");
+            button.setAttribute('title', visible ? "{{ __('Hide balance') }}" : "{{ __('Show balance') }}");
+
+            var icon = button.querySelector('i');
+            if (icon) {
+              icon.classList.toggle('la-eye', !visible);
+              icon.classList.toggle('la-eye-slash', visible);
+            }
+          });
+        }
+
+        window.toggleBalanceVisibility = function () {
+          var visible = !balancesAreVisible();
+          rememberBalanceVisibility(visible);
+          applyBalanceVisibility(visible);
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+          applyBalanceVisibility(balancesAreVisible());
+
+          document.querySelectorAll('[data-balance-toggle]').forEach(function (button) {
+            button.addEventListener('click', window.toggleBalanceVisibility);
+          });
+        });
+      })();
+    </script>
     @stack('js')
 
     <script>

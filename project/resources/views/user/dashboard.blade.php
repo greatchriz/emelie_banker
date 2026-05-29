@@ -52,7 +52,12 @@
       <div class="bb-dashed mb-5 flex flex-wrap items-center justify-between gap-3 pb-4">
         <div>
           <span class="text-sm text-n100">{{ __('Total Portfolio Balance') }}</span>
-          <h2 class="mt-2 text-3xl font-semibold">{{ showprice($accounts->where('status', 'active')->sum('balance'), $currency) }}</h2>
+          <div class="mt-2 flex items-center gap-3">
+            <h2 class="text-3xl font-semibold" data-balance-value>{{ showprice($accounts->where('status', 'active')->sum('balance'), $currency) }}</h2>
+            <button type="button" class="inline-flex size-9 items-center justify-center rounded-full border border-n30 bg-secondary/5 text-primary duration-300 hover:bg-primary hover:text-white" data-balance-toggle aria-label="{{ __('Hide balance') }}" title="{{ __('Hide balance') }}">
+              <i class="las la-eye-slash text-xl"></i>
+            </button>
+          </div>
         </div>
         <div class="flex flex-wrap gap-2 text-sm">
           <span class="rounded-full bg-[#20B757]/10 px-3 py-1 font-medium text-[#20B757]">{{ $accounts->where('status', 'active')->count() }} {{ __('Active') }}</span>
@@ -72,7 +77,7 @@
             $statusClass = $isActive
               ? 'bg-[#20B757]/10 text-[#20B757]'
               : ($isPending ? 'bg-[#FFC861]/15 text-[#8A6100]' : 'bg-[#EF4444]/10 text-[#EF4444]');
-            $panelStyle = $isBlocked ? 'filter: grayscale(1); opacity: .58;' : '';
+            $panelStyle = $isBlocked ? 'filter: grayscale(.18);' : '';
             $disabledTitle = $isBlocked ? __('Account Blocked') : __('Account Unavailable');
             $disabledMessage = $isBlocked
               ? __('This account has been blocked by admin. Please contact support for assistance.')
@@ -85,13 +90,14 @@
             ];
           @endphp
 
-          <div class="relative overflow-hidden rounded-lg border {{ $isBlocked ? 'border-[#EF4444]/30 bg-[#EF4444]/5' : 'border-n30 bg-n0' }} p-4 shadow-sm">
+          <div class="relative overflow-hidden rounded-lg border {{ $isBlocked ? 'border-[#EF4444]/40 bg-[#FFF7F7] dark:bg-[#2A171A]' : 'border-n30 bg-n0' }} p-4 shadow-sm">
             @if($isBlocked)
-              <div class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center" style="background: rgba(255, 255, 255, .58);">
-                <span class="inline-flex items-center gap-2 rounded-full bg-[#EF4444] px-4 py-2 text-sm font-semibold text-white shadow-lg">
+              <div class="mb-4 flex items-center justify-between gap-3 rounded-lg border border-[#EF4444]/25 bg-[#EF4444]/10 px-3 py-2 text-[#EF4444]">
+                <span class="inline-flex items-center gap-2 text-sm font-semibold">
                   <i class="las la-lock"></i>
                   {{ __('Blocked Account') }}
                 </span>
+                <span class="text-xs font-medium">{{ __('Contact support') }}</span>
               </div>
             @endif
 
@@ -114,7 +120,12 @@
               <div class="mb-4">
                 <div>
                   <span class="text-xs text-n100">{{ __('Balance') }}</span>
-                  <h3 class="mt-1 text-2xl font-semibold">{{ showprice($account->balance, $currency) }}</h3>
+                  <div class="mt-1 flex items-center gap-3">
+                    <h3 class="text-2xl font-semibold" data-balance-value>{{ showprice($account->balance, $currency) }}</h3>
+                    <button type="button" class="inline-flex size-8 items-center justify-center rounded-full border border-n30 bg-white text-primary duration-300 hover:bg-primary hover:text-white" data-balance-toggle aria-label="{{ __('Hide balance') }}" title="{{ __('Hide balance') }}">
+                      <i class="las la-eye-slash text-lg"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -128,8 +139,8 @@
                       <span class="text-xs font-medium">{{ $action['label'] }}</span>
                     </a>
                   @else
-                    <button type="button" class="flex min-h-20 flex-col items-center justify-center gap-2 rounded-lg border border-n30 bg-white p-3 text-center text-n700" onclick="openAccountStatusModal(@js($disabledTitle), @js($disabledMessage), @js($isBlocked))">
-                      <span class="flex size-10 items-center justify-center rounded-full bg-secondary/20 text-n700">
+                    <button type="button" class="flex min-h-20 flex-col items-center justify-center gap-2 rounded-lg border {{ $isBlocked ? 'border-[#EF4444]/25 bg-[#2F2F35] text-white' : 'border-n30 bg-white text-n700' }} p-3 text-center" onclick="openAccountStatusModal(@js($disabledTitle), @js($disabledMessage), @js($isBlocked))">
+                      <span class="flex size-10 items-center justify-center rounded-full {{ $isBlocked ? 'bg-white/10 text-white' : 'bg-secondary/20 text-n700' }}">
                         <i class="las {{ $isBlocked ? 'la-lock' : $action['icon'] }} text-xl"></i>
                       </span>
                       <span class="text-xs font-medium">{{ $action['label'] }}</span>

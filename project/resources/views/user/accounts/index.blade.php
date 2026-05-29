@@ -31,7 +31,12 @@
                 {{ ucfirst($account->status) }}
               </span>
             </div>
-            <h2 class="my-3">{{ showprice($account->balance, $currency) }}</h2>
+            <div class="my-3 d-flex align-items-center gap-2">
+              <h2 class="mb-0" data-balance-value>{{ showprice($account->balance, $currency) }}</h2>
+              <button type="button" class="btn btn-outline-primary btn-icon" data-balance-toggle aria-label="{{ __('Hide balance') }}" title="{{ __('Hide balance') }}">
+                <i class="las la-eye-slash"></i>
+              </button>
+            </div>
             <p class="mb-1">{{ __('Plan') }}: {{ $account->plan->title ?? __('No Plan') }}</p>
             <p class="mb-3">{{ __('Type') }}: {{ $account->is_default ? __('Default') : __('Additional') }}</p>
             <div class="d-flex flex-wrap gap-2">
