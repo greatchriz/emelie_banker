@@ -39,6 +39,7 @@
       align-items: center;
       justify-content: center;
       border-radius: 999px;
+      background: var(--quick-action-icon-bg, #20B757);
       color: #fff;
       line-height: 1;
     }
@@ -309,40 +310,40 @@
       @endphp
       <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
         <a href="{{ route('user.accounts.index') }}" class="{{ $quickActionCard }}">
-          <span class="{{ $quickActionIcon }} bg-[#4371E9]"><i class="las la-credit-card text-2xl"></i></span>
+          <span class="{{ $quickActionIcon }}" style="--quick-action-icon-bg: #4371E9;"><i class="las la-credit-card text-2xl"></i></span>
           <span class="{{ $quickActionLabel }}">{{ __('My Accounts') }}</span>
         </a>
 
         @if (!in_array('Deposit',$modules))
           <a href="{{ route('user.deposit.index') }}" class="{{ $quickActionCard }}">
-            <span class="{{ $quickActionIcon }} bg-[#20B757]"><i class="las la-piggy-bank text-2xl"></i></span>
+            <span class="{{ $quickActionIcon }}" style="--quick-action-icon-bg: #20B757;"><i class="las la-piggy-bank text-2xl"></i></span>
             <span class="{{ $quickActionLabel }}">{{ __('Deposit') }}</span>
           </a>
         @endif
 
         @if ($gs->withdraw_status == 1 && !in_array('Withdraw',$modules))
           <a href="{{ route('user.withdraw.index') }}" class="{{ $quickActionCard }}">
-            <span class="{{ $quickActionIcon }} bg-[#8B5CF6]"><i class="las la-wallet text-2xl"></i></span>
+            <span class="{{ $quickActionIcon }}" style="--quick-action-icon-bg: #8B5CF6;"><i class="las la-wallet text-2xl"></i></span>
             <span class="{{ $quickActionLabel }}">{{ __('Withdraw') }}</span>
           </a>
         @endif
 
         @if (!in_array('Wire Transfer',$modules))
           <a href="{{ route('user.wire.transfer.index') }}" class="{{ $quickActionCard }}">
-            <span class="{{ $quickActionIcon }} bg-[#4371E9]"><i class="las la-university text-2xl"></i></span>
+            <span class="{{ $quickActionIcon }}" style="--quick-action-icon-bg: #4371E9;"><i class="las la-university text-2xl"></i></span>
             <span class="{{ $quickActionLabel }}">{{ __('Wire Transfer') }}</span>
           </a>
         @endif
 
         <a href="{{ route('user.beneficiaries.index') }}" class="{{ $quickActionCard }}">
-          <span class="{{ $quickActionIcon }} bg-[#FFC861]"><i class="las la-user-friends text-2xl"></i></span>
+          <span class="{{ $quickActionIcon }}" style="--quick-action-icon-bg: #FFC861;"><i class="las la-user-friends text-2xl"></i></span>
           <span class="{{ $quickActionLabel }}">{{ __('Beneficiaries') }}</span>
         </a>
 
         @if (!in_array('Transfer',$modules))
           <details class="quick-action-dropdown relative">
             <summary class="{{ $quickActionCard }} cursor-pointer list-none">
-              <span class="{{ $quickActionIcon }} bg-[#0EA5E9]"><i class="las la-exchange-alt text-2xl"></i></span>
+              <span class="{{ $quickActionIcon }}" style="--quick-action-icon-bg: #0EA5E9;"><i class="las la-exchange-alt text-2xl"></i></span>
               <span class="{{ $quickActionLabel }}">{{ __('Transfer') }}</span>
               <i class="las la-angle-down quick-action-chevron"></i>
             </summary>
@@ -357,7 +358,7 @@
         @if (!in_array('Request Money',$modules))
           <details class="quick-action-dropdown relative">
             <summary class="{{ $quickActionCard }} cursor-pointer list-none">
-              <span class="{{ $quickActionIcon }} bg-[#20B757]"><i class="las la-download text-2xl"></i></span>
+              <span class="{{ $quickActionIcon }}" style="--quick-action-icon-bg: #20B757;"><i class="las la-download text-2xl"></i></span>
               <span class="{{ $quickActionLabel }}">{{ __('Request Money') }}</span>
               <i class="las la-angle-down quick-action-chevron"></i>
             </summary>
@@ -372,7 +373,7 @@
         @if (!in_array('Loan',$modules))
           <details class="quick-action-dropdown relative">
             <summary class="{{ $quickActionCard }} cursor-pointer list-none">
-              <span class="{{ $quickActionIcon }} bg-[#F59E0B]"><i class="las la-hand-holding-usd text-2xl"></i></span>
+              <span class="{{ $quickActionIcon }}" style="--quick-action-icon-bg: #F59E0B;"><i class="las la-hand-holding-usd text-2xl"></i></span>
               <span class="{{ $quickActionLabel }}">{{ __('Loan') }}</span>
               <i class="las la-angle-down quick-action-chevron"></i>
             </summary>
@@ -390,7 +391,7 @@
         @if (!in_array('DPS',$modules))
           <details class="quick-action-dropdown relative">
             <summary class="{{ $quickActionCard }} cursor-pointer list-none">
-              <span class="{{ $quickActionIcon }} bg-[#14B8A6]"><i class="las la-warehouse text-2xl"></i></span>
+              <span class="{{ $quickActionIcon }}" style="--quick-action-icon-bg: #14B8A6;"><i class="las la-warehouse text-2xl"></i></span>
               <span class="{{ $quickActionLabel }}">{{ __('DPS') }}</span>
               <i class="las la-angle-down quick-action-chevron"></i>
             </summary>
@@ -406,7 +407,7 @@
         @if (!in_array('FDR',$modules))
           <details class="quick-action-dropdown relative">
             <summary class="{{ $quickActionCard }} cursor-pointer list-none">
-              <span class="{{ $quickActionIcon }} bg-[#6366F1]"><i class="las la-user-shield text-2xl"></i></span>
+              <span class="{{ $quickActionIcon }}" style="--quick-action-icon-bg: #6366F1;"><i class="las la-user-shield text-2xl"></i></span>
               <span class="{{ $quickActionLabel }}">{{ __('FDR') }}</span>
               <i class="las la-angle-down quick-action-chevron"></i>
             </summary>
@@ -421,13 +422,13 @@
 
         @if (!in_array('Pricing Plan',$modules))
           <a href="{{ route('user.package.index') }}" class="{{ $quickActionCard }}">
-            <span class="{{ $quickActionIcon }} bg-[#22C55E]"><i class="las la-layer-group text-2xl"></i></span>
+            <span class="{{ $quickActionIcon }}" style="--quick-action-icon-bg: #22C55E;"><i class="las la-layer-group text-2xl"></i></span>
             <span class="{{ $quickActionLabel }}">{{ __('Pricing Plan') }}</span>
           </a>
         @endif
 
         <button type="button" class="{{ $quickActionCard }}" onclick="openJivoSupportChat()">
-          <span class="{{ $quickActionIcon }} bg-[#EF4444]"><i class="las la-life-ring text-2xl"></i></span>
+          <span class="{{ $quickActionIcon }}" style="--quick-action-icon-bg: #EF4444;"><i class="las la-life-ring text-2xl"></i></span>
           <span class="{{ $quickActionLabel }}">{{ __('Support') }}</span>
         </button>
       </div>
