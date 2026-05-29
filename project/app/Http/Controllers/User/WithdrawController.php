@@ -96,7 +96,7 @@ class WithdrawController extends Controller
         $finalamount = $amount - $fee;
         
         if($finalamount < 0){
-            return redirect()->back()->with('unsuccess','Request Amount should be greater than this '.$amountToAdd.' (USD)');
+            return redirect()->back()->with('unsuccess','Request Amount should be greater than this '.formatMoneyAmount($amountToAdd).' (USD)');
         }
 
         if($finalamount > $account->balance){
@@ -123,7 +123,7 @@ class WithdrawController extends Controller
 
         $wallet->log($user, $account, $finalamount, "Payout", "minus", $txnid);
 
-        return redirect()->back()->with('success','Withdraw Request Amount : '.$request->amount.' Fee : '.$messagefee.' = '.$messagefinal.' ('.$currency->name.') Sent Successfully.');
+        return redirect()->back()->with('success','Withdraw Request Amount : '.formatMoneyAmount($request->amount).' Fee : '.formatMoneyAmount($messagefee).' = '.formatMoneyAmount($messagefinal).' ('.$currency->name.') Sent Successfully.');
 
     }
 

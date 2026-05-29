@@ -143,7 +143,7 @@ class InstamojoController extends Controller
                mail($to,$subject,$msg,$headers);            
             }
 
-            return redirect()->route('user.deposit.create')->with('success','Deposit amount '.$input['amount'].' ('.$input['currency_code'].') successfully!');
+            return redirect()->route('user.deposit.create')->with('success','Deposit amount '.formatMoneyAmount($input['amount']).' ('.$input['currency_code'].') successfully!');
 
         }
         return redirect()->route('user.deposit.create')->with('unsuccess','Something Went wrong!');

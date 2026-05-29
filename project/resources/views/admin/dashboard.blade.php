@@ -285,7 +285,7 @@
           <div class="row align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-uppercase mb-1">{{ __('Total Deposit Amount') }}</div>
-              <div class="h6 mb-0 mt-2 font-weight-bold text-gray-800">{{ round($depositAmount,2) }} {{ $currency->name}} </div>
+              <div class="h6 mb-0 mt-2 font-weight-bold text-gray-800">{{ showNameAmount($depositAmount) }} </div>
             </div>
             <div class="col-auto">
               <i class="fas fa-dollar-sign fa-2x text-success"></i>
@@ -301,7 +301,7 @@
           <div class="row align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-uppercase mb-1">{{ __('Total Withdraw Amount') }}</div>
-              <div class="h6 mb-0 mt-2 font-weight-bold text-gray-800">{{ round($withdrawAmount,2) }} {{ $currency->name}}</div>
+              <div class="h6 mb-0 mt-2 font-weight-bold text-gray-800">{{ showNameAmount($withdrawAmount) }}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-dollar-sign fa-2x text-success"></i>
@@ -317,7 +317,7 @@
           <div class="row align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-uppercase mb-1">{{ __('Total Withdraw Charge Amount') }}</div>
-              <div class="h6 mb-0 mt-2 font-weight-bold text-gray-800">{{ round($withdrawChargeAmount,2) }} {{ $currency->name}}</div>
+              <div class="h6 mb-0 mt-2 font-weight-bold text-gray-800">{{ showNameAmount($withdrawChargeAmount) }}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-dollar-sign fa-2x text-success"></i>

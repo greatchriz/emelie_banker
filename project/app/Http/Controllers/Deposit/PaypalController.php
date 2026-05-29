@@ -163,7 +163,7 @@ class PaypalController extends Controller
             Session::forget('deposit_data');
             Session::forget('deposit_number');
 
-            return redirect()->route('user.deposit.create')->with('success', 'Deposit amount ' . $deposit->amount . ' (USD) successfully!');
+            return redirect()->route('user.deposit.create')->with('success', 'Deposit amount ' . formatMoneyAmount($deposit->amount) . ' (USD) successfully!');
 
         } else {
             return redirect()->back()->with('error', __('Payment failed'));

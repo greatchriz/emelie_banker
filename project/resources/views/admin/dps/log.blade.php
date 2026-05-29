@@ -34,7 +34,7 @@
                 <tr>
                     <td><span class="text-info">{{ $loop->iteration }}</span></td>
                     <td>{{ $data->created_at->toDateString()}}</td>
-                    <td>{{$currency->sign}} {{$data->amount}}</td>
+                    <td>{{ showprice($data->amount, $currency) }}</td>
                 </tr>
               @endforeach
           </tbody>

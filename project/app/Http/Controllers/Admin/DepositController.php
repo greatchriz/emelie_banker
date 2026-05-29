@@ -36,7 +36,7 @@ class DepositController extends Controller
                         ->editColumn('amount', function(Deposit $data) {
                             $gs = Generalsetting::find(1);
                             $defaultCurrency = Currency::where('is_default',1)->first();
-                            return $defaultCurrency->sign.round($data->amount*$defaultCurrency->value);
+                            return showprice($data->amount, $defaultCurrency);
                         })
                         ->editColumn('status', function(Deposit $data) {
                             $status = $data->status == 'pending' ? '<span class="badge badge-warning">pending</span>' : '<span class="badge badge-success">completed</span>';

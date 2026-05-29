@@ -24,9 +24,8 @@ class PlanController extends Controller
          return Datatables::of($datas)
 
                             ->editColumn('price', function(Product $data) {
-                                $sign = Currency::where('is_default','=',1)->first();
-                                $price = $sign->sign.$data->price;
-                                return  $price;
+                                $currency = Currency::where('is_default','=',1)->first();
+                                return showprice($data->price, $currency);
                             }) 
                             ->addColumn('action', function(Product $data) {
 

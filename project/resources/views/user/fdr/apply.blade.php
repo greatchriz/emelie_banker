@@ -36,7 +36,7 @@
                                 <td>
                                     <p class="strong mb-1">{{__('FDR Amount')}}</p>
                                 </td>
-                                <td class="text-end">{{ $currency->sign }} {{ $fdrAmount }}</td>
+                                <td class="text-end">{{ showprice($fdrAmount, $currency) }}</td>
                             </tr>
 
                             <tr>

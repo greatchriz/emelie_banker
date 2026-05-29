@@ -143,10 +143,10 @@ class StripeController extends Controller
                        mail($to,$subject,$msg,$headers);            
                     }
 
-                    return redirect()->route('user.deposit.create')->with('success','Deposit amount '.$request['amount'].' (USD) successfully!');
+                    return redirect()->route('user.deposit.create')->with('success','Deposit amount '.formatMoneyAmount($request['amount']).' (USD) successfully!');
                 }
                 else{
-                    return redirect()->route('user.deposit.create')->with('unsuccess','Deposit amount '.$request['amount'].' (USD) failed!');
+                    return redirect()->route('user.deposit.create')->with('unsuccess','Deposit amount '.formatMoneyAmount($request['amount']).' (USD) failed!');
                 }
                 
             }catch (Exception $e){

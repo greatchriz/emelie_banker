@@ -12,11 +12,17 @@ use Illuminate\Support\Facades\Session;
         }
     }
 
+    if(!function_exists('formatMoneyAmount')){
+        function formatMoneyAmount($amount){
+            return number_format((float) $amount, 2, '.', ',');
+        }
+    }
+
     if(!function_exists('showPrice')){
         function showPrice($price,$currency){
             $gs = Generalsetting::first();
 
-            $price = round(($price) * $currency->value,2);
+            $price = formatMoneyAmount(($price) * $currency->value);
             if($gs->currency_format == 0){
                 return $currency->sign. $price;
             }
@@ -31,7 +37,7 @@ use Illuminate\Support\Facades\Session;
             $gs = Generalsetting::first();
             $currency = globalCurrency();
 
-            $price = round(($amount) * $currency->value,2);
+            $price = formatMoneyAmount(($amount) * $currency->value);
             if($gs->currency_format == 0){
                 return $currency->name.' '. $price;
             }
@@ -46,9 +52,9 @@ use Illuminate\Support\Facades\Session;
             $gs = Generalsetting::first();
             $currency = globalCurrency();
 
-            $price = round(($amount) * $currency->value,2);
+            $price = formatMoneyAmount(($amount) * $currency->value);
             if($gs->currency_format == 0){
-                return $currency->name.' '. $price;
+                return $currency->sign. $price;
             }
             else{
                 return $price.' '. $currency->sign;
@@ -88,7 +94,7 @@ use Illuminate\Support\Facades\Session;
             $gs = Generalsetting::first();
             $currency = Currency::findOrFail($user->currency_id);
 
-            $price = round(($amount) * $currency->value,2);
+            $price = formatMoneyAmount(($amount) * $currency->value);
             if($gs->currency_format == 0){
                 return $currency->name.' '. $price;
             }
@@ -103,7 +109,7 @@ use Illuminate\Support\Facades\Session;
             $gs = Generalsetting::first();
             $currency = Currency::findOrFail($currencyId);
 
-            $price = round(($amount) * $currency->value,2);
+            $price = formatMoneyAmount(($amount) * $currency->value);
             if($gs->currency_format == 0){
                 return $currency->name.' '. $price;
             }

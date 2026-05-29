@@ -206,7 +206,7 @@ class RazorpayController extends Controller
 
      
             
-            return redirect()->route('user.deposit.create')->with('success','Deposit amount '.$input['amount'].' ('.$input['currency_code'].') successfully!');
+            return redirect()->route('user.deposit.create')->with('success','Deposit amount '.formatMoneyAmount($input['amount']).' ('.$input['currency_code'].') successfully!');
             
         }
         return redirect()->back()->with('warning','Something Went wrong!');

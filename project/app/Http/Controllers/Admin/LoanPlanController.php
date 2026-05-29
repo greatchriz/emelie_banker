@@ -27,8 +27,8 @@ class LoanPlanController extends Controller
                             ->editColumn('min_amount', function(LoanPlan $data) {
                                 $curr = Currency::where('is_default','=',1)->first();
                                 return  '<div>
-                                        Min: '.$curr->sign.$data->min_amount.'
-                                        <p>Max: '.$curr->sign.$data->max_amount.'</p>
+                                        Min: '.showprice($data->min_amount, $curr).'
+                                        <p>Max: '.showprice($data->max_amount, $curr).'</p>
                                 </div>';
                             }) 
                             ->editColumn('total_installment', function(LoanPlan $data){

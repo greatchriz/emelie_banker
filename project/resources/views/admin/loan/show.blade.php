@@ -83,12 +83,12 @@
                                     <tr>
                                         <th width="45%">{{__('Request Amount')}}</th>
                                         <th width="10%">:</th>
-                                        <td width="45%">{{ $currency->sign}} {{$data->loan_amount}}</td>
+                                        <td width="45%">{{ showprice($data->loan_amount, $currency) }}</td>
                                     </tr>
                                     <tr>
                                         <th width="45%">{{__('Pay Amount')}}</th>
                                         <th width="10%">:</th>
-                                        <td width="45%">{{ $currency->sign}} {{round($data->total_installment * $data->per_installment_amount,2)}}</td>
+                                        <td width="45%">{{ showprice($data->total_installment * $data->per_installment_amount, $currency) }}</td>
                                     </tr>
                                     <tr>
                                         <th width="45%">{{__('Total Installment')}}</th>
@@ -98,7 +98,7 @@
                                     <tr>
                                         <th width="45%">{{__('Per Installment')}}</th>
                                         <th width="10%">:</th>
-                                        <td width="45%">{{ $currency->sign}} {{$data->per_installment_amount}}</td>
+                                        <td width="45%">{{ showprice($data->per_installment_amount, $currency) }}</td>
                                     </tr>
                                     <tr>
                                         <th width="45%">{{__('Given Installment')}}</th>

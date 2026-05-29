@@ -37,7 +37,7 @@
                 @endif
                 <br><small>{{ $account->label }}</small>
               </td>
-              <td>{{ $account->balance }}</td>
+              <td>{{ showprice($account->balance, defaultCurr()) }}</td>
               <td>{{ $account->plan->title ?? __('No Plan') }}</td>
               <td><span class="badge badge-{{ $account->status == 'active' ? 'success' : ($account->status == 'pending' ? 'warning' : 'danger') }}">{{ ucfirst($account->status) }}</span></td>
               <td>

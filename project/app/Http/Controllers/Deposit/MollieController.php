@@ -144,7 +144,7 @@ class MollieController extends Controller
             }
    
             Session::forget('molly_data');
-            return redirect()->route('user.deposit.create')->with('success','Deposit amount ('.$input['amount'].') successfully!');
+            return redirect()->route('user.deposit.create')->with('success','Deposit amount ('.formatMoneyAmount($input['amount']).') successfully!');
         }
         else {
             return redirect()->route('user.deposit.create')->with('warning','Something Went wrong!');

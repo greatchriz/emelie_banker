@@ -25,14 +25,14 @@ class DpsPlanController extends Controller
                             ->editColumn('per_installment', function(DpsPlan $data) {
                                 $curr = Currency::where('is_default','=',1)->first();
                                 return  '<div>
-                                        <span class="text-primary">'.$curr->sign.$data->per_installment.'</span>/ <span class="text-primary">'.$data->installment_interval.'</span> Days
+                                        <span class="text-primary">'.showprice($data->per_installment, $curr).'</span>/ <span class="text-primary">'.$data->installment_interval.'</span> Days
                                         <p>for <span class="text-primary">'.$data->total_installment.'</span> times.</p>
                                 </div>';
                             }) 
                             ->editColumn('final_amount', function(DpsPlan $data){
                                 $curr = Currency::where('is_default','=',1)->first();
                                 return '<div>
-                                        <span class="text-primary">'.$curr->sign.round($data->final_amount + $data->user_profit,2).'</span>
+                                        <span class="text-primary">'.showprice($data->final_amount + $data->user_profit, $curr).'</span>
                                 </div>';
                             })
                             ->editColumn('status', function(DpsPlan $data) {

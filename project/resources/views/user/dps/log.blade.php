@@ -53,7 +53,7 @@
                                         </td>
                                         <td data-label="{{ __('Amount') }}">
                                           <div>
-                                            {{ $currency->sign }} {{ $data->amount }}
+                                            {{ showprice($data->amount, $currency) }}
                                           </div>
                                         </td>
                                     </tr>

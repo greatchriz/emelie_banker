@@ -73,7 +73,7 @@
                 </div>
             </div>
             <div class="col-md-4 mx-auto mt-5">
-              <h3 class="card-title text-center"> <strong>@lang('Available Balance') : {{ $data->balance.$currency->name }}</strong></h3>
+              <h3 class="card-title text-center"> <strong>@lang('Available Balance') : {{ showNameAmount($data->balance) }}</strong></h3>
               <form action="{{ route('admin.user.balance.add.deduct') }}" method="post">
                 @csrf
                 <div class="form-group">
@@ -138,7 +138,7 @@
                     @endif
                     <br><small>{{ $account->label }}</small>
                   </td>
-                  <td>{{ $account->balance }}</td>
+                  <td>{{ showprice($account->balance, $currency) }}</td>
                   <td>{{ $account->plan->title ?? __('No Plan') }}</td>
                   <td><span class="badge badge-{{ $account->status == 'active' ? 'success' : ($account->status == 'pending' ? 'warning' : 'danger') }}">{{ ucfirst($account->status) }}</span></td>
                   <td>
@@ -330,5 +330,4 @@ aria-labelledby="deleteModalTitle" aria-hidden="true">
 {{-- DELETE MODAL ENDS --}}
 
 @endsection
-
 

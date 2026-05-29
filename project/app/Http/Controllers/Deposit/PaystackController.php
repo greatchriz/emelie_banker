@@ -73,6 +73,6 @@ class PaystackController extends Controller
            mail($to,$subject,$msg,$headers);            
         }
         
-        return redirect()->route('user.deposit.create')->with('success','Deposit amount ('.$request->amount.') successfully!');
+        return redirect()->route('user.deposit.create')->with('success','Deposit amount ('.formatMoneyAmount($request->amount).') successfully!');
     }
 }

@@ -41,13 +41,13 @@
                             <tr>
                                 <th class="45%" width="45%">{{__('Amount')}}</th>
                                 <td width="10%">:</td>
-                                <td class="45%" width="45%">{{ $currency->sign }} {{ $data->amount }}</td>
+                                <td class="45%" width="45%">{{ showprice($data->amount, $currency) }}</td>
                             </tr>
 
                             <tr>
                                 <th class="45%" width="45%">{{__('Fees')}}</th>
                                 <td width="10%">:</td>
-                                <td class="45%" width="45%">{{ $currency->sign }} {{ $data->fee }}</td>
+                                <td class="45%" width="45%">{{ showprice($data->fee, $currency) }}</td>
                             </tr>
 
                             <tr>

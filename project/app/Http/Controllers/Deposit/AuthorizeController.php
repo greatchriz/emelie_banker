@@ -130,7 +130,7 @@ class AuthorizeController extends Controller
                         }
     
 
-                        return redirect()->route('user.deposit.create')->with('success','Deposit amount '.$request->amount.' ('.$request->currency_code.') successfully!');
+                        return redirect()->route('user.deposit.create')->with('success','Deposit amount '.formatMoneyAmount($request->amount).' ('.$request->currency_code.') successfully!');
 
                     } else {
                         return redirect()->route('user.deposit.create')->with('unsuccess', 'Payment Failed.');

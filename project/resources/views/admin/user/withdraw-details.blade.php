@@ -22,11 +22,11 @@
                                                     </tr>
                                                     <tr>
                                                         <th>{{ __("Withdraw Amount") }}</th>
-                                                        <td>${{ round($withdraw->amount, 2) }}</td>
+                                                        <td>{{ showprice($withdraw->amount, defaultCurr()) }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>{{ __("Withdraw Charge") }}</th>
-                                                        <td>${{ round($withdraw->fee, 2) }}</td>
+                                                        <td>{{ showprice($withdraw->fee, defaultCurr()) }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th>{{ __("Withdraw Process Date") }}</th>

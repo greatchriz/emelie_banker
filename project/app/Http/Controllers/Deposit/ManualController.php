@@ -62,6 +62,6 @@ class ManualController extends Controller
            mail($to,$subject,$msg,$headers);            
         }
 
-        return redirect()->route('user.deposit.create')->with('success','Deposit amount '.$request->amount.' ('.$request->currency_code.') successfully!');
+        return redirect()->route('user.deposit.create')->with('success','Deposit amount '.formatMoneyAmount($request->amount).' ('.$request->currency_code.') successfully!');
     }
 }

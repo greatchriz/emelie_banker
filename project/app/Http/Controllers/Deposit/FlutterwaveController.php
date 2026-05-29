@@ -176,7 +176,7 @@ class FlutterwaveController extends Controller
                         mail($to, $subject, $msg, $headers);
                     }
 
-                    return redirect()->route('user.deposit.create')->with('success', 'Deposit amount ' . $deposit_data['amount'] . ' (' . $deposit_data['currency_code'] . ') successfully!');
+                    return redirect()->route('user.deposit.create')->with('success', 'Deposit amount ' . formatMoneyAmount($deposit_data['amount']) . ' (' . $deposit_data['currency_code'] . ') successfully!');
 
                 } else {
                     return redirect()->route('user.deposit.create')->with('error', 'Something went wrong!');
