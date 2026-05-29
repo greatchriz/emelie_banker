@@ -100,9 +100,6 @@
                 <div class="min-w-0">
                   <div class="mb-2 flex flex-wrap items-center gap-2">
                     <h4 class="h4 truncate">{{ $accountName }}</h4>
-                    @if($account->is_default)
-                      <span class="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">{{ __('Default') }}</span>
-                    @endif
                   </div>
                   <div class="flex flex-wrap items-center gap-2 text-sm text-n700">
                     <span>{{ __('No') }}: <span id="account-number-{{ $account->id }}">{{ $account->account_number }}</span></span>
