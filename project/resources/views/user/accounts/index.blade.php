@@ -9,7 +9,7 @@
         <h2 class="page-title">{{ __('My Accounts') }}</h2>
       </div>
       <div class="col-auto ms-auto">
-        <a href="{{ route('user.accounts.create') }}" class="btn btn-primary">{{ __('Create Account') }}</a>
+        <a href="{{ route('user.accounts.create') }}" class="btn btn-primary">{{ __('Request Account') }}</a>
       </div>
     </div>
   </div>
@@ -37,9 +37,9 @@
             <div class="d-flex flex-wrap gap-2">
               <a href="{{ route('user.accounts.show', $account->id) }}" class="btn btn-outline-primary">{{ __('Details') }}</a>
               @if($account->status == 'active' && optional($activeAccount)->id != $account->id)
-                <a href="{{ route('user.accounts.switch', $account->id) }}" class="btn btn-primary">{{ __('Use Account') }}</a>
+                <a href="{{ route('user.accounts.switch', $account->id) }}" class="btn btn-primary">{{ __('Select Account') }}</a>
               @elseif(optional($activeAccount)->id == $account->id)
-                <span class="btn btn-success disabled">{{ __('Active') }}</span>
+                <span class="btn btn-success disabled">{{ __('Selected') }}</span>
               @endif
             </div>
           </div>

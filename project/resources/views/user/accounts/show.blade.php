@@ -10,7 +10,7 @@
       </div>
       <div class="col-auto ms-auto">
         @if($account->status == 'active')
-          <a href="{{ route('user.accounts.switch', $account->id) }}" class="btn btn-primary">{{ __('Use Account') }}</a>
+          <a href="{{ route('user.accounts.switch', $account->id) }}" class="btn btn-primary">{{ __('Select Account') }}</a>
         @endif
       </div>
     </div>

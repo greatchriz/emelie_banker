@@ -33,7 +33,20 @@ class UserController extends Controller
     {
         $data['user'] = Auth::user();  
         $data['activeAccount'] = $wallet->activeAccount($data['user']);
-        $data['accounts'] = $data['user']->accounts()->orderByDesc('is_default')->orderBy('id')->get();
+        $data['accounts'] = $data['user']->accounts()
+            ->with('plan')
+            ->withCount([
+                'deposits',
+                'withdraws',
+                'transactions',
+                'outgoingTransfers as transfers_count',
+            ])
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->get();
+        $data['accounts']->each(function ($account) {
+            $account->setRelation('latestTransactions', $account->transactions()->latest()->limit(5)->get());
+        });
         $data['transactions'] = $data['activeAccount']
             ? Transaction::whereUserId(auth()->id())->where('account_id', $data['activeAccount']->id)->orderBy('id','desc')->limit(5)->get()
             : collect();
