@@ -32,7 +32,7 @@
                                 <label class="font-weight-bold">{{ __('Set Image') }} </label>
                                 <div class="wrapper-image-preview">
                                     <div class="box">
-                                        <div class="back-preview-image" style="background-image: url({{auth()->user()->photo ? asset('assets/images/'.auth()->user()->photo) : asset('assets/images/placeholder.jpg') }});"></div>
+                                        <div class="back-preview-image" style="background-image: url({{auth()->user()->photo ? asset('assets/images/'.auth()->user()->photo) : asset('assets/user/img/user.jpg') }});"></div>
                                         <div class="upload-options">
                                             <label class="img-upload-label" for="img-upload"> <i class="fa fa-camera"></i> {{ __('Upload Picture') }} </label>
                                             <input id="img-upload" type="file" class="image-upload" name="photo" >

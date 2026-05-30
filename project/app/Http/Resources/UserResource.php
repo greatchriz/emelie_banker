@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Generalsetting;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -15,7 +14,7 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-        $gs = Generalsetting::first();
+        $defaultProfilePhoto = url('/') . '/assets/user/img/user.jpg';
 
         return [
             'id' => $this->id,
@@ -25,7 +24,7 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'email' => $this->email,
             'fax' => $this->fax,
-            'propic' => $this->photo ? url('/') . '/assets/images/' . $this->photo : url('/') . '/assets/images/'.$gs->user_image,
+            'propic' => $this->photo ? url('/') . '/assets/images/' . $this->photo : $defaultProfilePhoto,
             'zip_code' => $this->zip,
             'city' => $this->city,
             'country' => $this->country,
